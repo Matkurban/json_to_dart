@@ -2,6 +2,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:json_to_dart/model/domain/dart/class_info.dart';
+import 'package:json_to_dart/model/domain/dart/dart_type.dart';
+import 'package:json_to_dart/model/domain/dart/field_info.dart';
+import 'package:json_to_dart/model/domain/dart/history_item.dart';
+import 'package:json_to_dart/model/domain/dart/type_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class JsonConverterLogic extends GetxController {
@@ -14,6 +19,21 @@ class JsonConverterLogic extends GetxController {
 
   RxString dartCode = ''.obs;
   RxString errorMessage = ''.obs;
+
+  // 布局状态
+  final showHistoryPanel = true.obs;
+  final inputPanelRatio = 5.obs;
+  final outputPanelRatio = 5.obs;
+
+  // 历史记录
+  final history = <HistoryItem>[].obs;
+  final _historyKey = 'conversion_history';
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadHistory();
+  }
 
   void generateDartClass() {
     try {
@@ -29,6 +49,7 @@ class JsonConverterLogic extends GetxController {
       errorMessage.value = 'Error: ${e.toString().replaceAll('FormatException: ', '')}';
       dartCode.value = '';
     }
+    addHistory(jsonController.text, dartCode.value);
   }
 
   void formatJson() {
@@ -48,7 +69,7 @@ class JsonConverterLogic extends GetxController {
 
     final buffer = StringBuffer();
     final classes = <String, Map<String, dynamic>>{};
-    final classStack = [_ClassInfo(classNameController.text, jsonData)];
+    final classStack = [ClassInfo(classNameController.text, jsonData)];
 
     while (classStack.isNotEmpty) {
       final current = classStack.removeLast();
@@ -176,7 +197,7 @@ class JsonConverterLogic extends GetxController {
   List<FieldInfo> _parseFields(
     Map<String, dynamic> data,
     Map<String, Map<String, dynamic>> classes,
-    List<_ClassInfo> classStack,
+    List<ClassInfo> classStack,
     String parentClassName,
   ) {
     return data.entries.map((entry) {
@@ -205,7 +226,7 @@ class JsonConverterLogic extends GetxController {
     dynamic value,
     String key,
     Map<String, Map<String, dynamic>> classes,
-    List<_ClassInfo> classStack,
+    List<ClassInfo> classStack,
     String parentClassName,
   ) {
     if (value == null) {
@@ -214,7 +235,7 @@ class JsonConverterLogic extends GetxController {
 
     if (value is Map) {
       final className = _classNameFromKey(key, parentClassName);
-      classStack.add(_ClassInfo(className, value.cast<String, dynamic>()));
+      classStack.add(ClassInfo(className, value.cast<String, dynamic>()));
       return TypeInfo(
         type: className,
         baseType: className,
@@ -231,7 +252,7 @@ class JsonConverterLogic extends GetxController {
       final firstElement = value.first;
       if (firstElement is Map) {
         final className = '${_classNameFromKey(key, parentClassName)}Item';
-        classStack.add(_ClassInfo(className, firstElement.cast<String, dynamic>()));
+        classStack.add(ClassInfo(className, firstElement.cast<String, dynamic>()));
         return TypeInfo(
           type: 'List<$className>',
           baseType: 'List',
@@ -264,56 +285,132 @@ class JsonConverterLogic extends GetxController {
     );
   }
 
-  // 修改 _convertFieldName 方法（在JsonConverterController类中）
   String _convertFieldName(String key) {
-    // 处理特殊字符和数字开头
-    final validName = key
-        .replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_') // 替换非字母数字为下划线
-        .split('_') // 以下划线分割
-        .where((part) => part.isNotEmpty) // 移除空片段
-        .map((part) {
-          // 处理纯数字片段
+    // 1. 标准化处理：替换所有非字母数字字符为下划线，并合并连续下划线
+    String sanitized = key
+        .replaceAll(RegExp(r'[^a-zA-Z0-9]+'), '_') // 合并连续特殊字符为单个下划线
+        .replaceAll(RegExp(r'_+'), '_'); // 确保没有连续下划线
+
+    // 2. 分割下划线并过滤空片段
+    List<String> parts = sanitized.split('_').where((p) => p.isNotEmpty).toList();
+
+    // 3. 处理每个片段
+    List<String> processedParts =
+        parts.map((part) {
+          // 处理纯数字片段（如 "123" → "_123"）
           if (RegExp(r'^\d+$').hasMatch(part)) {
-            return '_$part'; // 纯数字添加前缀
+            return '_$part';
           }
-          // 处理数字开头（非纯数字）
+
+          // 处理数字开头的混合片段（如 "2fa" → "fa2"）
           if (RegExp(r'^\d').hasMatch(part)) {
-            final letters = part.split(RegExp(r'(?<=[a-zA-Z])(?=\d)|(?<=\d)(?=[a-zA-Z])'));
-            return letters.reversed.join();
+            return part
+                .split(RegExp(r'(?<=\d)(?=\D)|(?<=\D)(?=\d)')) // 分割数字和字母
+                .reversed
+                .join(); // 反转顺序
           }
+
           return part;
-        })
-        .map((part) => _capitalizeFirst(part)) // 首字母大写
-        .join('');
+        }).toList();
 
-    // 转换为小驼峰
-    final camelCase = _capitalizeFirst(validName, lowerFirst: true);
+    // 4. 转换为大驼峰格式（首字母大写）
+    processedParts = processedParts.map((p) => p[0].toUpperCase() + p.substring(1)).toList();
 
-    // 处理保留字和空值
+    // 5. 转换为小驼峰格式（首个字母小写）
+    String camelCase =
+        processedParts.isNotEmpty
+            ? processedParts.first[0].toLowerCase() +
+                processedParts.first.substring(1) +
+                processedParts.sublist(1).join()
+            : '';
+
+    // 6. 处理保留字和空值
     return _sanitizeFieldName(camelCase);
   }
 
-  String _capitalizeFirst(String s, {bool lowerFirst = false}) {
-    if (s.isEmpty) return '';
-    final first = lowerFirst ? s[0].toLowerCase() : s[0].toUpperCase();
-    return '$first${s.substring(1).toLowerCase()}';
-  }
-
   String _sanitizeFieldName(String name) {
-    const reservedWords = {'default', 'class', 'switch', 'async'};
+    const reservedWords = {
+      'abstract',
+      'as',
+      'assert',
+      'async',
+      'await',
+      'break',
+      'case',
+      'catch',
+      'class',
+      'const',
+      'continue',
+      'covariant',
+      'default',
+      'deferred',
+      'do',
+      'dynamic',
+      'else',
+      'enum',
+      'export',
+      'extends',
+      'extension',
+      'external',
+      'factory',
+      'false',
+      'final',
+      'finally',
+      'for',
+      'function',
+      'get',
+      'hide',
+      'if',
+      'implements',
+      'import',
+      'in',
+      'interface',
+      'is',
+      'late',
+      'library',
+      'mixin',
+      'new',
+      'null',
+      'on',
+      'operator',
+      'part',
+      'required',
+      'rethrow',
+      'return',
+      'set',
+      'show',
+      'static',
+      'super',
+      'switch',
+      'sync',
+      'this',
+      'throw',
+      'true',
+      'try',
+      'typedef',
+      'var',
+      'void',
+      'while',
+      'with',
+      'yield',
+    };
 
     // 处理保留字
     if (reservedWords.contains(name)) {
       return '${name}Field';
     }
 
-    // 处理数字开头
+    // 处理空值
+    if (name.isEmpty) {
+      return 'unnamedField';
+    }
+
+    // 处理数字开头（经过前面处理不应该出现）
     if (RegExp(r'^[0-9]').hasMatch(name)) {
       return '_$name';
     }
 
-    // 处理空字段名
-    return name.isEmpty ? 'unnamedField' : name;
+    return name;
   }
 
   String _classNameFromKey(String key, String parentClassName) {
@@ -342,83 +439,47 @@ class JsonConverterLogic extends GetxController {
   }
 
   static const _dartTypeMap = {
-    String: _DartType('String', 'String', ".toString()", "''"),
-    int: _DartType('int', 'int', " ?? 0", '0'),
-    double: _DartType('double', 'double', " ?? 0.0", '0.0'),
-    bool: _DartType('bool', 'bool', " ?? false", 'false'),
-    Null: _DartType('dynamic', 'dynamic', '', null),
+    String: DartType('String', 'String', ".toString()", "''"),
+    int: DartType('int', 'int', " ?? 0", '0'),
+    double: DartType('double', 'double', " ?? 0.0", '0.0'),
+    bool: DartType('bool', 'bool', " ?? false", 'false'),
+    Null: DartType('dynamic', 'dynamic', '', null),
   };
-  // 布局状态
-  final showHistoryPanel = true.obs;
-  final inputPanelRatio = 5.obs;
-  final outputPanelRatio = 5.obs;
-
-  // 历史记录
-  final history = <HistoryItem>[].obs;
-  final _historyKey = 'conversion_history';
-  
-  @override
-  void onInit() {
-    super.onInit();
-    loadHistory();
-  }
-
-
- void updatePanelRatio(double delta) {
-  const minRatio = 1;
-  const maxRatio = 10;
-  final deltaStep = delta > 0 ? 1 : -1;
-
-  final newInput = (inputPanelRatio.value + deltaStep).clamp(minRatio, maxRatio);
-  final newOutput = (outputPanelRatio.value - deltaStep).clamp(minRatio, maxRatio);
-
-  if (newInput + newOutput == inputPanelRatio.value + outputPanelRatio.value) {
-    inputPanelRatio.value = newInput;
-    outputPanelRatio.value = newOutput;
-  }
-}
 
   // 添加历史记录
-void addHistory(String jsonData, String dartCode) async {
-  final newItem = HistoryItem(
-    title: '转换记录 ${DateTime.now().toString().substring(11, 16)}',
-    subtitle: DateTime.now().toString().substring(0, 10),
-    json: jsonData,
-    dartCode: dartCode,
-    timestamp: DateTime.now(),
-  );
+  void addHistory(String jsonData, String dartCode) async {
+    final newItem = HistoryItem(
+      title: '转换记录 ${DateTime.now().toString().substring(11, 16)}',
+      subtitle: DateTime.now().toString().substring(0, 10),
+      json: jsonData,
+      dartCode: dartCode,
+      timestamp: DateTime.now(),
+    );
 
-  // 保存到 SharedPreferences
-  final prefs = await SharedPreferences.getInstance();
-  final historyJson = prefs.getStringList('history') ?? [];
-  historyJson.add(jsonEncode(newItem.toJson()));
-  await prefs.setStringList('history', historyJson);
+    // 保存到 SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    final historyJson = prefs.getStringList(_historyKey) ?? [];
+    historyJson.add(jsonEncode(newItem.toJson()));
+    await prefs.setStringList(_historyKey, historyJson);
 
-  // 更新控制器列表
-  history.insert(0, newItem);
-}
+    // 更新控制器列表
+    history.insert(0, newItem);
+  }
 
   // 加载历史记录
- void loadHistory() async {
-  final prefs = await SharedPreferences.getInstance();
-  final historyJson = prefs.getStringList('history') ?? [];
-  
-  // 更新控制器的 history 列表
-  history.assignAll(
-    historyJson.map((jsonStr) {
-      try {
+  void loadHistory() async {
+    final prefs = await SharedPreferences.getInstance();
+    final historyJson = prefs.getStringList(_historyKey) ?? [];
+
+    // 更新控制器的 history 列表
+    history.assignAll(
+      historyJson.map((jsonStr) {
         return HistoryItem.fromJson(jsonDecode(jsonStr));
-      } catch (e) {
-        print('解析历史记录失败: $e');
-        return null;
-      }
-    }).where((item) => item != null).cast<HistoryItem>().toList()
-  );
-}
+      }).toList(),
+    );
+  }
 
   //================ 本地存储实现 ================
-
-
 
   // 清空历史记录
   Future<void> clearHistory() async {
@@ -426,114 +487,4 @@ void addHistory(String jsonData, String dartCode) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_historyKey);
   }
-}
-
-// 历史记录模型类
-class HistoryItem {
-  final String title;
-  final String subtitle;
-  final String json;
-  final String dartCode;
-  final DateTime timestamp;
-
-  HistoryItem({
-    required this.title,
-    required this.subtitle,
-    required this.json,
-    required this.dartCode,
-    required this.timestamp,
-  });
-
-  // 将对象转换为 JSON
-  Map<String, dynamic> toJson() {
-    return {
-      'title': title,
-      'subtitle': subtitle,
-      'json': json,
-      'dartCode': dartCode,
-      'timestamp': timestamp.millisecondsSinceEpoch, // 将 DateTime 转换为时间戳
-    };
-  }
-
-  // 从 JSON 创建对象
-  factory HistoryItem.fromJson(Map<String, dynamic> json) {
-    return HistoryItem(
-      title: json['title'] as String,
-      subtitle: json['subtitle'] as String,
-      json: json['json'] as String,
-      dartCode: json['dartCode'] as String,
-      timestamp: DateTime.fromMillisecondsSinceEpoch(json['timestamp'] as int), // 从时间戳恢复 DateTime
-    );
-  }
-}
-
-// Helper Classes
-class TypeInfo {
-  final String type;
-  final String baseType;
-  final String? listType;
-  final bool isDynamic;
-  final bool isCustomType;
-  final bool isList;
-  final bool isListOfCustomType;
-  final bool isBasicListType;
-  final bool nullable;
-  final String? defaultValue;
-
-  TypeInfo({
-    required this.type,
-    required this.baseType,
-    this.listType,
-    this.isDynamic = false,
-    this.isCustomType = false,
-    this.isList = false,
-    this.isListOfCustomType = false,
-    this.isBasicListType = false,
-    this.nullable = true,
-    this.defaultValue,
-  });
-}
-
-class _DartType {
-  final String type;
-  final String castType;
-  final String cast;
-  final String? defaultValue;
-
-  const _DartType(this.type, this.castType, this.cast, [this.defaultValue]);
-}
-
-class FieldInfo {
-  final String jsonKey;
-  final String name;
-  final String type;
-  final String baseType;
-  final String? listType;
-  final bool isDynamic;
-  final bool isCustomType;
-  final bool isList;
-  final bool isListOfCustomType;
-  final bool isBasicListType;
-  final String? defaultValue;
-
-  FieldInfo({
-    required this.jsonKey,
-    required this.name,
-    required this.type,
-    required this.baseType,
-    this.listType,
-    this.isDynamic = false,
-    this.isCustomType = false,
-    this.isList = false,
-    this.isListOfCustomType = false,
-    this.isBasicListType = false,
-    this.defaultValue,
-  });
-}
-
-class _ClassInfo {
-  final String name;
-  final Map<String, dynamic> data;
-
-  _ClassInfo(this.name, this.data);
 }

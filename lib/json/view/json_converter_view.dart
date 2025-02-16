@@ -12,30 +12,25 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(context),
-      body: _buildDesktopLayout(context),
-      endDrawer: _buildHistoryDrawer(context),
-    );
+    return Scaffold(appBar: _buildAppBar(context), body: _buildBody(context), endDrawer: _buildHistoryDrawer(context));
   }
 
-  Widget _buildDesktopLayout(BuildContext context) {
+  Widget _buildBody(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
+        spacing: 16,
         children: [
           // 输入输出分栏
           Expanded(
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 16,
               children: [
                 _buildInputPanel(context), // 左侧输入区
-                const SizedBox(width: 16),
                 _buildOutputPanel(context), // 右侧输出区
               ],
             ),
           ),
-          const SizedBox(height: 16),
           _buildControlPanel(context), // 底部控制区
         ],
       ),
@@ -49,22 +44,23 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            spacing: 10,
             children: [
-              _buildInputLabel(context, 'JSON输入'),
-              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildInputLabel(context, 'JSON输入'),
+                  IconButton(onPressed: () => controller.jsonController.clear(), icon: Icon(Icons.clear)),
+                ],
+              ),
               Expanded(
                 child: TextField(
                   controller: controller.jsonController,
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                    hintText: '在此输入或粘贴JSON内容...',
-                    contentPadding: const EdgeInsets.all(12),
-                  ),
+                  decoration: InputDecoration(hintText: '在此输入或粘贴JSON内容...'),
                 ),
               ),
-              const SizedBox(height: 16),
               _buildClassNameField(context),
             ],
           ),
@@ -80,6 +76,7 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            spacing: 10,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -92,19 +89,14 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
               Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceVariant,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Obx(() {
-                    if (controller.dartCode.isEmpty) {
-                      return const Center(child: Text('点击生成按钮获取Dart类代码'));
-                    }
-                    return SingleChildScrollView(
-                      padding: const EdgeInsets.all(12),
+                child: Obx(() {
+                  if (controller.dartCode.isEmpty) {
+                    return const Center(child: Text('点击生成按钮获取Dart类代码'));
+                  }
+                  return SingleChildScrollView(
+                    child: SizedBox(
+                      width: double.infinity,
                       child: HighlightView(
                         controller.dartCode.value,
                         language: 'dart',
@@ -112,9 +104,9 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
                         padding: const EdgeInsets.all(12),
                         textStyle: const TextStyle(fontFamily: 'FiraCode', fontSize: 13),
                       ),
-                    );
-                  }),
-                ),
+                    ),
+                  );
+                }),
               ),
             ],
           ),
@@ -125,9 +117,14 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
 
   Widget _buildControlPanel(BuildContext context) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-        child: Column(children: [_buildOptionsRow(context), const SizedBox(height: 16), _buildActionButtons(context)]),
+      child: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+          child: Column(
+            children: [_buildOptionsRow(context), const SizedBox(height: 16), _buildActionButtons(context)],
+          ),
+        ),
       ),
     );
   }
@@ -201,15 +198,7 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
       children: [
         Text('主类名：', style: Theme.of(context).textTheme.bodyLarge),
         const SizedBox(width: 12),
-        Expanded(
-          child: TextField(
-            controller: controller.classNameController,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-              contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-            ),
-          ),
-        ),
+        Expanded(child: TextField(controller: controller.classNameController)),
       ],
     );
   }
@@ -229,13 +218,7 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
   void _copyDartCode(BuildContext context) {
     if (controller.dartCode.isNotEmpty) {
       Clipboard.setData(ClipboardData(text: controller.dartCode.value));
-      Get.snackbar(
-        '成功',
-        '代码已复制到剪贴板',
-        snackPosition: SnackPosition.BOTTOM,
-        colorText: Colors.white,
-        backgroundColor: Colors.green,
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('代码已复制到剪贴板')));
     }
   }
 
@@ -266,7 +249,7 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
                           child: ListTile(
                             title: Text(item.title),
                             subtitle: Text('${item.subtitle} ${formatTimeHHmm(item.timestamp)}'),
-                            onTap: () => controller.loadHistory(),
+                            onTap: () {},
                           ),
                         );
                       },
@@ -306,5 +289,4 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
       ],
     );
   }
-
 }
