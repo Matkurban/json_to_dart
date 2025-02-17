@@ -1,11 +1,20 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:json_to_dart/common/main/binding/main_binding.dart';
+import 'package:json_to_dart/common/main/view/main_view.dart';
 import 'package:json_to_dart/config/theme/app_theme.dart';
-import 'package:json_to_dart/json/binding/json_converter_binding.dart';
-import 'package:json_to_dart/json/view/json_converter_view.dart';
+import 'package:json_to_dart/router/router_pages.dart';
+import 'package:json_to_dart/services/storage_services.dart';
 
-void main() => runApp(const JsonToDartApp());
+void main() async {
+  await initServices();
+  runApp(const JsonToDartApp());
+}
+
+Future<void> initServices() async {
+  await Get.putAsync(() => StorageServices().init());
+}
 
 class JsonToDartApp extends StatelessWidget {
   const JsonToDartApp({super.key});
@@ -17,9 +26,10 @@ class JsonToDartApp extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
-      home: const JsonConverterView(),
-      initialBinding: JsonConverterBinding(),
+      home: MainView(),
+      initialBinding: MainBinding(),
       debugShowCheckedModeBanner: false,
+      getPages: RouterPages.allPages(),
     );
   }
 }

@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:json_to_dart/json/logic/json_converter_logic.dart';
+import 'package:json_to_dart/common/json/logic/json_converter_logic.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/github.dart';
 import 'package:flutter_highlight/themes/vs.dart';
@@ -71,7 +71,10 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildInputLabel(context, 'JSON输入'),
-                  IconButton(onPressed: () => controller.jsonController.clear(), icon: Icon(Icons.clear)),
+                  IconButton(
+                    onPressed: () => controller.jsonController.clear(),
+                    icon: Icon(Icons.clear),
+                  ),
                 ],
               ),
               Expanded(
@@ -121,9 +124,15 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
                       child: HighlightView(
                         controller.dartCode.value,
                         language: 'dart',
-                        theme: Theme.of(context).brightness == Brightness.light ? githubTheme : vsTheme,
+                        theme:
+                            Theme.of(context).brightness == Brightness.light
+                                ? githubTheme
+                                : vsTheme,
                         padding: const EdgeInsets.all(12),
-                        textStyle: const TextStyle(fontFamily: 'FiraCode', fontSize: 13),
+                        textStyle: const TextStyle(
+                          fontFamily: 'FiraCode',
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   );
@@ -143,7 +152,11 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
           child: Column(
-            children: [_buildOptionsRow(context), const SizedBox(height: 16), _buildActionButtons(context)],
+            children: [
+              _buildOptionsRow(context),
+              const SizedBox(height: 16),
+              _buildActionButtons(context),
+            ],
           ),
         ),
       ),
@@ -208,7 +221,10 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
           icon: const Icon(Icons.downloading, size: 20),
           label: const Text('生成Dart类'),
           onPressed: controller.generateDartClass,
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple, foregroundColor: Colors.white),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.deepPurple,
+            foregroundColor: Colors.white,
+          ),
         ),
       ],
     );
@@ -229,9 +245,10 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
       alignment: Alignment.centerLeft,
       child: Text(
         text,
-        style: Theme.of(
-          context,
-        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).colorScheme.primary,
+        ),
       ),
     );
   }
@@ -239,7 +256,9 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
   void _copyDartCode(BuildContext context) {
     if (controller.dartCode.isNotEmpty) {
       Clipboard.setData(ClipboardData(text: controller.dartCode.value));
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('代码已复制到剪贴板')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('代码已复制到剪贴板')));
     }
   }
 
@@ -253,12 +272,20 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
         children: [
           ListTile(
             title: Text('历史记录 (${controller.history.length})'),
-            trailing: IconButton(icon: const Icon(Icons.delete), onPressed: controller.clearHistory),
+            trailing: IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: controller.clearHistory,
+            ),
           ),
           Expanded(
             child:
                 controller.history.isEmpty
-                    ? Center(child: Text('暂无历史记录', style: Theme.of(context).textTheme.bodyLarge))
+                    ? Center(
+                      child: Text(
+                        '暂无历史记录',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    )
                     : ListView.builder(
                       itemCount: controller.history.length,
                       itemBuilder: (context, index) {
@@ -266,10 +293,13 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
                         return Dismissible(
                           key: ValueKey(item.timestamp),
                           background: Container(color: Colors.red),
-                          onDismissed: (_) => controller.history.removeAt(index),
+                          onDismissed:
+                              (_) => controller.history.removeAt(index),
                           child: ListTile(
                             title: Text(item.title),
-                            subtitle: Text('${item.subtitle} ${formatTimeHHmm(item.timestamp)}'),
+                            subtitle: Text(
+                              '${item.subtitle} ${formatTimeHHmm(item.timestamp)}',
+                            ),
                             onTap: () {},
                           ),
                         );

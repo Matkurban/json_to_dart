@@ -46,7 +46,8 @@ class JsonConverterLogic extends GetxController {
       final parsedJson = json.decode(jsonString);
       dartCode.value = _generateCode(parsedJson);
     } catch (e) {
-      errorMessage.value = 'Error: ${e.toString().replaceAll('FormatException: ', '')}';
+      errorMessage.value =
+          'Error: ${e.toString().replaceAll('FormatException: ', '')}';
       dartCode.value = '';
     }
     addHistory(jsonController.text, dartCode.value);
@@ -55,7 +56,9 @@ class JsonConverterLogic extends GetxController {
   void formatJson() {
     try {
       final parsedJson = json.decode(jsonController.text);
-      jsonController.text = const JsonEncoder.withIndent('  ').convert(parsedJson);
+      jsonController.text = const JsonEncoder.withIndent(
+        '  ',
+      ).convert(parsedJson);
       errorMessage.value = '';
     } catch (e) {
       errorMessage.value = 'Invalid JSON format';
@@ -75,7 +78,12 @@ class JsonConverterLogic extends GetxController {
       final current = classStack.removeLast();
       if (classes.containsKey(current.name)) continue;
 
-      final fields = _parseFields(current.data, classes, classStack, current.name);
+      final fields = _parseFields(
+        current.data,
+        classes,
+        classStack,
+        current.name,
+      );
 
       _writeClassHeader(current.name, buffer);
       _writeClassBody(current.name, fields, buffer);
@@ -89,7 +97,11 @@ class JsonConverterLogic extends GetxController {
     buffer.writeln('class $className {');
   }
 
-  void _writeClassBody(String className, List<FieldInfo> fields, StringBuffer buffer) {
+  void _writeClassBody(
+    String className,
+    List<FieldInfo> fields,
+    StringBuffer buffer,
+  ) {
     // 字段声明
     for (final f in fields) {
       final nullability =
@@ -141,7 +153,8 @@ class JsonConverterLogic extends GetxController {
     String line;
     if (f.isCustomType) {
       if (nonNullable.value) {
-        line = '${f.name}: ${f.type}.fromJson(json[\'${f.jsonKey}\'] as Map<String, dynamic>)';
+        line =
+            '${f.name}: ${f.type}.fromJson(json[\'${f.jsonKey}\'] as Map<String, dynamic>)';
       } else {
         line =
             '${f.name}: json[\'${f.jsonKey}\'] != null ? ${f.type}.fromJson(json[\'${f.jsonKey}\'] as Map<String, dynamic>) : null';
@@ -158,13 +171,15 @@ class JsonConverterLogic extends GetxController {
       if (nonNullable.value) {
         line = '${f.name}: json[\'${f.jsonKey}\'] as List<${f.baseType}>';
       } else {
-        line = '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\'] as List<${f.baseType}> : null';
+        line =
+            '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\'] as List<${f.baseType}> : null';
       }
     } else {
       if (nonNullable.value) {
         line = '${f.name}: json[\'${f.jsonKey}\'] as ${f.baseType}';
       } else {
-        line = '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\'] as ${f.baseType} : null';
+        line =
+            '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\'] as ${f.baseType} : null';
       }
     }
     return '$line,'; // 添加逗号
@@ -203,7 +218,13 @@ class JsonConverterLogic extends GetxController {
     return data.entries.map((entry) {
       final jsonKey = entry.key;
       final value = entry.value;
-      final typeInfo = _resolveType(value, jsonKey, classes, classStack, parentClassName);
+      final typeInfo = _resolveType(
+        value,
+        jsonKey,
+        classes,
+        classStack,
+        parentClassName,
+      );
       final fieldName = _convertFieldName(jsonKey);
 
       return FieldInfo(
@@ -217,7 +238,10 @@ class JsonConverterLogic extends GetxController {
         isList: typeInfo.isList,
         isListOfCustomType: typeInfo.isListOfCustomType,
         isBasicListType: typeInfo.isBasicListType,
-        defaultValue: nonNullable.value && typeInfo.nullable ? typeInfo.defaultValue : null,
+        defaultValue:
+            nonNullable.value && typeInfo.nullable
+                ? typeInfo.defaultValue
+                : null,
       );
     }).toList();
   }
@@ -230,7 +254,12 @@ class JsonConverterLogic extends GetxController {
     String parentClassName,
   ) {
     if (value == null) {
-      return TypeInfo(type: 'dynamic', baseType: 'dynamic', isDynamic: true, nullable: true);
+      return TypeInfo(
+        type: 'dynamic',
+        baseType: 'dynamic',
+        isDynamic: true,
+        nullable: true,
+      );
     }
 
     if (value is Map) {
@@ -246,13 +275,21 @@ class JsonConverterLogic extends GetxController {
 
     if (value is List) {
       if (value.isEmpty) {
-        return TypeInfo(type: 'List<dynamic>', baseType: 'List', isDynamic: true, isList: true, defaultValue: '[]');
+        return TypeInfo(
+          type: 'List<dynamic>',
+          baseType: 'List',
+          isDynamic: true,
+          isList: true,
+          defaultValue: '[]',
+        );
       }
 
       final firstElement = value.first;
       if (firstElement is Map) {
         final className = '${_classNameFromKey(key, parentClassName)}Item';
-        classStack.add(ClassInfo(className, firstElement.cast<String, dynamic>()));
+        classStack.add(
+          ClassInfo(className, firstElement.cast<String, dynamic>()),
+        );
         return TypeInfo(
           type: 'List<$className>',
           baseType: 'List',
@@ -292,7 +329,8 @@ class JsonConverterLogic extends GetxController {
         .replaceAll(RegExp(r'_+'), '_'); // 确保没有连续下划线
 
     // 2. 分割下划线并过滤空片段
-    List<String> parts = sanitized.split('_').where((p) => p.isNotEmpty).toList();
+    List<String> parts =
+        sanitized.split('_').where((p) => p.isNotEmpty).toList();
 
     // 3. 处理每个片段
     List<String> processedParts =
@@ -314,7 +352,8 @@ class JsonConverterLogic extends GetxController {
         }).toList();
 
     // 4. 转换为大驼峰格式（首字母大写）
-    processedParts = processedParts.map((p) => p[0].toUpperCase() + p.substring(1)).toList();
+    processedParts =
+        processedParts.map((p) => p[0].toUpperCase() + p.substring(1)).toList();
 
     // 5. 转换为小驼峰格式（首个字母小写）
     String camelCase =
@@ -468,7 +507,7 @@ class JsonConverterLogic extends GetxController {
 
   // 加载历史记录
   void loadHistory() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = Get.find<SharedPreferences>();
     final historyJson = prefs.getStringList(_historyKey) ?? [];
 
     // 更新控制器的 history 列表
