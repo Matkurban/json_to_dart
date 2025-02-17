@@ -74,6 +74,7 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
                   IconButton(
                     onPressed: () => controller.jsonController.clear(),
                     icon: Icon(Icons.clear),
+                    tooltip: '清空输入框',
                   ),
                 ],
               ),
@@ -226,10 +227,20 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
 
   Widget _buildClassNameField(BuildContext context) {
     return Row(
+      spacing: 10,
       children: [
         Text('主类名：', style: Theme.of(context).textTheme.bodyLarge),
-        const SizedBox(width: 12),
-        Expanded(child: TextField(controller: controller.classNameController)),
+        Expanded(
+          child: TextField(
+            controller: controller.classNameController,
+            decoration: InputDecoration(hintText: '请输入主类名'),
+          ),
+        ),
+        IconButton(
+          onPressed: () => controller.classNameController.clear(),
+          icon: Icon(Icons.clear),
+          tooltip: '清空类名',
+        ),
       ],
     );
   }
@@ -257,18 +268,24 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
   }
 
   Widget _buildHistoryDrawer(BuildContext context) {
-    return Drawer(width: 300, child: _buildHistoryPanel(context));
+    var width = MediaQuery.sizeOf(context).width * 0.3;
+    return Drawer(width: width, child: _buildHistoryPanel(context));
   }
 
   Widget _buildHistoryPanel(BuildContext context) {
+    var colorScheme = Theme.of(context).colorScheme;
     return Obx(
       () => Column(
         children: [
           ListTile(
             title: Text('历史记录 (${controller.history.length})'),
             trailing: IconButton(
-              icon: const Icon(Icons.delete),
+              icon: Icon(
+                Icons.delete_forever_outlined,
+                color: colorScheme.error,
+              ),
               onPressed: controller.clearHistory,
+              tooltip: '清空历史记录',
             ),
           ),
           Expanded(
@@ -286,7 +303,6 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
                         final item = controller.history[index];
                         return Dismissible(
                           key: ValueKey(item.timestamp),
-                          background: Container(color: Colors.red),
                           onDismissed:
                               (_) => controller.history.removeAt(index),
                           child: ListTile(
@@ -295,6 +311,27 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
                               '${item.subtitle} ${formatTimeHHmm(item.timestamp)}',
                             ),
                             onTap: () {},
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.preview_outlined,
+                                    color: colorScheme.primary,
+                                  ),
+                                  tooltip: '预览',
+                                ),
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(
+                                    Icons.remove,
+                                    color: colorScheme.error,
+                                  ),
+                                  tooltip: '删除',
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       },
