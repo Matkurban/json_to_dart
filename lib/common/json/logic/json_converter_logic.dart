@@ -7,6 +7,7 @@ import 'package:json_to_dart/model/domain/dart/dart_type.dart';
 import 'package:json_to_dart/model/domain/dart/field_info.dart';
 import 'package:json_to_dart/model/domain/dart/history_item.dart';
 import 'package:json_to_dart/model/domain/dart/type_info.dart';
+import 'package:json_to_dart/utils/message_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class JsonConverterLogic extends GetxController {
@@ -40,22 +41,30 @@ class JsonConverterLogic extends GetxController {
       errorMessage.value = '';
       final jsonString = jsonController.text.trim();
       if (jsonString.isEmpty) {
-        print('JSON cannot be empty');
+        MessageUtil.showWarning(title: '操作提示 ', content: '请输入json后操作');
+        return;
       }
 
+      final classNameString = classNameController.text.trim();
+      if (classNameString.isEmpty) {
+        MessageUtil.showWarning(title: '操作提示 ', content: '请输入类名后操作');
+        return;
+      }
       final parsedJson = json.decode(jsonString);
       dartCode.value = _generateCode(parsedJson);
       addHistory(jsonController.text, dartCode.value);
     } catch (e) {
-      errorMessage.value =
-          'Error: ${e.toString().replaceAll('FormatException: ', '')}';
       dartCode.value = '';
+      MessageUtil.showWarning(title: '转换异常 ', content: '请输入正确格式的json后操作');
     }
   }
 
   void formatJson() {
-    print('点击了格式化');
     try {
+      if (jsonController.text.trim().isEmpty) {
+        MessageUtil.showWarning(title: '操作提示 ', content: '请输入json后操作');
+        return;
+      }
       final parsedJson = json.decode(jsonController.text);
       jsonController.text = const JsonEncoder.withIndent(
         '  ',
@@ -63,12 +72,13 @@ class JsonConverterLogic extends GetxController {
       errorMessage.value = '';
     } catch (e) {
       errorMessage.value = 'Invalid JSON format';
+      MessageUtil.showWarning(title: '格式化异常 ', content: '请输入正确格式的json后操作');
     }
   }
 
   String _generateCode(dynamic jsonData) {
     if (jsonData is! Map<String, dynamic>) {
-      print('Requires JSON object format');
+      MessageUtil.showWarning(title: '转换异常 ', content: '请输入正确格式的json后操作');
     }
 
     final buffer = StringBuffer();
@@ -114,9 +124,7 @@ class JsonConverterLogic extends GetxController {
       buffer.writeln('  final ${f.type}$nullability ${f.name};');
     }
 
-    // 主构造函数
     buffer.write('''
-  
   $className({
     ${fields.map((f) {
       final required = nonNullable.value && !f.isDynamic ? 'required ' : '';
@@ -125,7 +133,6 @@ class JsonConverterLogic extends GetxController {
   });
   ''');
 
-    // fromJson
     if (generateFromJson.value) {
       buffer.write('''
     
@@ -434,22 +441,18 @@ class JsonConverterLogic extends GetxController {
       'with',
       'yield',
     };
-
     // 处理保留字
     if (reservedWords.contains(name)) {
       return '${name}Field';
     }
-
     // 处理空值
     if (name.isEmpty) {
       return 'unnamedField';
     }
-
     // 处理数字开头（经过前面处理不应该出现）
     if (RegExp(r'^[0-9]').hasMatch(name)) {
       return '_$name';
     }
-
     return name;
   }
 

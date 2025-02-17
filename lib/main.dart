@@ -6,6 +6,7 @@ import 'package:json_to_dart/common/main/view/main_view.dart';
 import 'package:json_to_dart/config/theme/app_theme.dart';
 import 'package:json_to_dart/router/router_pages.dart';
 import 'package:json_to_dart/services/storage_services.dart';
+import 'package:toastification/toastification.dart';
 
 void main() async {
   await initServices();
@@ -21,15 +22,17 @@ class JsonToDartApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      title: '高级JSON转换工具',
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.system,
-      home: MainView(),
-      initialBinding: MainBinding(),
-      debugShowCheckedModeBanner: false,
-      getPages: RouterPages.allPages(),
+    return ToastificationWrapper(
+      child: GetMaterialApp(
+        title: '高级JSON转换工具',
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: ThemeMode.system,
+        home: MainView(),
+        initialBinding: MainBinding(),
+        debugShowCheckedModeBanner: false,
+        getPages: RouterPages.allPages(),
+      ),
     );
   }
 }

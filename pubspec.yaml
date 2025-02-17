@@ -39,6 +39,7 @@ dependencies:
   flutter_highlight: ^0.7.0
   shared_preferences: ^2.5.2
   flex_color_scheme: ^8.1.1
+  toastification: ^2.3.0
 
 dev_dependencies:
   flutter_test:
