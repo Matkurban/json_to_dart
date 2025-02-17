@@ -39,7 +39,7 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
 
   Widget _buildBody(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(10.0),
       child: Column(
         spacing: 16,
         children: [
@@ -63,6 +63,7 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
     return Expanded(
       flex: 5, // 输入区占比5份
       child: Card(
+        margin: EdgeInsets.zero,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -99,6 +100,7 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
     return Expanded(
       flex: 5, // 输出区占比5份
       child: Card(
+        margin: EdgeInsets.zero,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -146,6 +148,7 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
 
   Widget _buildControlPanel(BuildContext context) {
     return Card(
+      margin: EdgeInsets.zero,
       child: SizedBox(
         width: double.infinity,
         child: Padding(
@@ -208,18 +211,20 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
       runSpacing: 12,
       alignment: WrapAlignment.center,
       children: [
-        FilledButton.tonalIcon(
-          icon: const Icon(Icons.auto_awesome, size: 20),
+        FilledButton.icon(
+          icon: const Icon(Icons.auto_awesome),
           label: const Text('格式化JSON'),
           onPressed: controller.formatJson,
+          style: FilledButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.primary,
+          ),
         ),
         FilledButton.icon(
-          icon: const Icon(Icons.downloading, size: 20),
+          icon: const Icon(Icons.downloading),
           label: const Text('生成Dart类'),
           onPressed: controller.generateDartClass,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.deepPurple,
-            foregroundColor: Colors.white,
+          style: FilledButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
         ),
       ],

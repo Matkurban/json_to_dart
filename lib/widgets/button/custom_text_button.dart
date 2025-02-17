@@ -9,14 +9,9 @@ class CustomTextButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var themeData = Theme.of(context);
-    return FilledButton(
+    return ElevatedButton(
       onPressed: onPress,
-      child: Text(
-        text,
-        style: themeData.textTheme.titleMedium!.copyWith(
-          color: themeData.colorScheme.onPrimary,
-        ),
-      ),
+      child: Text(text, style: themeData.textTheme.titleMedium),
     );
   }
 }
