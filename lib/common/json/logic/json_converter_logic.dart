@@ -7,6 +7,7 @@ import 'package:json_to_dart/model/domain/dart/dart_type.dart';
 import 'package:json_to_dart/model/domain/dart/field_info.dart';
 import 'package:json_to_dart/model/domain/dart/history_item.dart';
 import 'package:json_to_dart/model/domain/dart/type_info.dart';
+import 'package:json_to_dart/utils/confirm_dialog.dart';
 import 'package:json_to_dart/utils/message_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -526,8 +527,14 @@ class JsonConverterLogic extends GetxController {
 
   // 清空历史记录
   Future<void> clearHistory() async {
-    history.clear();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_historyKey);
+    ConfirmDialog.showConfirmDialog(
+      title: '确认清空吗',
+      content: '清空后将无法恢复，请谨慎操作。',
+      onConfirm: () async {
+        history.clear();
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove(_historyKey);
+      },
+    );
   }
 }
