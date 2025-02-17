@@ -38,22 +38,23 @@ class JsonConverterLogic extends GetxController {
   void generateDartClass() {
     try {
       errorMessage.value = '';
-      final jsonString = jsonController.text;
+      final jsonString = jsonController.text.trim();
       if (jsonString.isEmpty) {
-        throw const FormatException('JSON cannot be empty');
+        print('JSON cannot be empty');
       }
 
       final parsedJson = json.decode(jsonString);
       dartCode.value = _generateCode(parsedJson);
+      addHistory(jsonController.text, dartCode.value);
     } catch (e) {
       errorMessage.value =
           'Error: ${e.toString().replaceAll('FormatException: ', '')}';
       dartCode.value = '';
     }
-    addHistory(jsonController.text, dartCode.value);
   }
 
   void formatJson() {
+    print('点击了格式化');
     try {
       final parsedJson = json.decode(jsonController.text);
       jsonController.text = const JsonEncoder.withIndent(
@@ -67,7 +68,7 @@ class JsonConverterLogic extends GetxController {
 
   String _generateCode(dynamic jsonData) {
     if (jsonData is! Map<String, dynamic>) {
-      throw FormatException('Requires JSON object format');
+      print('Requires JSON object format');
     }
 
     final buffer = StringBuffer();

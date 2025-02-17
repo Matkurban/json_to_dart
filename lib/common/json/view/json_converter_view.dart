@@ -129,10 +129,7 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
                                 ? githubTheme
                                 : vsTheme,
                         padding: const EdgeInsets.all(12),
-                        textStyle: const TextStyle(
-                          fontFamily: 'FiraCode',
-                          fontSize: 13,
-                        ),
+                        textStyle: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ),
                   );
@@ -152,11 +149,8 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
           child: Column(
-            children: [
-              _buildOptionsRow(context),
-              const SizedBox(height: 16),
-              _buildActionButtons(context),
-            ],
+            spacing: 10,
+            children: [_buildOptionsRow(context), _buildActionButtons(context)],
           ),
         ),
       ),

@@ -5,6 +5,12 @@ import 'package:json_to_dart/router/router_names.dart';
 
 sealed class RouterPages {
   static List<GetPage> allPages() {
-    return [GetPage(name: RouterNames.jsonToDart, page: () => JsonConverterView(), binding: JsonConverterBinding())];
+    return [
+      GetPage(
+        name: RouterNames.jsonToDart,
+        page: () => JsonConverterView(),
+        binding: JsonConverterBinding(),
+      ),
+    ];
   }
 }
