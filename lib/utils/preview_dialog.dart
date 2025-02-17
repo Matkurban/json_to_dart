@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:json_to_dart/model/domain/dart/history_item.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:json_to_dart/utils/message_util.dart';
 
 sealed class PreviewDialog {
   static void showPreviewDialog(HistoryItem item) {
@@ -75,6 +76,7 @@ class _PreviewDialogContent extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
+            spacing: 10,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // 标题栏
@@ -89,20 +91,17 @@ class _PreviewDialogContent extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.copy, size: 20),
+                    icon: const Icon(Icons.copy),
                     onPressed: () {
                       onCopy();
-                      ScaffoldMessenger.of(Get.context!).showSnackBar(
-                        SnackBar(
-                          content: Text('$title 已复制到剪贴板'),
-                          duration: const Duration(seconds: 1),
-                        ),
+                      MessageUtil.showSuccess(
+                        title: '操作提示',
+                        content: '已成功复制到剪切板',
                       );
                     },
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
               // 代码内容区域
               Expanded(
                 child: Container(

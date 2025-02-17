@@ -312,28 +312,14 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
                               '${item.subtitle} ${formatTimeHHmm(item.timestamp)}',
                             ),
                             onTap: () {},
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    PreviewDialog.showPreviewDialog(item);
-                                  },
-                                  icon: Icon(
-                                    Icons.preview_outlined,
-                                    color: colorScheme.primary,
-                                  ),
-                                  tooltip: '预览',
-                                ),
-                                IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.remove,
-                                    color: colorScheme.error,
-                                  ),
-                                  tooltip: '删除',
-                                ),
-                              ],
+                            trailing: IconButton(
+                              onPressed:
+                                  () => PreviewDialog.showPreviewDialog(item),
+                              icon: Icon(
+                                Icons.preview_outlined,
+                                color: colorScheme.primary,
+                              ),
+                              tooltip: '预览',
                             ),
                           ),
                         );
