@@ -12,7 +12,28 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: _buildAppBar(context), body: _buildBody(context), endDrawer: _buildHistoryDrawer(context));
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('JSON转Dart工具'),
+        centerTitle: true,
+        actions: [
+          Builder(
+            builder:
+                (context) => IconButton(
+                  icon: const Icon(Icons.history),
+                  onPressed: () {
+                    if (Scaffold.of(context).hasEndDrawer) {
+                      Scaffold.of(context).openEndDrawer();
+                    }
+                  },
+                  tooltip: '历史记录',
+                ),
+          ),
+        ],
+      ),
+      body: _buildBody(context),
+      endDrawer: _buildHistoryDrawer(context),
+    );
   }
 
   Widget _buildBody(BuildContext context) {
@@ -267,26 +288,5 @@ class JsonConverterView extends GetView<JsonConverterLogic> {
     // 获取分钟并确保两位数格式
     final minute = time.minute.toString().padLeft(2, '0');
     return '$hour:$minute';
-  }
-
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return AppBar(
-      title: const Text('高级JSON转换工具'),
-      actions: [
-        Builder(
-          builder:
-              (innerContext) => IconButton(
-                icon: const Icon(Icons.history),
-                onPressed: () {
-                  // 使用 innerContext 而非外部的 context
-                  if (Scaffold.of(innerContext).hasEndDrawer) {
-                    Scaffold.of(innerContext).openEndDrawer();
-                  }
-                },
-                tooltip: '历史记录',
-              ),
-        ),
-      ],
-    );
   }
 }
