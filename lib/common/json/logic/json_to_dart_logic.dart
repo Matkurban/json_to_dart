@@ -10,6 +10,7 @@ import 'package:json_to_dart/model/domain/dart/type_info.dart';
 import 'package:json_to_dart/utils/confirm_dialog.dart';
 import 'package:json_to_dart/utils/message_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:syntax_highlight/syntax_highlight.dart';
 
 class JsonToDartLogic extends GetxController {
   final jsonController = TextEditingController();
@@ -31,10 +32,15 @@ class JsonToDartLogic extends GetxController {
   final history = <HistoryItem>[].obs;
   final _historyKey = 'conversion_history';
 
+  late Highlighter highlighter;
+
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
     loadHistory();
+    // Load the default light theme and create a highlighter.
+    var theme = await HighlighterTheme.loadLightTheme();
+    highlighter = Highlighter(language: 'dart', theme: theme);
   }
 
   void generateDartClass() {

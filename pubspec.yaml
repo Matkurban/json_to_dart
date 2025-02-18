@@ -13,10 +13,12 @@ dependencies:
   cupertino_icons: ^1.0.8
   get: ^4.7.2
   json_serializable: ^6.9.4
-  flutter_highlight: ^0.7.0
+  # flutter_highlight: ^0.7.0
   shared_preferences: ^2.5.2
   flex_color_scheme: ^8.1.1
   toastification: ^2.3.0
+  syntax_highlight: ^0.4.0
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:

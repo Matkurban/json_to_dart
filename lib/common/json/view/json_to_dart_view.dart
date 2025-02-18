@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:json_to_dart/common/json/logic/json_to_dart_logic.dart';
-import 'package:flutter_highlight/flutter_highlight.dart';
-import 'package:flutter_highlight/themes/github.dart';
-import 'package:flutter_highlight/themes/vs.dart';
 import 'package:json_to_dart/utils/preview_dialog.dart';
+import 'package:json_to_dart/widgets/highlight/highlight_text.dart';
 
 class JsonToDartView extends GetView<JsonToDartLogic> {
   const JsonToDartView({super.key});
@@ -126,15 +124,9 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                   return SingleChildScrollView(
                     child: SizedBox(
                       width: double.infinity,
-                      child: HighlightView(
-                        controller.dartCode.value,
-                        language: 'dart',
-                        theme:
-                            Theme.of(context).brightness == Brightness.light
-                                ? githubTheme
-                                : vsTheme,
-                        padding: const EdgeInsets.all(12),
-                        textStyle: Theme.of(context).textTheme.bodyLarge,
+                      child: HighlightText(
+                        codeText: controller.dartCode.value,
+                        highlighter: controller.highlighter,
                       ),
                     ),
                   );

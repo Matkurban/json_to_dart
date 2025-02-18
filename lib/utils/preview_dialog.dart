@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:json_to_dart/common/json/logic/json_to_dart_logic.dart';
 import 'package:json_to_dart/model/domain/dart/history_item.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:json_to_dart/utils/message_util.dart';
+import 'package:json_to_dart/widgets/highlight/highlight_text.dart';
 
 sealed class PreviewDialog {
   static void showPreviewDialog(HistoryItem item) {
@@ -13,7 +15,7 @@ sealed class PreviewDialog {
   }
 }
 
-class _PreviewDialogContent extends StatelessWidget {
+class _PreviewDialogContent extends GetView<JsonToDartLogic> {
   final HistoryItem item;
 
   const _PreviewDialogContent({required this.item});
@@ -108,7 +110,10 @@ class _PreviewDialogContent extends StatelessWidget {
                   padding: const EdgeInsets.all(8),
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
-                    child: SelectableText(content),
+                    child: HighlightText(
+                      codeText: content,
+                      highlighter: controller.highlighter,
+                    ),
                   ),
                 ),
               ),
