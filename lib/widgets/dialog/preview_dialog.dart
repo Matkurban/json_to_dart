@@ -7,9 +7,9 @@ import 'package:json_to_dart/utils/message_util.dart';
 import 'package:json_to_dart/widgets/highlight/highlight_text.dart';
 
 sealed class PreviewDialog {
-  static void showPreviewDialog(HistoryItem item) {
+  static void showPreviewDialog(BuildContext context, HistoryItem item) {
     showDialog(
-      context: Get.context!,
+      context: context,
       builder: (context) => _PreviewDialogContent(item: item),
     );
   }
@@ -22,42 +22,29 @@ class _PreviewDialogContent extends GetView<JsonToDartLogic> {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.sizeOf(context);
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ConstrainedBox(
+      child: Container(
+        padding: const EdgeInsets.all(10.0),
         constraints: BoxConstraints(
-          maxWidth: Get.width * 0.7,
-          maxHeight: Get.height * 0.8,
+          maxWidth: size.width * 0.9,
+          maxHeight: size.height * 0.9,
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(
+        child: Expanded(
+          child: Row(
             spacing: 10,
-            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // 主要内容区域
-              Expanded(
-                child: Row(
-                  spacing: 10,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildCodeCard(
-                      title: 'JSON',
-                      content: item.json,
-                      onCopy: () => _copyToClipboard(item.json),
-                    ),
-                    _buildCodeCard(
-                      title: 'Dart',
-                      content: item.dartCode,
-                      onCopy: () => _copyToClipboard(item.dartCode),
-                    ),
-                  ],
-                ),
+              _buildCodeCard(
+                title: 'JSON',
+                content: item.json,
+                onCopy: () => _copyToClipboard(item.json),
               ),
-              // 底部关闭按钮
-              Align(
-                alignment: Alignment.bottomRight,
-                child: TextButton(onPressed: Get.back, child: const Text('关闭')),
+              _buildCodeCard(
+                title: 'Dart',
+                content: item.dartCode,
+                onCopy: () => _copyToClipboard(item.dartCode),
               ),
             ],
           ),

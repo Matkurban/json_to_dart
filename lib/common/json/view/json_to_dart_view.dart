@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:json_to_dart/common/json/logic/json_to_dart_logic.dart';
-import 'package:json_to_dart/utils/preview_dialog.dart';
+import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
 import 'package:json_to_dart/widgets/highlight/highlight_text.dart';
 
 class JsonToDartView extends GetView<JsonToDartLogic> {
@@ -208,17 +208,13 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
           icon: const Icon(Icons.auto_awesome),
           label: const Text('格式化JSON'),
           onPressed: controller.formatJson,
-          style: FilledButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
+          style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary),
         ),
         FilledButton.icon(
           icon: const Icon(Icons.downloading),
           label: const Text('生成Dart类'),
           onPressed: controller.generateDartClass,
-          style: FilledButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.secondary,
-          ),
+          style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.secondary),
         ),
       ],
     );
@@ -260,9 +256,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
   void _copyDartCode(BuildContext context) {
     if (controller.dartCode.isNotEmpty) {
       Clipboard.setData(ClipboardData(text: controller.dartCode.value));
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('代码已复制到剪贴板')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('代码已复制到剪贴板')));
     }
   }
 
@@ -273,16 +267,13 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
 
   Widget _buildHistoryPanel(BuildContext context) {
     var colorScheme = Theme.of(context).colorScheme;
-    return Obx(
-      () => Column(
+    return Obx(() {
+      return Column(
         children: [
           ListTile(
             title: Text('历史记录 (${controller.history.length})'),
             trailing: IconButton(
-              icon: Icon(
-                Icons.delete_forever_outlined,
-                color: colorScheme.error,
-              ),
+              icon: Icon(Icons.delete_forever_outlined, color: colorScheme.error),
               onPressed: controller.clearHistory,
               tooltip: '清空历史记录',
             ),
@@ -290,33 +281,21 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
           Expanded(
             child:
                 controller.history.isEmpty
-                    ? Center(
-                      child: Text(
-                        '暂无历史记录',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    )
+                    ? Center(child: Text('暂无历史记录', style: Theme.of(context).textTheme.bodyLarge))
                     : ListView.builder(
                       itemCount: controller.history.length,
                       itemBuilder: (context, index) {
                         final item = controller.history[index];
                         return Dismissible(
                           key: ValueKey(item.timestamp),
-                          onDismissed:
-                              (_) => controller.history.removeAt(index),
+                          onDismissed: (_) => controller.history.removeAt(index),
                           child: ListTile(
                             title: Text(item.title),
-                            subtitle: Text(
-                              '${item.subtitle} ${formatTimeHHmm(item.timestamp)}',
-                            ),
-                            onTap: () {},
+                            subtitle: Text('${item.subtitle} ${formatTimeHHmm(item.timestamp)}'),
+                            onTap: () => PreviewDialog.showPreviewDialog(context, item),
                             trailing: IconButton(
-                              onPressed:
-                                  () => PreviewDialog.showPreviewDialog(item),
-                              icon: Icon(
-                                Icons.preview_outlined,
-                                color: colorScheme.primary,
-                              ),
+                              onPressed: () => PreviewDialog.showPreviewDialog(context, item),
+                              icon: Icon(Icons.preview_outlined, color: colorScheme.primary),
                               tooltip: '预览',
                             ),
                           ),
@@ -325,8 +304,8 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                     ),
           ),
         ],
-      ),
-    );
+      );
+    });
   }
 
   // 定义时间格式化方法

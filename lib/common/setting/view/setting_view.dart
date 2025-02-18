@@ -7,6 +7,17 @@ class SettingView extends GetView<SettingLogic> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: Text('设置')));
+    return Scaffold(
+      appBar: AppBar(title: Text('设置')),
+      body: ListView(
+        children: [
+          ListTile(
+            title: Text('主题'),
+            onTap: () => controller.selectTheme(context),
+          ),
+          ListTile(title: Text('版本')),
+        ],
+      ),
+    );
   }
 }
