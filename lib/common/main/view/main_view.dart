@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
-import 'package:json_to_dart/common/home/view/home_view.dart';
+import 'package:json_to_dart/common/json/view/json_to_dart_view.dart';
 import 'package:json_to_dart/common/main/logic/main_logic.dart';
 import 'package:json_to_dart/common/setting/view/setting_view.dart';
 
@@ -13,7 +13,7 @@ class MainView extends GetView<MainLogic> {
       body: PageView(
         controller: controller.pageController,
         onPageChanged: controller.onPageChanged,
-        children: [HomeView(), SettingView()],
+        children: [JsonToDartView(), SettingView()],
       ),
       bottomNavigationBar: Obx(() {
         return BottomNavigationBar(
