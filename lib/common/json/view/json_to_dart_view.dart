@@ -83,6 +83,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
               Expanded(
                 child: TextField(
                   controller: controller.jsonController,
+                  minLines: 6,
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(hintText: '在此输入或粘贴JSON内容...'),
