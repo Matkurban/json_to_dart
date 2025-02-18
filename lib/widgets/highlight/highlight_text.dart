@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:syntax_highlight/syntax_highlight.dart';
 
 class HighlightText extends StatelessWidget {
@@ -10,12 +10,10 @@ class HighlightText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text.rich(
-      highlighter.highlight(codeText),
-      style: TextStyle(
-        fontFamily: "JetBrainsMono",
-        fontSize: 16,
-        height: 1.2,
+    return SelectionArea(
+      child: Text.rich(
+        highlighter.highlight(codeText),
+        style: TextStyle(fontFamily: "JetBrainsMono", fontSize: 16, height: 1.2),
       ),
     );
   }
