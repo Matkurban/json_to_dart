@@ -11,11 +11,14 @@ class SettingView extends GetView<SettingLogic> {
       appBar: AppBar(title: Text('设置')),
       body: ListView(
         children: [
-          ListTile(
-            title: Text('主题'),
-            onTap: () => controller.selectTheme(context),
+          Card(
+            child: ListTile(
+              title: Text('主题'),
+              trailing: Obx(() => Text(controller.themeChineseString.value)),
+              onTap: () => controller.selectTheme(context),
+            ),
           ),
-          ListTile(title: Text('版本')),
+          Card(child: ListTile(title: Text('版本'))),
         ],
       ),
     );

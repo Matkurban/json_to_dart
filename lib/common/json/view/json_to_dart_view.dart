@@ -39,12 +39,12 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Column(
-        spacing: 16,
+        spacing: 10,
         children: [
           // 输入输出分栏
           Expanded(
             child: Row(
-              spacing: 16,
+              spacing: 10,
               children: [
                 _buildInputPanel(context), // 左侧输入区
                 _buildOutputPanel(context), // 右侧输出区
