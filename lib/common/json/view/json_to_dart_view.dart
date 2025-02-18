@@ -2,14 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:json_to_dart/common/json/logic/json_converter_logic.dart';
+import 'package:json_to_dart/common/json/logic/json_to_dart_logic.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/github.dart';
 import 'package:flutter_highlight/themes/vs.dart';
 import 'package:json_to_dart/utils/preview_dialog.dart';
 
-class JsonConverterView extends GetView<JsonConverterLogic> {
-  const JsonConverterView({super.key});
+class JsonToDartView extends GetView<JsonToDartLogic> {
+  const JsonToDartView({super.key});
 
   @override
   Widget build(BuildContext context) {

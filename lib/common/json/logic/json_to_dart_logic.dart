@@ -11,7 +11,7 @@ import 'package:json_to_dart/utils/confirm_dialog.dart';
 import 'package:json_to_dart/utils/message_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class JsonConverterLogic extends GetxController {
+class JsonToDartLogic extends GetxController {
   final jsonController = TextEditingController();
   final classNameController = TextEditingController(text: 'MyModel');
 

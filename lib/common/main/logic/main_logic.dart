@@ -1,10 +1,13 @@
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:json_to_dart/model/domain/main/router_item.dart';
-import 'package:json_to_dart/router/router_names.dart';
 
 class MainLogic extends GetxController {
-  ///已有的功能
-  final List<RouterItem> commonList = <RouterItem>[
-    RouterItem(name: 'Json转Dart类', router: RouterNames.jsonToDart),
-  ];
+  ///页面控制器
+  final PageController pageController = PageController();
+
+  ///bottomNavigationBar 的当前索引
+  RxInt currentIndex = 0.obs;
+
+  ///pageController切换时触发，返回索引
+  void onPageChanged(int index) => currentIndex(index);
 }
