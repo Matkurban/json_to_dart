@@ -17,7 +17,10 @@ sealed class Dialogs {
                 return RadioListTile<ThemeMode>(
                   value: ThemeMode.light,
                   groupValue: appSetting.theme.value,
-                  onChanged: (value) => appSetting.changeTheme(value!),
+                  onChanged: (value) {
+                    Get.back();
+                    appSetting.changeTheme(value!);
+                  },
                   title: Text('亮色'),
                 );
               }),
@@ -25,7 +28,10 @@ sealed class Dialogs {
                 return RadioListTile<ThemeMode>(
                   value: ThemeMode.dark,
                   groupValue: appSetting.theme.value,
-                  onChanged: (value) => appSetting.changeTheme(value!),
+                  onChanged: (value) {
+                    Get.back();
+                    appSetting.changeTheme(value!);
+                  },
                   title: Text('暗色'),
                 );
               }),
@@ -33,7 +39,10 @@ sealed class Dialogs {
                 return RadioListTile<ThemeMode>(
                   value: ThemeMode.system,
                   groupValue: appSetting.theme.value,
-                  onChanged: (value) => appSetting.changeTheme(value!),
+                  onChanged: (value) {
+                    Get.back();
+                    appSetting.changeTheme(value!);
+                  },
                   title: Text('系统'),
                 );
               }),
