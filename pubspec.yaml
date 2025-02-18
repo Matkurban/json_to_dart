@@ -18,7 +18,7 @@ dependencies:
   flex_color_scheme: ^8.1.1
   toastification: ^2.3.0
   syntax_highlight: ^0.4.0
-  google_fonts: ^6.2.1
+  package_info_plus: ^8.2.1
 
 dev_dependencies:
   flutter_test:
@@ -28,3 +28,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: JetBrainsMono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono-Light.ttf
+

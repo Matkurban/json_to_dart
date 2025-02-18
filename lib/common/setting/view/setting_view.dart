@@ -18,7 +18,7 @@ class SettingView extends GetView<SettingLogic> {
               onTap: () => controller.selectTheme(context),
             ),
           ),
-          Card(child: ListTile(title: Text('版本'))),
+          Card(child: ListTile(title: Text('版本'), trailing: Obx(() => Text(controller.version.value)))),
         ],
       ),
     );

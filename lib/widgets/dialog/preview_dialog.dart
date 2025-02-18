@@ -8,10 +8,7 @@ import 'package:json_to_dart/widgets/highlight/highlight_text.dart';
 
 sealed class PreviewDialog {
   static void showPreviewDialog(BuildContext context, HistoryItem item) {
-    showDialog(
-      context: context,
-      builder: (context) => _PreviewDialogContent(item: item),
-    );
+    showDialog(context: context, builder: (context) => _PreviewDialogContent(item: item));
   }
 }
 
@@ -27,37 +24,20 @@ class _PreviewDialogContent extends GetView<JsonToDartLogic> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
         padding: const EdgeInsets.all(10.0),
-        constraints: BoxConstraints(
-          maxWidth: size.width * 0.9,
-          maxHeight: size.height * 0.9,
-        ),
-        child: Expanded(
-          child: Row(
-            spacing: 10,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildCodeCard(
-                title: 'JSON',
-                content: item.json,
-                onCopy: () => _copyToClipboard(item.json),
-              ),
-              _buildCodeCard(
-                title: 'Dart',
-                content: item.dartCode,
-                onCopy: () => _copyToClipboard(item.dartCode),
-              ),
-            ],
-          ),
+        constraints: BoxConstraints(maxWidth: size.width * 0.9, maxHeight: size.height * 0.9),
+        child: Row(
+          spacing: 10,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildCodeCard(title: 'JSON', content: item.json, onCopy: () => _copyToClipboard(item.json)),
+            _buildCodeCard(title: 'Dart', content: item.dartCode, onCopy: () => _copyToClipboard(item.dartCode)),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildCodeCard({
-    required String title,
-    required String content,
-    required VoidCallback onCopy,
-  }) {
+  Widget _buildCodeCard({required String title, required String content, required VoidCallback onCopy}) {
     return Expanded(
       child: Card(
         elevation: 0,
@@ -72,21 +52,12 @@ class _PreviewDialogContent extends GetView<JsonToDartLogic> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
+                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                   IconButton(
                     icon: const Icon(Icons.copy),
                     onPressed: () {
                       onCopy();
-                      MessageUtil.showSuccess(
-                        title: '操作提示',
-                        content: '已成功复制到剪切板',
-                      );
+                      MessageUtil.showSuccess(title: '操作提示', content: '已成功复制到剪切板');
                     },
                   ),
                 ],
@@ -97,10 +68,7 @@ class _PreviewDialogContent extends GetView<JsonToDartLogic> {
                   padding: const EdgeInsets.all(8),
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
-                    child: HighlightText(
-                      codeText: content,
-                      highlighter: controller.highlighter,
-                    ),
+                    child: HighlightText(codeText: content, highlighter: controller.highlighter),
                   ),
                 ),
               ),
