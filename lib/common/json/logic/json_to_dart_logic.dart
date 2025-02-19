@@ -21,15 +21,10 @@ class JsonToDartLogic extends GetxController {
   RxBool generateFromJson = true.obs;
 
   RxString dartCode = ''.obs;
-  RxString errorMessage = ''.obs;
-
-  // 布局状态
-  final showHistoryPanel = true.obs;
-  final inputPanelRatio = 5.obs;
-  final outputPanelRatio = 5.obs;
 
   // 历史记录
   final history = <HistoryItem>[].obs;
+
   final _historyKey = 'conversion_history';
 
   late Highlighter highlighter;
@@ -37,15 +32,41 @@ class JsonToDartLogic extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-    loadHistory();
-    // Load the default light theme and create a highlighter.
     var theme = await HighlighterTheme.loadLightTheme();
     highlighter = Highlighter(language: 'dart', theme: theme);
+    jsonController.addListener(jsonListener);
+    classNameController.addListener(classNameListener);
+    nonNullable.listen((newValue) => generateDartClass());
+    generateToJson.listen((newValue) => generateDartClass());
+    generateFromJson.listen((newValue) => generateDartClass());
+    loadHistory();
+  }
+
+  void jsonListener() {
+    String text = jsonController.text.trim();
+    if (text.isEmpty) {
+      dartCode('');
+      return;
+    }
+    generateDartClass();
+  }
+
+  void classNameListener() {
+    String classNameText = classNameController.text.trim();
+    if (classNameText.isEmpty) {
+      dartCode('');
+      return;
+    }
+    String jsonText = jsonController.text.trim();
+    if (jsonText.isEmpty) {
+      dartCode('');
+      return;
+    }
+    generateDartClass();
   }
 
   void generateDartClass() {
     try {
-      errorMessage.value = '';
       final jsonString = jsonController.text.trim();
       if (jsonString.isEmpty) {
         MessageUtil.showWarning(title: '操作提示 ', content: '请输入json后操作');
@@ -73,12 +94,8 @@ class JsonToDartLogic extends GetxController {
         return;
       }
       final parsedJson = json.decode(jsonController.text);
-      jsonController.text = const JsonEncoder.withIndent(
-        '  ',
-      ).convert(parsedJson);
-      errorMessage.value = '';
+      jsonController.text = const JsonEncoder.withIndent('  ').convert(parsedJson);
     } catch (e) {
-      errorMessage.value = 'Invalid JSON format';
       MessageUtil.showWarning(title: '格式化异常 ', content: '请输入正确格式的json后操作');
     }
   }
@@ -96,12 +113,7 @@ class JsonToDartLogic extends GetxController {
       final current = classStack.removeLast();
       if (classes.containsKey(current.name)) continue;
 
-      final fields = _parseFields(
-        current.data,
-        classes,
-        classStack,
-        current.name,
-      );
+      final fields = _parseFields(current.data, classes, classStack, current.name);
 
       _writeClassHeader(current.name, buffer);
       _writeClassBody(current.name, fields, buffer);
@@ -115,11 +127,7 @@ class JsonToDartLogic extends GetxController {
     buffer.writeln('class $className {');
   }
 
-  void _writeClassBody(
-    String className,
-    List<FieldInfo> fields,
-    StringBuffer buffer,
-  ) {
+  void _writeClassBody(String className, List<FieldInfo> fields, StringBuffer buffer) {
     // 字段声明
     for (final f in fields) {
       final nullability =
@@ -168,8 +176,7 @@ class JsonToDartLogic extends GetxController {
     String line;
     if (f.isCustomType) {
       if (nonNullable.value) {
-        line =
-            '${f.name}: ${f.type}.fromJson(json[\'${f.jsonKey}\'] as Map<String, dynamic>)';
+        line = '${f.name}: ${f.type}.fromJson(json[\'${f.jsonKey}\'] as Map<String, dynamic>)';
       } else {
         line =
             '${f.name}: json[\'${f.jsonKey}\'] != null ? ${f.type}.fromJson(json[\'${f.jsonKey}\'] as Map<String, dynamic>) : null';
@@ -233,13 +240,7 @@ class JsonToDartLogic extends GetxController {
     return data.entries.map((entry) {
       final jsonKey = entry.key;
       final value = entry.value;
-      final typeInfo = _resolveType(
-        value,
-        jsonKey,
-        classes,
-        classStack,
-        parentClassName,
-      );
+      final typeInfo = _resolveType(value, jsonKey, classes, classStack, parentClassName);
       final fieldName = _convertFieldName(jsonKey);
 
       return FieldInfo(
@@ -253,10 +254,7 @@ class JsonToDartLogic extends GetxController {
         isList: typeInfo.isList,
         isListOfCustomType: typeInfo.isListOfCustomType,
         isBasicListType: typeInfo.isBasicListType,
-        defaultValue:
-            nonNullable.value && typeInfo.nullable
-                ? typeInfo.defaultValue
-                : null,
+        defaultValue: nonNullable.value && typeInfo.nullable ? typeInfo.defaultValue : null,
       );
     }).toList();
   }
@@ -269,12 +267,7 @@ class JsonToDartLogic extends GetxController {
     String parentClassName,
   ) {
     if (value == null) {
-      return TypeInfo(
-        type: 'dynamic',
-        baseType: 'dynamic',
-        isDynamic: true,
-        nullable: true,
-      );
+      return TypeInfo(type: 'dynamic', baseType: 'dynamic', isDynamic: true, nullable: true);
     }
 
     if (value is Map) {
@@ -302,9 +295,7 @@ class JsonToDartLogic extends GetxController {
       final firstElement = value.first;
       if (firstElement is Map) {
         final className = '${_classNameFromKey(key, parentClassName)}Item';
-        classStack.add(
-          ClassInfo(className, firstElement.cast<String, dynamic>()),
-        );
+        classStack.add(ClassInfo(className, firstElement.cast<String, dynamic>()));
         return TypeInfo(
           type: 'List<$className>',
           baseType: 'List',
@@ -344,8 +335,7 @@ class JsonToDartLogic extends GetxController {
         .replaceAll(RegExp(r'_+'), '_'); // 确保没有连续下划线
 
     // 2. 分割下划线并过滤空片段
-    List<String> parts =
-        sanitized.split('_').where((p) => p.isNotEmpty).toList();
+    List<String> parts = sanitized.split('_').where((p) => p.isNotEmpty).toList();
 
     // 3. 处理每个片段
     List<String> processedParts =
@@ -367,8 +357,7 @@ class JsonToDartLogic extends GetxController {
         }).toList();
 
     // 4. 转换为大驼峰格式（首字母大写）
-    processedParts =
-        processedParts.map((p) => p[0].toUpperCase() + p.substring(1)).toList();
+    processedParts = processedParts.map((p) => p[0].toUpperCase() + p.substring(1)).toList();
 
     // 5. 转换为小驼峰格式（首个字母小写）
     String camelCase =
@@ -542,5 +531,14 @@ class JsonToDartLogic extends GetxController {
         await prefs.remove(_historyKey);
       },
     );
+  }
+
+  @override
+  void onClose() {
+    jsonController.removeListener(jsonListener);
+    classNameController.removeListener(classNameListener);
+    jsonController.dispose();
+    classNameController.dispose();
+    super.onClose();
   }
 }

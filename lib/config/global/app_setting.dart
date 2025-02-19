@@ -6,13 +6,10 @@ class AppSetting extends GetxController {
   ///软件主题
   final Rx<ThemeMode> theme = ThemeMode.system.obs;
 
-  
-
   @override
   void onInit() {
     super.onInit();
     loadThemeFormCache();
-    
   }
 
   ///更改主题方法
@@ -47,6 +44,4 @@ class AppSetting extends GetxController {
         return ThemeMode.system;
     }
   }
-
-
 }

@@ -35,6 +35,7 @@ abstract final class AppTheme {
       errorContainer: Color(0xFFFFFFFF),
     ),
     lightIsWhite: true,
+    fontFamily: "JetBrainsMono",
     subThemesData: const FlexSubThemesData(
       interactionEffects: true,
       tintedDisabledControls: true,
@@ -81,6 +82,7 @@ abstract final class AppTheme {
       error: Color(0xFFFFB4AB),
       errorContainer: Color(0xFF93000A),
     ),
+    fontFamily: "JetBrainsMono",
     subThemesData: const FlexSubThemesData(
       interactionEffects: true,
       tintedDisabledControls: true,

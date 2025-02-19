@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:json_to_dart/common/json/logic/json_to_dart_logic.dart';
+import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
 import 'package:json_to_dart/widgets/highlight/highlight_text.dart';
 
@@ -84,6 +85,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                   minLines: 6,
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
+                  style: AppStyle.codeTextStyle,
                   decoration: InputDecoration(hintText: '在此输入或粘贴JSON内容...'),
                 ),
               ),
@@ -228,6 +230,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
         Expanded(
           child: TextField(
             controller: controller.classNameController,
+            style: AppStyle.codeTextStyle,
             decoration: InputDecoration(hintText: '请输入主类名'),
           ),
         ),
