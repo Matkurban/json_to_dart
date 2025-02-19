@@ -34,11 +34,11 @@ A Flutter package for **automatically generating Dart classes from JSON data**, 
 
 | Feature 功能                            | Preview 效果展示                                                         |
 | --------------------------------------- | ------------------------------------------------------------------------ |
-| **Main Interface**<br>**主界面**        | ![Main Screen](docs/images/image1.png)<br>输入 JSON ➔ 实时生成 Dart 代码 |
-| **Generated Output**<br>**生成结果**    | ![Generated Classes](docs/images/image2.png)<br>支持一键复制/导出        |
-| **Theme Switching**<br>**主题切换**     | ![Theme Demo](docs/images/image3.png)<br>亮色/暗色模式自由切换           |
-| **History Storage**<br>**历史记录**     | ![History Preview](docs/images/image4.png)<br>本地存储+快速检索          |
-| **History Preview**<br>**预览历史记录** | ![History Preview](docs/images/image5.png)<br>本地存储+可预览            |
+| **Main Interface**  **主界面**        | ![Main Screen](docs/images/image1.png) 输入 JSON ➔ 实时生成 Dart 代码 |
+| **Generated Output** **生成结果**    | ![Generated Classes](docs/images/image2.png) 支持一键复制/导出        |
+| **Theme Switching** **主题切换**     | ![Theme Demo](docs/images/image3.png) 亮色/暗色模式自由切换           |
+| **History Storage** **历史记录**     | ![History Preview](docs/images/image4.png) 本地存储+快速检索          |
+| **History Preview** **预览历史记录** | ![History Preview](docs/images/image5.png) 本地存储+可预览            |
 
 ---
 
