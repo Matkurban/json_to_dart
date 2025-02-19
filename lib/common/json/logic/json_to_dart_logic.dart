@@ -1,5 +1,6 @@
 // lib/controllers/json_converter_controller.dart
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:json_to_dart/model/domain/dart/class_info.dart';
@@ -9,8 +10,10 @@ import 'package:json_to_dart/model/domain/dart/history_item.dart';
 import 'package:json_to_dart/model/domain/dart/type_info.dart';
 import 'package:json_to_dart/utils/confirm_dialog.dart';
 import 'package:json_to_dart/utils/message_util.dart';
+import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syntax_highlight/syntax_highlight.dart';
+import 'package:file_selector/file_selector.dart';
 
 class JsonToDartLogic extends GetxController {
   final jsonController = TextEditingController();
@@ -137,7 +140,7 @@ class JsonToDartLogic extends GetxController {
               : '?';
       buffer.writeln('  final ${f.type}$nullability ${f.name};');
     }
-
+    buffer.write('\n');
     buffer.write('''
   $className({
     ${fields.map((f) {
@@ -146,29 +149,30 @@ class JsonToDartLogic extends GetxController {
     }).join('\n    ')}
   });
   ''');
+    buffer.write('\n');
 
     if (generateFromJson.value) {
       buffer.write('''
-    
   factory $className.fromJson(Map<String, dynamic> json) {
     return $className(
       ${fields.map((f) => _fromJsonLine(f)).join('\n      ')}
     );
   }
     ''');
+      buffer.write('\n');
     }
 
     // toJson
     if (generateToJson.value) {
       buffer.write('''
-    
   Map<String, dynamic> toJson() => {
-        ${fields.map((f) => _toJsonLine(f)).join('\n        ')}
-      };
-    ''');
+    ${fields.map((f) => _toJsonLine(f)).join('\n    ')}
+  };''');
+      buffer.writeln('\n');
     }
 
-    buffer.writeln('\n}');
+    buffer.writeln('}');
+    buffer.writeln('\n');
   }
 
   String _fromJsonLine(FieldInfo f) {
@@ -192,15 +196,13 @@ class JsonToDartLogic extends GetxController {
       if (nonNullable.value) {
         line = '${f.name}: json[\'${f.jsonKey}\'] as List<${f.baseType}>';
       } else {
-        line =
-            '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\'] as List<${f.baseType}> : null';
+        line = '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\'] as List<${f.baseType}> : null';
       }
     } else {
       if (nonNullable.value) {
         line = '${f.name}: json[\'${f.jsonKey}\'] as ${f.baseType}';
       } else {
-        line =
-            '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\'] as ${f.baseType} : null';
+        line = '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\'] as ${f.baseType} : null';
       }
     }
     return '$line,'; // 添加逗号
@@ -282,13 +284,7 @@ class JsonToDartLogic extends GetxController {
 
     if (value is List) {
       if (value.isEmpty) {
-        return TypeInfo(
-          type: 'List<dynamic>',
-          baseType: 'List',
-          isDynamic: true,
-          isList: true,
-          defaultValue: '[]',
-        );
+        return TypeInfo(type: 'List<dynamic>', baseType: 'List', isDynamic: true, isList: true, defaultValue: '[]');
       }
 
       final firstElement = value.first;
@@ -486,9 +482,7 @@ class JsonToDartLogic extends GetxController {
 
   // 添加历史记录
   void addHistory() async {
-    if (jsonController.text.trim().isEmpty ||
-        dartCode.value.isEmpty ||
-        classNameController.text.trim().isEmpty) {
+    if (jsonController.text.trim().isEmpty || dartCode.value.isEmpty || classNameController.text.trim().isEmpty) {
       MessageUtil.showError(title: '操作提示', content: '请生成Dart类后再保存到历史记录');
       return;
     }
@@ -516,9 +510,7 @@ class JsonToDartLogic extends GetxController {
     final historyJson = prefs.getStringList(_historyKey) ?? [];
 
     // 更新控制器的 history 列表
-    history.assignAll(
-      historyJson.map((jsonStr) => HistoryItem.fromJson(jsonDecode(jsonStr))).toList(),
-    );
+    history.assignAll(historyJson.map((jsonStr) => HistoryItem.fromJson(jsonDecode(jsonStr))).toList());
   }
 
   //================ 本地存储实现 ================
@@ -545,13 +537,19 @@ class JsonToDartLogic extends GetxController {
         if (remove) {
           final prefs = await SharedPreferences.getInstance();
           await prefs.remove(_historyKey);
-          prefs.setStringList(
-            _historyKey,
-            history.map((item) => jsonEncode(item.toJson())).toList(),
-          );
+          prefs.setStringList(_historyKey, history.map((item) => jsonEncode(item.toJson())).toList());
         }
       },
     );
+  }
+
+  ///预览Json
+  void previewJson(BuildContext context) {
+    if (jsonController.text.trim().isEmpty) {
+      MessageUtil.showError(title: '操作提示', content: '请输入Json后预览');
+      return;
+    }
+    PreviewDialog.showPreviewJsonDialog(context, jsonController.text);
   }
 
   @override
@@ -562,4 +560,49 @@ class JsonToDartLogic extends GetxController {
     classNameController.dispose();
     super.onClose();
   }
+
+  /// 保存为文件
+  void saveToFile(BuildContext context) async {
+    if (jsonController.text.trim().isEmpty) {
+      MessageUtil.showError(title: '操作提示', content: '请输入Json后保存');
+      return;
+    }
+    if (classNameController.text.trim().isEmpty) {
+      MessageUtil.showError(title: '操作提示', content: '请输入类名后保存');
+      return;
+    }
+
+    // 生成文件名：大驼峰类名转下划线格式
+    String fileName =
+        classNameController.text
+            .replaceAllMapped(RegExp(r'([a-z])([A-Z])'), (Match m) => '${m[1]}_${m[2]}')
+            .toLowerCase();
+    if (!fileName.endsWith('.dart')) {
+      fileName += '.dart';
+    }
+
+    // 获取Dart代码内容
+    final dartCodeContent = dartCode.value;
+
+    try {
+      final FileSaveLocation? result = await getSaveLocation(
+        suggestedName: fileName,
+        acceptedTypeGroups: [
+          XTypeGroup(label: 'dart', extensions: ['.dart']),
+        ],
+      );
+      if (result == null) {
+        // Operation was canceled by the user.
+        return;
+      }
+      final Uint8List fileData = Uint8List.fromList(dartCodeContent.codeUnits);
+      const String mimeType = 'text/plain';
+      final XFile textFile = XFile.fromData(fileData, mimeType: mimeType, name: fileName);
+      await textFile.saveTo(result.path);
+      MessageUtil.showSuccess(title: '操作提示', content: '文件保存成功');
+    } catch (e) {
+      MessageUtil.showError(title: '保存失败', content: '文件保存异常: ${e.toString()}');
+    }
+  }
+
 }

@@ -1,5 +1,6 @@
 // lib/views/json_converter_view.dart
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -65,14 +66,19 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
       child: Card(
         margin: EdgeInsets.zero,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(10.0),
           child: Column(
             spacing: 10,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildInputLabel(context, 'JSON输入'),
+                  Spacer(),
+                  IconButton(
+                    onPressed: () => controller.previewJson(context),
+                    icon: Icon(CupertinoIcons.eye),
+                    tooltip: '预览Json视图',
+                  ),
                   IconButton(
                     onPressed: () => controller.jsonController.clear(),
                     icon: Icon(Icons.clear),
@@ -104,14 +110,20 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
       child: Card(
         margin: EdgeInsets.zero,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(10),
           child: Column(
             spacing: 10,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildInputLabel(context, 'Dart输出'),
+                  Spacer(),
+                  if (!kIsWeb)
+                    IconButton(
+                      icon: const Icon(Icons.save_alt),
+                      onPressed: () => controller.saveToFile(context),
+                      tooltip: '保存为文件',
+                    ),
                   IconButton(
                     icon: const Icon(Icons.copy_all),
                     onPressed: () => _copyDartCode(context),
@@ -127,10 +139,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                   return SingleChildScrollView(
                     child: SizedBox(
                       width: double.infinity,
-                      child: HighlightText(
-                        codeText: controller.dartCode.value,
-                        highlighter: controller.highlighter,
-                      ),
+                      child: HighlightText(codeText: controller.dartCode.value, highlighter: controller.highlighter),
                     ),
                   );
                 }),
@@ -149,10 +158,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
         width: double.infinity,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-          child: Column(
-            spacing: 10,
-            children: [_buildOptionsRow(context), _buildActionButtons(context)],
-          ),
+          child: Column(spacing: 10, children: [_buildOptionsRow(context), _buildActionButtons(context)]),
         ),
       ),
     );
@@ -241,11 +247,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
             decoration: InputDecoration(hintText: '请输入主类名'),
           ),
         ),
-        IconButton(
-          onPressed: () => controller.classNameController.clear(),
-          icon: Icon(Icons.clear),
-          tooltip: '清空类名',
-        ),
+        IconButton(onPressed: () => controller.classNameController.clear(), icon: Icon(Icons.clear), tooltip: '清空类名'),
       ],
     );
   }
@@ -255,10 +257,9 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
       alignment: Alignment.centerLeft,
       child: Text(
         text,
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.bold,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+        style: Theme.of(
+          context,
+        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
       ),
     );
   }
@@ -308,7 +309,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                               children: [
                                 IconButton(
                                   onPressed: () => PreviewDialog.showPreviewDialog(context, item),
-                                  icon: Icon(Icons.preview_outlined, color: colorScheme.primary),
+                                  icon: Icon(CupertinoIcons.eye, color: colorScheme.primary),
                                   tooltip: '预览',
                                 ),
                                 IconButton(
