@@ -1,59 +1,64 @@
 # json_to_dart
 
-`json_to_dart` is a Flutter package that helps you convert JSON data into Dart classes. This tool simplifies the process of working with JSON data in your Flutter applications by generating the necessary Dart code for you. With `json_to_dart`, you can easily parse JSON data and use it in your Flutter projects without writing boilerplate code manually.
+A Flutter package for **automatically generating Dart classes from JSON data**, eliminating manual boilerplate coding. Simplify JSON parsing and supercharge your Flutter development workflow!
 
-`json_to_dart` 是一个 Flutter 包，帮助你将 JSON 数据转换为 Dart 类。这个工具通过为你生成必要的 Dart 代码，简化了在 Flutter 应用中处理 JSON 数据的过程。使用 `json_to_dart`，你可以轻松解析 JSON 数据，并在 Flutter 项目中使用它，而无需手动编写样板代码。
+一个用于**将 JSON 数据自动转换为 Dart 类**的 Flutter 包，告别手动编写样板代码。简化 JSON 解析，提升 Flutter 开发效率！
 
-## 页面截图
+---
 
-![截图 1](docs/images/image1.png)
+## ✨ Features 主要特性
 
-## 生成效果
+- **One-click Conversion**  
+  Generate complete Dart classes with `fromJson`/`toJson` methods in seconds.  
+  **一键转换**：快速生成包含`fromJson`/`toJson`方法的完整 Dart 类。
 
-![截图 2](docs/images/image2.png)
+- **Smart Type Inference**  
+  Automatically detects data types (including nested objects and arrays).  
+  **智能类型推断**：自动识别数据类型（支持嵌套对象和数组）。
 
-## 输入
+- **Theme Support**  
+  Switch between light/dark themes for comfortable coding.  
+  **主题支持**：亮色/暗色主题自由切换，舒适编码体验。
 
-```json
-{
-  "name": "kurban",
-  "age": 18,
-  "six": "男",
-  "like": ["唱跳rap"]
-}
-```
+- **History Storage**  
+  Local storage for conversion history with preview capabilities.  
+  **历史记录**：本地存储转换历史，支持随时预览复用。
 
-## 输出
+- **Null Safety**  
+  Generates null-safe Dart code by default.  
+  **空安全**：默认生成空安全代码。
 
-```dart
-class User {
-  final String name;
-  final int age;
-  final String six;
-  final List<String> like;
+---
 
-  User({
-    required  this.name,
-    required  this.age,
-    required  this.six,
-    required  this.like,
-  });
+## 📸 Screenshots 界面预览
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      name: json['name'] as String,
-      age: json['age'] as int,
-      six: json['six'] as String,
-      like: json['like'] as List<String>,
-    );
-  }
+| Feature 功能                            | Preview 效果展示                                                         |
+| --------------------------------------- | ------------------------------------------------------------------------ |
+| **Main Interface**<br>**主界面**        | ![Main Screen](docs/images/image1.png)<br>输入 JSON ➔ 实时生成 Dart 代码 |
+| **Generated Output**<br>**生成结果**    | ![Generated Classes](docs/images/image2.png)<br>支持一键复制/导出        |
+| **Theme Switching**<br>**主题切换**     | ![Theme Demo](docs/images/image3.png)<br>亮色/暗色模式自由切换           |
+| **History Storage**<br>**历史记录**     | ![History Preview](docs/images/image4.png)<br>本地存储+快速检索          |
+| **History Preview**<br>**预览历史记录** | ![History Preview](docs/images/image5.png)<br>本地存储+可预览            |
 
-  Map<String, dynamic> toJson() => {
-        'name': name,
-        'age': age,
-        'six': six,
-        'like': like,
-      };
+---
 
-}
-```
+## 🤝 Contributing 贡献指南
+
+We welcome contributions!  
+欢迎参与项目贡献！
+
+1. Fork the repository  
+   复刻仓库
+2. Create your feature branch  
+   创建特性分支
+3. Submit a pull request  
+   提交 Pull Request
+
+---
+
+## 📄 License 许可证
+
+This project is MIT-licensed.  
+本项目采用 MIT 许可证。
+
+---
