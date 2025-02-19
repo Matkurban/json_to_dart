@@ -1,4 +1,5 @@
 // lib/views/json_converter_view.dart
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -207,16 +208,22 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
       alignment: WrapAlignment.center,
       children: [
         FilledButton.icon(
-          icon: const Icon(Icons.auto_awesome),
+          icon: const Icon(Icons.format_align_justify),
           label: const Text('格式化JSON'),
           onPressed: controller.formatJson,
           style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary),
         ),
         FilledButton.icon(
-          icon: const Icon(Icons.downloading),
+          icon: const Icon(Icons.create),
           label: const Text('生成Dart类'),
           onPressed: controller.generateDartClass,
           style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.secondary),
+        ),
+        FilledButton.icon(
+          icon: const Icon(Icons.add),
+          label: const Text('添加到历史记录'),
+          onPressed: controller.addHistory,
+          style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary),
         ),
       ],
     );
@@ -296,10 +303,20 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                             title: Text(item.title),
                             subtitle: Text('${item.subtitle} ${formatTimeHHmm(item.timestamp)}'),
                             onTap: () => PreviewDialog.showPreviewDialog(context, item),
-                            trailing: IconButton(
-                              onPressed: () => PreviewDialog.showPreviewDialog(context, item),
-                              icon: Icon(Icons.preview_outlined, color: colorScheme.primary),
-                              tooltip: '预览',
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  onPressed: () => PreviewDialog.showPreviewDialog(context, item),
+                                  icon: Icon(Icons.preview_outlined, color: colorScheme.primary),
+                                  tooltip: '预览',
+                                ),
+                                IconButton(
+                                  onPressed: () => controller.deleteOne(item),
+                                  icon: Icon(Icons.remove, color: colorScheme.error),
+                                  tooltip: '删除',
+                                ),
+                              ],
                             ),
                           ),
                         );

@@ -80,7 +80,6 @@ class JsonToDartLogic extends GetxController {
       }
       final parsedJson = json.decode(jsonString);
       dartCode.value = _generateCode(parsedJson);
-      addHistory(jsonController.text, dartCode.value);
     } catch (e) {
       dartCode.value = '';
       MessageUtil.showWarning(title: '转换异常 ', content: '请输入正确格式的json后操作');
@@ -486,12 +485,18 @@ class JsonToDartLogic extends GetxController {
   };
 
   // 添加历史记录
-  void addHistory(String jsonData, String dartCode) async {
+  void addHistory() async {
+    if (jsonController.text.trim().isEmpty ||
+        dartCode.value.isEmpty ||
+        classNameController.text.trim().isEmpty) {
+      MessageUtil.showError(title: '操作提示', content: '请生成Dart类后再保存到历史记录');
+      return;
+    }
     final newItem = HistoryItem(
-      title: '转换记录 ${DateTime.now().toString().substring(11, 16)}',
+      title: classNameController.text,
       subtitle: DateTime.now().toString().substring(0, 10),
-      json: jsonData,
-      dartCode: dartCode,
+      json: jsonController.text,
+      dartCode: dartCode.value,
       timestamp: DateTime.now(),
     );
 
@@ -512,16 +517,14 @@ class JsonToDartLogic extends GetxController {
 
     // 更新控制器的 history 列表
     history.assignAll(
-      historyJson.map((jsonStr) {
-        return HistoryItem.fromJson(jsonDecode(jsonStr));
-      }).toList(),
+      historyJson.map((jsonStr) => HistoryItem.fromJson(jsonDecode(jsonStr))).toList(),
     );
   }
 
   //================ 本地存储实现 ================
 
   // 清空历史记录
-  Future<void> clearHistory() async {
+  void clearHistory() async {
     ConfirmDialog.showConfirmDialog(
       title: '确认清空吗',
       content: '清空后将无法恢复，请谨慎操作。',
@@ -529,6 +532,24 @@ class JsonToDartLogic extends GetxController {
         history.clear();
         final prefs = await SharedPreferences.getInstance();
         await prefs.remove(_historyKey);
+      },
+    );
+  }
+
+  void deleteOne(HistoryItem item) {
+    ConfirmDialog.showConfirmDialog(
+      title: '确认删除吗',
+      content: '您即将删除单条历史记录，删除后将无法恢复，请谨慎操作。',
+      onConfirm: () async {
+        bool remove = history.remove(item);
+        if (remove) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.remove(_historyKey);
+          prefs.setStringList(
+            _historyKey,
+            history.map((item) => jsonEncode(item.toJson())).toList(),
+          );
+        }
       },
     );
   }
