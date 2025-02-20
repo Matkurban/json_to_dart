@@ -49,5 +49,6 @@
   "officialWebsite": "Official Website",
   "githubRepo": "GitHub Repository",
   "language": "Language",
-  "selectLanguage": "Select Language"
+  "selectLanguage": "Select Language",
+  "forceTypeCasting": "Type Casting (as Type)"
 }

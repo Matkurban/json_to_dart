@@ -14,6 +14,7 @@ class AppSetting extends GetxController {
   void onInit() {
     super.onInit();
     loadThemeFormCache();
+    loadLanguageFormCache();
   }
 
   ///更改主题方法
@@ -46,6 +47,23 @@ class AppSetting extends GetxController {
         return ThemeMode.dark;
       default:
         return ThemeMode.system;
+    }
+  }
+
+  ///更改语言
+  void changeLanguage(AppLanguage languages) async {
+    language(languages);
+    await Get.updateLocale(languages.locale);
+    var preferences = Get.find<SharedPreferences>();
+    preferences.setString('language', languages.code);
+  }
+
+  ///从缓存中加载设置的语言
+  void loadLanguageFormCache() {
+    SharedPreferences preferences = Get.find<SharedPreferences>();
+    String? language = preferences.getString('language');
+    if (language != null) {
+      Get.updateLocale(AppLanguage.fromCode(language).locale);
     }
   }
 }

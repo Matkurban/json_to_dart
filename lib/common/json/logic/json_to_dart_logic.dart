@@ -44,6 +44,9 @@ class JsonToDartLogic extends GetxController {
   ///高亮
   late Highlighter highlighter;
 
+  // 新增强制类型转换选项
+  RxBool forceTypeCasting = false.obs;
+
   @override
   void onInit() async {
     super.onInit();
@@ -54,6 +57,7 @@ class JsonToDartLogic extends GetxController {
     nonNullable.listen((newValue) => generateDartClass());
     generateToJson.listen((newValue) => generateDartClass());
     generateFromJson.listen((newValue) => generateDartClass());
+    forceTypeCasting.listen((newValue) => generateDartClass());
     loadHistory();
   }
 
@@ -173,7 +177,7 @@ class JsonToDartLogic extends GetxController {
     buffer.writeln('\n');
   }
 
-  String _fromJsonLine(FieldInfo f) {
+  /*  String _fromJsonLine(FieldInfo f) {
     String line;
     if (f.isCustomType) {
       if (nonNullable.value) {
@@ -204,6 +208,41 @@ class JsonToDartLogic extends GetxController {
       }
     }
     return '$line,'; // 添加逗号
+  } */
+  // json_to_dart_logic.dart
+  String _fromJsonLine(FieldInfo f) {
+    String line;
+    final typeCast = forceTypeCasting.value ? " as ${f.baseType}" : "";
+    final mapCast = forceTypeCasting.value ? " as Map<String, dynamic>" : "";
+    final listCast = forceTypeCasting.value ? " as List<${f.baseType}>" : "";
+
+    if (f.isCustomType) {
+      if (nonNullable.value) {
+        line = '${f.name}: ${f.type}.fromJson(json[\'${f.jsonKey}\']$mapCast)';
+      } else {
+        line = '${f.name}: json[\'${f.jsonKey}\'] != null ? ${f.type}.fromJson(json[\'${f.jsonKey}\']$mapCast) : null';
+      }
+    } else if (f.isListOfCustomType) {
+      if (nonNullable.value) {
+        line = '${f.name}: (json[\'${f.jsonKey}\']$listCast).map((e) => ${f.listType}.fromJson(e$mapCast)).toList()';
+      } else {
+        line =
+            '${f.name}: json[\'${f.jsonKey}\'] != null ? (json[\'${f.jsonKey}\']$listCast).map((e) => ${f.listType}.fromJson(e$mapCast)).toList() : null';
+      }
+    } else if (f.isList) {
+      if (nonNullable.value) {
+        line = '${f.name}: json[\'${f.jsonKey}\']$listCast';
+      } else {
+        line = '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\']$listCast : null';
+      }
+    } else {
+      if (nonNullable.value) {
+        line = '${f.name}: json[\'${f.jsonKey}\']$typeCast';
+      } else {
+        line = '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\']$typeCast : null';
+      }
+    }
+    return '$line,';
   }
 
   String _toJsonLine(FieldInfo f) {
@@ -392,12 +431,14 @@ class JsonToDartLogic extends GetxController {
     return reservedWords.contains(baseName) ? '${baseName}Class' : baseName;
   }
 
+  // json_to_dart_logic.dart
   static const _dartTypeMap = {
     String: DartType('String', 'String', ".toString()", "''"),
     int: DartType('int', 'int', " ?? 0", '0'),
     double: DartType('double', 'double', " ?? 0.0", '0.0'),
     bool: DartType('bool', 'bool', " ?? false", 'false'),
     Null: DartType('dynamic', 'dynamic', '', null),
+    num: DartType('num', 'num', " ?? 0", '0'),
   };
 
   // 添加历史记录
@@ -515,7 +556,9 @@ class JsonToDartLogic extends GetxController {
   ///json为null或者格式异常，转换异常时的提示
   void _jsonConvertWarning() {
     dartCode.value = '';
-    MessageUtil.showWarning(title: l10n.conversionError, content: l10n.enterValidJsonPrompt);
+    if (jsonController.text.trim().isNotEmpty) {
+      MessageUtil.showError(title: l10n.conversionError, content: l10n.enterValidJsonPrompt);
+    }
     return;
   }
 

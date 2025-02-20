@@ -49,5 +49,6 @@
   "officialWebsite": "官网",
   "githubRepo": "Github仓库",
   "language": "语言",
-  "selectLanguage": "选择语言"
+  "selectLanguage": "选择语言",
+  "forceTypeCasting": "强制类型转换 (as Type)"
 }

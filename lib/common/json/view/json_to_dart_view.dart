@@ -186,6 +186,12 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
             label: l10n.generateFromJson,
             onChanged: (v) => controller.generateFromJson.value = v!,
           ),
+           _buildCheckbox(
+          context,
+          value: controller.forceTypeCasting.value,
+          label: l10n.forceTypeCasting,
+          onChanged: (v) => controller.forceTypeCasting.value = v!,
+        ),
         ],
       );
     });

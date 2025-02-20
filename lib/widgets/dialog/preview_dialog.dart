@@ -38,18 +38,10 @@ sealed class PreviewDialog {
                     fontWeight: FontWeight.w500,
                     color: textTheme.bodyLarge?.color ?? Colors.black,
                   ),
-                  keyStyle: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: colorScheme.primary,
-                  ),
+                  keyStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colorScheme.primary),
                   doubleStyle: TextStyle(fontSize: 14, color: colorScheme.secondary),
                   intStyle: TextStyle(fontSize: 14, color: colorScheme.tertiary),
-                  boolStyle: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.error,
-                  ),
+                  boolStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: colorScheme.error),
                   stringStyle: TextStyle(
                     fontSize: 14,
                     color: colorScheme.onSurfaceVariant,
@@ -63,10 +55,7 @@ sealed class PreviewDialog {
                         message: error.toString(),
                         child: Icon(Icons.error_outline, color: colorScheme.error, size: 16),
                       ),
-                  loadingWidget: CircularProgressIndicator(
-                    color: colorScheme.primary,
-                    strokeWidth: 2,
-                  ),
+                  loadingWidget: CircularProgressIndicator(color: colorScheme.primary, strokeWidth: 2),
                   backgroundColor: Colors.transparent,
                 ),
               ),
@@ -94,15 +83,30 @@ class _PreviewDialogContent extends GetView<JsonToDartLogic> {
           spacing: 10,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildCodeCard(title: 'JSON', content: item.json, onCopy: () => copyToClipboard(item.json)),
-            _buildCodeCard(title: 'Dart', content: item.dartCode, onCopy: () => copyToClipboard(item.dartCode)),
+            _buildCodeCard(
+              title: 'JSON',
+              content: item.json,
+              onCopy: () => copyToClipboard(item.json),
+              tooltip: l10n.copyJson,
+            ),
+            _buildCodeCard(
+              title: 'Dart',
+              content: item.dartCode,
+              onCopy: () => copyToClipboard(item.dartCode),
+              tooltip: l10n.copyCode,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildCodeCard({required String title, required String content, required VoidCallback onCopy}) {
+  Widget _buildCodeCard({
+    required String title,
+    required String content,
+    required VoidCallback onCopy,
+    String? tooltip,
+  }) {
     return Expanded(
       child: Card(
         elevation: 0,
@@ -117,7 +121,7 @@ class _PreviewDialogContent extends GetView<JsonToDartLogic> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  IconButton(icon: const Icon(Icons.copy), onPressed: onCopy),
+                  IconButton(icon: const Icon(Icons.copy), onPressed: onCopy, tooltip: tooltip),
                 ],
               ),
               // 代码内容区域
@@ -132,5 +136,4 @@ class _PreviewDialogContent extends GetView<JsonToDartLogic> {
       ),
     );
   }
-
 }
