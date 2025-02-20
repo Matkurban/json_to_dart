@@ -501,7 +501,6 @@ class JsonToDartLogic extends GetxController {
   ///json为空的时候操作提示
   void _jsonNullWarning() {
     if (jsonController.text.trim().isEmpty) {
-      MessageUtil.showError(title: l10n.operationPrompt, content: l10n.enterJsonPrompt);
       return;
     }
   }
@@ -509,7 +508,6 @@ class JsonToDartLogic extends GetxController {
   ///类名为空时的提示
   void _classNameNullWarning() {
     if (classNameController.text.trim().isEmpty) {
-      MessageUtil.showError(title: l10n.operationPrompt, content: l10n.enterClassNamePrompt);
       return;
     }
   }
@@ -518,6 +516,7 @@ class JsonToDartLogic extends GetxController {
   void _jsonConvertWarning() {
     dartCode.value = '';
     MessageUtil.showWarning(title: l10n.conversionError, content: l10n.enterValidJsonPrompt);
+    return;
   }
 
   @override

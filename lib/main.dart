@@ -8,8 +8,10 @@ import 'package:json_to_dart/config/theme/app_theme.dart';
 import 'package:json_to_dart/router/router_pages.dart';
 import 'package:json_to_dart/services/storage_services.dart';
 import 'package:toastification/toastification.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 void main() async {
+  usePathUrlStrategy();
   await initServices();
   runApp(const JsonToDartApp());
 }
