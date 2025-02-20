@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:json_to_dart/config/global/app_setting.dart';
-import 'package:json_to_dart/widgets/dialog/dialogs.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class SettingLogic extends GetxController {
@@ -22,11 +21,6 @@ class SettingLogic extends GetxController {
   }
 
   void convert(ThemeMode mode) => themeChineseString(themeConvertToString(mode));
-
-  ///选择主题
-  void selectTheme(BuildContext context) {
-    Dialogs.selectThemeDialog(context);
-  }
 
   ///主题转换为中文字符串
   String themeConvertToString(ThemeMode mode) {

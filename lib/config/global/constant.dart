@@ -1,3 +1,8 @@
+import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:get/get.dart';
+import 'package:json_to_dart/utils/message_util.dart';
+
 // 定义时间格式化方法
 String formatTimeHHmm(DateTime time) {
   // 获取小时并确保两位数格式
@@ -5,6 +10,13 @@ String formatTimeHHmm(DateTime time) {
   // 获取分钟并确保两位数格式
   final minute = time.minute.toString().padLeft(2, '0');
   return '$hour:$minute';
+}
+
+AppLocalizations get l10n => AppLocalizations.of(Get.context!)!;
+
+Future<void> copyToClipboard(String text) async {
+  await Clipboard.setData(ClipboardData(text: text));
+  MessageUtil.showSuccess(title: l10n.operationPrompt, content: l10n.codeCopied);
 }
 
 const reservedWords = {

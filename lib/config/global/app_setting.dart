@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:json_to_dart/model/enum/app_language.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppSetting extends GetxController {
   ///软件主题
   final Rx<ThemeMode> theme = ThemeMode.system.obs;
+
+  ///系统语言
+  final Rx<AppLanguage> language = AppLanguage.chineseSimplified.obs;
 
   @override
   void onInit() {

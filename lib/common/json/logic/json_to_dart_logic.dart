@@ -10,8 +10,8 @@ import 'package:json_to_dart/model/domain/dart/dart_type.dart';
 import 'package:json_to_dart/model/domain/dart/field_info.dart';
 import 'package:json_to_dart/model/domain/dart/history_item.dart';
 import 'package:json_to_dart/model/domain/dart/type_info.dart';
-import 'package:json_to_dart/utils/confirm_dialog.dart';
 import 'package:json_to_dart/utils/message_util.dart';
+import 'package:json_to_dart/widgets/dialog/confirm_dialog.dart';
 import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syntax_highlight/syntax_highlight.dart';
@@ -109,7 +109,7 @@ class JsonToDartLogic extends GetxController {
 
   String _generateCode(dynamic jsonData) {
     if (jsonData is! Map<String, dynamic>) {
-      MessageUtil.showWarning(title: '转换异常 ', content: '请输入正确格式的json后操作');
+      MessageUtil.showWarning(title: l10n.conversionError, content: l10n.enterValidJsonPrompt);
       return '';
     }
     final buffer = StringBuffer();
@@ -431,8 +431,8 @@ class JsonToDartLogic extends GetxController {
   // 清空历史记录
   void clearHistory() async {
     ConfirmDialog.showConfirmDialog(
-      title: '确认清空吗',
-      content: '清空后将无法恢复，请谨慎操作。',
+      title: l10n.confirmClear,
+      content: l10n.clearWarning,
       onConfirm: () async {
         history.clear();
         final prefs = await SharedPreferences.getInstance();
@@ -444,8 +444,8 @@ class JsonToDartLogic extends GetxController {
   ///删除单个历史记录
   void deleteOne(HistoryItem item) {
     ConfirmDialog.showConfirmDialog(
-      title: '确认删除吗',
-      content: '您即将删除单条历史记录，删除后将无法恢复，请谨慎操作。',
+      title: l10n.confirmDelete,
+      content: l10n.deleteHistoryWarning,
       onConfirm: () async {
         bool remove = history.remove(item);
         if (remove) {
@@ -492,16 +492,16 @@ class JsonToDartLogic extends GetxController {
       const String mimeType = 'text/plain';
       final XFile textFile = XFile.fromData(fileData, mimeType: mimeType, name: fileName);
       await textFile.saveTo(result.path);
-      MessageUtil.showSuccess(title: '操作提示', content: '文件保存成功');
+      MessageUtil.showSuccess(title: l10n.operationPrompt, content: l10n.fileSaveSuccess);
     } catch (e) {
-      MessageUtil.showError(title: '操作提示', content: '文件保存异常: ${e.toString()}');
+      MessageUtil.showError(title: l10n.operationPrompt, content: l10n.fileSaveFailed);
     }
   }
 
   ///json为空的时候操作提示
   void _jsonNullWarning() {
     if (jsonController.text.trim().isEmpty) {
-      MessageUtil.showError(title: '操作提示', content: '请输入Json后操作');
+      MessageUtil.showError(title: l10n.operationPrompt, content: l10n.enterJsonPrompt);
       return;
     }
   }
@@ -509,7 +509,7 @@ class JsonToDartLogic extends GetxController {
   ///类名为空时的提示
   void _classNameNullWarning() {
     if (classNameController.text.trim().isEmpty) {
-      MessageUtil.showError(title: '操作提示', content: '请输入类名后操作');
+      MessageUtil.showError(title: l10n.operationPrompt, content: l10n.enterClassNamePrompt);
       return;
     }
   }
@@ -517,7 +517,7 @@ class JsonToDartLogic extends GetxController {
   ///json为null或者格式异常，转换异常时的提示
   void _jsonConvertWarning() {
     dartCode.value = '';
-    MessageUtil.showWarning(title: '转换异常 ', content: '请输入正确格式的json后操作');
+    MessageUtil.showWarning(title: l10n.conversionError, content: l10n.enterValidJsonPrompt);
   }
 
   @override

@@ -1,3 +1,4 @@
 sealed class RouterNames {
-  static const String jsonToDart = "/jsonToDart";
+  static const String toggleTheme="/setting/toggleTheme";
+  static const String toggleLanguage="/setting/toggleLanguage";
 }

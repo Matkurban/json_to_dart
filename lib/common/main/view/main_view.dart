@@ -3,6 +3,7 @@ import 'package:get/state_manager.dart';
 import 'package:json_to_dart/common/json/view/json_to_dart_view.dart';
 import 'package:json_to_dart/common/main/logic/main_logic.dart';
 import 'package:json_to_dart/common/setting/view/setting_view.dart';
+import 'package:json_to_dart/config/global/constant.dart';
 
 class MainView extends GetView<MainLogic> {
   const MainView({super.key});
@@ -25,8 +26,8 @@ class MainView extends GetView<MainLogic> {
                 curve: Curves.bounceIn,
               ),
           items: [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: '首页'),
-            BottomNavigationBarItem(icon: Icon(Icons.settings), label: '设置'),
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: l10n.home),
+            BottomNavigationBarItem(icon: Icon(Icons.settings), label: l10n.settings),
           ],
         );
       }),

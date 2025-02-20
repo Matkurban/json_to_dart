@@ -15,7 +15,6 @@ class MainLogic extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-    // Initialize the highlighter.
     await Highlighter.initialize(['dart']);
   }
 }

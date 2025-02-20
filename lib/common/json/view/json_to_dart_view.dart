@@ -17,7 +17,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('JSON转Dart工具'),
+        title: Text(l10n.jsonToDartTool),
         centerTitle: true,
         actions: [
           Builder(
@@ -29,7 +29,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                       Scaffold.of(context).openEndDrawer();
                     }
                   },
-                  tooltip: '历史记录',
+                  tooltip: l10n.history,
                 ),
           ),
         ],
@@ -73,17 +73,17 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
             children: [
               Row(
                 children: [
-                  _buildInputLabel(context, 'JSON输入'),
+                  _buildInputLabel(context, l10n.jsonInput),
                   Spacer(),
                   IconButton(
                     onPressed: () => controller.previewJson(context),
                     icon: Icon(CupertinoIcons.eye),
-                    tooltip: '预览Json视图',
+                    tooltip: l10n.previewJsonView,
                   ),
                   IconButton(
                     onPressed: () => controller.jsonController.clear(),
                     icon: Icon(Icons.clear),
-                    tooltip: '清空输入框',
+                    tooltip: l10n.clearInput,
                   ),
                 ],
               ),
@@ -94,7 +94,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                   style: AppStyle.codeTextStyle,
-                  decoration: InputDecoration(hintText: '在此输入或粘贴JSON内容...'),
+                  decoration: InputDecoration(hintText: l10n.jsonInputPlaceholder),
                 ),
               ),
               _buildClassNameField(context),
@@ -117,25 +117,25 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
             children: [
               Row(
                 children: [
-                  _buildInputLabel(context, 'Dart输出'),
+                  _buildInputLabel(context, l10n.dartOutput),
                   Spacer(),
                   if (!kIsWeb)
                     IconButton(
                       icon: const Icon(Icons.save_alt),
                       onPressed: () => controller.saveToFile(context),
-                      tooltip: '保存为文件',
+                      tooltip: l10n.saveAsFile,
                     ),
                   IconButton(
                     icon: const Icon(Icons.copy_all),
                     onPressed: () => _copyDartCode(context),
-                    tooltip: '复制代码',
+                    tooltip: l10n.copyCode,
                   ),
                 ],
               ),
               Expanded(
                 child: Obx(() {
                   if (controller.dartCode.isEmpty) {
-                    return const Center(child: Text('点击生成按钮获取Dart类代码'));
+                    return Center(child: Text(l10n.generateDartHint));
                   }
                   return SingleChildScrollView(
                     child: SizedBox(
@@ -171,19 +171,19 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
           _buildCheckbox(
             context,
             value: controller.nonNullable.value,
-            label: '非空字段',
+            label: l10n.nonNullableFields,
             onChanged: (v) => controller.nonNullable.value = v!,
           ),
           _buildCheckbox(
             context,
             value: controller.generateToJson.value,
-            label: '生成toJson',
+            label: l10n.generateToJson,
             onChanged: (v) => controller.generateToJson.value = v!,
           ),
           _buildCheckbox(
             context,
             value: controller.generateFromJson.value,
-            label: '生成fromJson',
+            label: l10n.generateFromJson,
             onChanged: (v) => controller.generateFromJson.value = v!,
           ),
         ],
@@ -215,19 +215,19 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
       children: [
         FilledButton.icon(
           icon: const Icon(Icons.format_align_justify),
-          label: const Text('格式化JSON'),
+          label: Text(l10n.formatJson),
           onPressed: controller.formatJson,
           style: FilledButton.styleFrom(backgroundColor: colorScheme.primary),
         ),
         FilledButton.icon(
           icon: const Icon(Icons.create),
-          label: const Text('生成Dart类'),
+          label: Text(l10n.generateDartClass),
           onPressed: controller.generateDartClass,
           style: FilledButton.styleFrom(backgroundColor: colorScheme.secondary),
         ),
         FilledButton.icon(
           icon: const Icon(Icons.add),
-          label: const Text('添加到历史记录'),
+          label: Text(l10n.addToHistory),
           onPressed: controller.addHistory,
           style: FilledButton.styleFrom(backgroundColor: colorScheme.primary),
         ),
@@ -239,12 +239,12 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
     return Row(
       spacing: 10,
       children: [
-        Text('主类名：', style: Theme.of(context).textTheme.bodyLarge),
+        Text(l10n.mainClassNameLabel, style: Theme.of(context).textTheme.bodyLarge),
         Expanded(
           child: TextField(
             controller: controller.classNameController,
             style: AppStyle.codeTextStyle,
-            decoration: const InputDecoration(hintText: '请输入主类名'),
+            decoration: InputDecoration(hintText: l10n.mainClassNamePlaceholder),
           ),
         ),
         IconButton(onPressed: controller.classNameController.clear, icon: const Icon(Icons.clear), tooltip: '清空类名'),
@@ -269,7 +269,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
   void _copyDartCode(BuildContext context) {
     if (controller.dartCode.isNotEmpty) {
       Clipboard.setData(ClipboardData(text: controller.dartCode.value));
-      MessageUtil.showSuccess(title: '操作提示', content: '代码已复制到剪贴板');
+      MessageUtil.showSuccess(title: l10n.operationPrompt, content: l10n.codeCopied);
     }
   }
 
@@ -284,17 +284,17 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
       return Column(
         children: [
           ListTile(
-            title: Text('历史记录 (${controller.history.length})'),
+            title: Text('${l10n.history} (${controller.history.length})'),
             trailing: IconButton(
               icon: Icon(Icons.delete_forever_outlined, color: colorScheme.error),
               onPressed: controller.clearHistory,
-              tooltip: '清空历史记录',
+              tooltip: l10n.clearHistory,
             ),
           ),
           Expanded(
             child:
                 controller.history.isEmpty
-                    ? Center(child: Text('暂无历史记录', style: Theme.of(context).textTheme.bodyLarge))
+                    ? Center(child: Text(l10n.noHistory, style: Theme.of(context).textTheme.bodyLarge))
                     : ListView.builder(
                       itemCount: controller.history.length,
                       itemBuilder: (context, index) {
@@ -312,12 +312,12 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                                 IconButton(
                                   onPressed: () => PreviewDialog.showPreviewDialog(context, item),
                                   icon: Icon(CupertinoIcons.eye, color: colorScheme.primary),
-                                  tooltip: '预览',
+                                  tooltip: l10n.preview,
                                 ),
                                 IconButton(
                                   onPressed: () => controller.deleteOne(item),
                                   icon: Icon(Icons.remove, color: colorScheme.error),
-                                  tooltip: '删除',
+                                  tooltip: l10n.delete,
                                 ),
                               ],
                             ),
