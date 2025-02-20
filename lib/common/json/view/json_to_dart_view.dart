@@ -1,11 +1,12 @@
-// lib/views/json_converter_view.dart
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:json_to_dart/common/json/logic/json_to_dart_logic.dart';
+import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
+import 'package:json_to_dart/utils/message_util.dart';
 import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
 import 'package:json_to_dart/widgets/highlight/highlight_text.dart';
 
@@ -40,7 +41,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
 
   Widget _buildBody(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: AppStyle.defaultPadding,
       child: Column(
         spacing: 10,
         children: [
@@ -66,7 +67,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
       child: Card(
         margin: EdgeInsets.zero,
         child: Padding(
-          padding: const EdgeInsets.all(10.0),
+          padding: AppStyle.defaultPadding,
           child: Column(
             spacing: 10,
             children: [
@@ -110,7 +111,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
       child: Card(
         margin: EdgeInsets.zero,
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: AppStyle.defaultPadding,
           child: Column(
             spacing: 10,
             children: [
@@ -154,19 +155,17 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
   Widget _buildControlPanel(BuildContext context) {
     return Card(
       margin: EdgeInsets.zero,
-      child: SizedBox(
+      child: Container(
         width: double.infinity,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-          child: Column(spacing: 10, children: [_buildOptionsRow(context), _buildActionButtons(context)]),
-        ),
+        padding: AppStyle.defaultPadding,
+        child: Column(spacing: 10, children: [_buildOptionsRow(context), _buildActionButtons(context)]),
       ),
     );
   }
 
   Widget _buildOptionsRow(BuildContext context) {
-    return Obx(
-      () => Wrap(
+    return Obx(() {
+      return Wrap(
         spacing: 20,
         children: [
           _buildCheckbox(
@@ -188,8 +187,8 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
             onChanged: (v) => controller.generateFromJson.value = v!,
           ),
         ],
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildCheckbox(
@@ -208,28 +207,29 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
   }
 
   Widget _buildActionButtons(BuildContext context) {
+    var colorScheme = Theme.of(context).colorScheme;
     return Wrap(
-      spacing: 16,
-      runSpacing: 12,
+      spacing: 10,
+      runSpacing: 10,
       alignment: WrapAlignment.center,
       children: [
         FilledButton.icon(
           icon: const Icon(Icons.format_align_justify),
           label: const Text('格式化JSON'),
           onPressed: controller.formatJson,
-          style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary),
+          style: FilledButton.styleFrom(backgroundColor: colorScheme.primary),
         ),
         FilledButton.icon(
           icon: const Icon(Icons.create),
           label: const Text('生成Dart类'),
           onPressed: controller.generateDartClass,
-          style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.secondary),
+          style: FilledButton.styleFrom(backgroundColor: colorScheme.secondary),
         ),
         FilledButton.icon(
           icon: const Icon(Icons.add),
           label: const Text('添加到历史记录'),
           onPressed: controller.addHistory,
-          style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary),
+          style: FilledButton.styleFrom(backgroundColor: colorScheme.primary),
         ),
       ],
     );
@@ -244,22 +244,24 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
           child: TextField(
             controller: controller.classNameController,
             style: AppStyle.codeTextStyle,
-            decoration: InputDecoration(hintText: '请输入主类名'),
+            decoration: const InputDecoration(hintText: '请输入主类名'),
           ),
         ),
-        IconButton(onPressed: () => controller.classNameController.clear(), icon: Icon(Icons.clear), tooltip: '清空类名'),
+        IconButton(onPressed: controller.classNameController.clear, icon: const Icon(Icons.clear), tooltip: '清空类名'),
       ],
     );
   }
 
   Widget _buildInputLabel(BuildContext context, String text) {
+    var themeData = Theme.of(context);
     return Align(
       alignment: Alignment.centerLeft,
       child: Text(
         text,
-        style: Theme.of(
-          context,
-        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary),
+        style: themeData.textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: themeData.colorScheme.primary,
+        ),
       ),
     );
   }
@@ -267,7 +269,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
   void _copyDartCode(BuildContext context) {
     if (controller.dartCode.isNotEmpty) {
       Clipboard.setData(ClipboardData(text: controller.dartCode.value));
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('代码已复制到剪贴板')));
+      MessageUtil.showSuccess(title: '操作提示', content: '代码已复制到剪贴板');
     }
   }
 
@@ -327,14 +329,5 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
         ],
       );
     });
-  }
-
-  // 定义时间格式化方法
-  String formatTimeHHmm(DateTime time) {
-    // 获取小时并确保两位数格式
-    final hour = time.hour.toString().padLeft(2, '0');
-    // 获取分钟并确保两位数格式
-    final minute = time.minute.toString().padLeft(2, '0');
-    return '$hour:$minute';
   }
 }

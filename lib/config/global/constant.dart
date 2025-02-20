@@ -1,3 +1,12 @@
+// 定义时间格式化方法
+String formatTimeHHmm(DateTime time) {
+  // 获取小时并确保两位数格式
+  final hour = time.hour.toString().padLeft(2, '0');
+  // 获取分钟并确保两位数格式
+  final minute = time.minute.toString().padLeft(2, '0');
+  return '$hour:$minute';
+}
+
 const reservedWords = {
   'abstract',
   'as',

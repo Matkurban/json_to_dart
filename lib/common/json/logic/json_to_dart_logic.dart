@@ -1,4 +1,6 @@
 import 'dart:convert';
+
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,7 +15,6 @@ import 'package:json_to_dart/utils/message_util.dart';
 import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syntax_highlight/syntax_highlight.dart';
-import 'package:file_selector/file_selector.dart';
 
 class JsonToDartLogic extends GetxController {
   ///json输入框控制器
@@ -125,8 +126,7 @@ class JsonToDartLogic extends GetxController {
     return buffer.toString().trim();
   }
 
-  void _writeClassHeader(String className, StringBuffer buffer) =>
-      buffer.writeln('class $className {');
+  void _writeClassHeader(String className, StringBuffer buffer) => buffer.writeln('class $className {');
 
   void _writeClassBody(String className, List<FieldInfo> fields, StringBuffer buffer) {
     // 字段声明
@@ -194,15 +194,13 @@ class JsonToDartLogic extends GetxController {
       if (nonNullable.value) {
         line = '${f.name}: json[\'${f.jsonKey}\'] as List<${f.baseType}>';
       } else {
-        line =
-            '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\'] as List<${f.baseType}> : null';
+        line = '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\'] as List<${f.baseType}> : null';
       }
     } else {
       if (nonNullable.value) {
         line = '${f.name}: json[\'${f.jsonKey}\'] as ${f.baseType}';
       } else {
-        line =
-            '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\'] as ${f.baseType} : null';
+        line = '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\'] as ${f.baseType} : null';
       }
     }
     return '$line,'; // 添加逗号
@@ -284,15 +282,8 @@ class JsonToDartLogic extends GetxController {
 
     if (value is List) {
       if (value.isEmpty) {
-        return TypeInfo(
-          type: 'List<dynamic>',
-          baseType: 'List',
-          isDynamic: true,
-          isList: true,
-          defaultValue: '[]',
-        );
+        return TypeInfo(type: 'List<dynamic>', baseType: 'List', isDynamic: true, isList: true, defaultValue: '[]');
       }
-
       final firstElement = value.first;
       if (firstElement is Map) {
         final className = '${_classNameFromKey(key, parentClassName)}Item';
@@ -306,7 +297,6 @@ class JsonToDartLogic extends GetxController {
           defaultValue: nonNullable.value ? '[]' : null,
         );
       }
-
       final elementType = firstElement.runtimeType;
       final dartType = _dartTypeMap[elementType]?.type ?? 'dynamic';
       return TypeInfo(
@@ -317,10 +307,8 @@ class JsonToDartLogic extends GetxController {
         defaultValue: nonNullable.value ? '[]' : null,
       );
     }
-
     final type = value.runtimeType;
     final typeDesc = _dartTypeMap[type] ?? _dartTypeMap[Null]!;
-
     return TypeInfo(
       type: typeDesc.type,
       baseType: typeDesc.type,
@@ -329,15 +317,14 @@ class JsonToDartLogic extends GetxController {
     );
   }
 
+  ///格式化类名
   String _convertFieldName(String key) {
     // 1. 标准化处理：替换所有非字母数字字符为下划线，并合并连续下划线
     String sanitized = key
         .replaceAll(RegExp(r'[^a-zA-Z0-9]+'), '_') // 合并连续特殊字符为单个下划线
         .replaceAll(RegExp(r'_+'), '_'); // 确保没有连续下划线
-
     // 2. 分割下划线并过滤空片段
     List<String> parts = sanitized.split('_').where((p) => p.isNotEmpty).toList();
-
     // 3. 处理每个片段
     List<String> processedParts =
         parts.map((part) {
@@ -345,7 +332,6 @@ class JsonToDartLogic extends GetxController {
           if (RegExp(r'^\d+$').hasMatch(part)) {
             return '_$part';
           }
-
           // 处理数字开头的混合片段（如 "2fa" → "fa2"）
           if (RegExp(r'^\d').hasMatch(part)) {
             return part
@@ -353,13 +339,10 @@ class JsonToDartLogic extends GetxController {
                 .reversed
                 .join(); // 反转顺序
           }
-
           return part;
         }).toList();
-
     // 4. 转换为大驼峰格式（首字母大写）
     processedParts = processedParts.map((p) => p[0].toUpperCase() + p.substring(1)).toList();
-
     // 5. 转换为小驼峰格式（首个字母小写）
     String camelCase =
         processedParts.isNotEmpty
@@ -367,7 +350,6 @@ class JsonToDartLogic extends GetxController {
                 processedParts.first.substring(1) +
                 processedParts.sublist(1).join()
             : '';
-
     // 6. 处理保留字和空值
     return _sanitizeFieldName(camelCase);
   }
@@ -396,7 +378,6 @@ class JsonToDartLogic extends GetxController {
           if (part.isEmpty) return '';
           return '${part[0].toUpperCase()}${part.substring(1)}';
         }).join();
-
     // 处理字段名中的各种分隔符
     final keyParts = key.split(RegExp(r'[^a-zA-Z0-9]'));
     final processedKey =
@@ -404,10 +385,8 @@ class JsonToDartLogic extends GetxController {
           if (part.isEmpty) return '';
           return '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}';
         }).join();
-
     // 组合生成类名
     final baseName = '$processedParent$processedKey';
-
     // 处理保留字（示例）
     final reservedWords = {'Class', 'Switch', 'Default'};
     return reservedWords.contains(baseName) ? '${baseName}Class' : baseName;
@@ -432,29 +411,22 @@ class JsonToDartLogic extends GetxController {
       dartCode: dartCode.value,
       timestamp: DateTime.now(),
     );
-
     // 保存到 SharedPreferences
     final prefs = await SharedPreferences.getInstance();
     final historyJson = prefs.getStringList(_historyKey) ?? [];
     historyJson.add(jsonEncode(newItem.toJson()));
     await prefs.setStringList(_historyKey, historyJson);
-
     // 更新控制器列表
-    history.insert(0, newItem);
+    history.add(newItem);
   }
 
   // 加载历史记录
   void loadHistory() async {
     final prefs = Get.find<SharedPreferences>();
     final historyJson = prefs.getStringList(_historyKey) ?? [];
-
     // 更新控制器的 history 列表
-    history.assignAll(
-      historyJson.map((jsonStr) => HistoryItem.fromJson(jsonDecode(jsonStr))).toList(),
-    );
+    history.assignAll(historyJson.map((jsonStr) => HistoryItem.fromJson(jsonDecode(jsonStr))).toList());
   }
-
-  //================ 本地存储实现 ================
 
   // 清空历史记录
   void clearHistory() async {
@@ -469,6 +441,7 @@ class JsonToDartLogic extends GetxController {
     );
   }
 
+  ///删除单个历史记录
   void deleteOne(HistoryItem item) {
     ConfirmDialog.showConfirmDialog(
       title: '确认删除吗',
@@ -478,10 +451,7 @@ class JsonToDartLogic extends GetxController {
         if (remove) {
           final prefs = await SharedPreferences.getInstance();
           await prefs.remove(_historyKey);
-          prefs.setStringList(
-            _historyKey,
-            history.map((item) => jsonEncode(item.toJson())).toList(),
-          );
+          prefs.setStringList(_historyKey, history.map((item) => jsonEncode(item.toJson())).toList());
         }
       },
     );
@@ -497,7 +467,6 @@ class JsonToDartLogic extends GetxController {
   void saveToFile(BuildContext context) async {
     _jsonNullWarning();
     _classNameNullWarning();
-
     // 生成文件名：大驼峰类名转下划线格式
     String fileName =
         classNameController.text
@@ -509,7 +478,6 @@ class JsonToDartLogic extends GetxController {
 
     // 获取Dart代码内容
     final dartCodeContent = dartCode.value;
-
     try {
       final FileSaveLocation? result = await getSaveLocation(
         suggestedName: fileName,
@@ -526,7 +494,7 @@ class JsonToDartLogic extends GetxController {
       await textFile.saveTo(result.path);
       MessageUtil.showSuccess(title: '操作提示', content: '文件保存成功');
     } catch (e) {
-      MessageUtil.showError(title: '保存失败', content: '文件保存异常: ${e.toString()}');
+      MessageUtil.showError(title: '操作提示', content: '文件保存异常: ${e.toString()}');
     }
   }
 
