@@ -9,7 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  flutter_localizations:
+    sdk: flutter
   cupertino_icons: ^1.0.8
   get: ^4.7.2
   shared_preferences: ^2.5.2
@@ -20,6 +21,7 @@ dependencies:
   flutter_json_view: ^1.1.5
   file_selector: ^1.0.3
   url_launcher: ^6.3.1
+  intl: any
 
 dev_dependencies:
   flutter_test:
@@ -28,6 +30,7 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.3
 
 flutter:
+  generate: true
   uses-material-design: true
   fonts:
     - family: JetBrainsMono

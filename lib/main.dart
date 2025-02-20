@@ -1,5 +1,6 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
 import 'package:json_to_dart/common/main/binding/main_binding.dart';
 import 'package:json_to_dart/common/main/view/main_view.dart';
@@ -30,8 +31,10 @@ class JsonToDartApp extends StatelessWidget {
         themeMode: ThemeMode.system,
         home: MainView(),
         initialBinding: MainBinding(),
-        debugShowCheckedModeBanner: false,
         getPages: RouterPages.allPages(),
+        debugShowCheckedModeBanner: false,
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
       ),
     );
   }
