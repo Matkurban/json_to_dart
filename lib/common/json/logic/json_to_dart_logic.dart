@@ -1,8 +1,8 @@
-// lib/controllers/json_converter_controller.dart
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/model/domain/dart/class_info.dart';
 import 'package:json_to_dart/model/domain/dart/dart_type.dart';
 import 'package:json_to_dart/model/domain/dart/field_info.dart';
@@ -16,20 +16,31 @@ import 'package:syntax_highlight/syntax_highlight.dart';
 import 'package:file_selector/file_selector.dart';
 
 class JsonToDartLogic extends GetxController {
+  ///json输入框控制器
   final jsonController = TextEditingController();
+
+  ///类名输入框控制器
   final classNameController = TextEditingController(text: 'MyModel');
 
+  ///是否为空
   RxBool nonNullable = true.obs;
+
+  ///是否生成toJson
   RxBool generateToJson = true.obs;
+
+  ///是否生成formJson
   RxBool generateFromJson = true.obs;
 
+  ///生成的dart类
   RxString dartCode = ''.obs;
 
   // 历史记录
   final history = <HistoryItem>[].obs;
 
+  ///历史记录的key
   final _historyKey = 'conversion_history';
 
+  ///高亮
   late Highlighter highlighter;
 
   @override
@@ -45,89 +56,77 @@ class JsonToDartLogic extends GetxController {
     loadHistory();
   }
 
+  ///json输入框监听
   void jsonListener() {
-    String text = jsonController.text.trim();
-    if (text.isEmpty) {
-      dartCode('');
-      return;
-    }
+    _jsonIsEmpty();
     generateDartClass();
   }
 
+  ///类名输入框监听
   void classNameListener() {
+    _classNameIsEmpty();
+    _jsonIsEmpty();
+    generateDartClass();
+  }
+
+  void _classNameIsEmpty() {
     String classNameText = classNameController.text.trim();
     if (classNameText.isEmpty) {
       dartCode('');
       return;
     }
+  }
+
+  void _jsonIsEmpty() {
     String jsonText = jsonController.text.trim();
     if (jsonText.isEmpty) {
       dartCode('');
       return;
     }
-    generateDartClass();
   }
 
   void generateDartClass() {
     try {
-      final jsonString = jsonController.text.trim();
-      if (jsonString.isEmpty) {
-        MessageUtil.showWarning(title: '操作提示 ', content: '请输入json后操作');
-        return;
-      }
-
-      final classNameString = classNameController.text.trim();
-      if (classNameString.isEmpty) {
-        MessageUtil.showWarning(title: '操作提示 ', content: '请输入类名后操作');
-        return;
-      }
-      final parsedJson = json.decode(jsonString);
+      _jsonNullWarning();
+      _classNameNullWarning();
+      final parsedJson = json.decode(jsonController.text.trim());
       dartCode.value = _generateCode(parsedJson);
     } catch (e) {
-      dartCode.value = '';
-      MessageUtil.showWarning(title: '转换异常 ', content: '请输入正确格式的json后操作');
+      _jsonConvertWarning();
     }
   }
 
   void formatJson() {
     try {
-      if (jsonController.text.trim().isEmpty) {
-        MessageUtil.showWarning(title: '操作提示 ', content: '请输入json后操作');
-        return;
-      }
+      _jsonNullWarning();
       final parsedJson = json.decode(jsonController.text);
       jsonController.text = const JsonEncoder.withIndent('  ').convert(parsedJson);
     } catch (e) {
-      MessageUtil.showWarning(title: '格式化异常 ', content: '请输入正确格式的json后操作');
+      _jsonConvertWarning();
     }
   }
 
   String _generateCode(dynamic jsonData) {
     if (jsonData is! Map<String, dynamic>) {
       MessageUtil.showWarning(title: '转换异常 ', content: '请输入正确格式的json后操作');
+      return '';
     }
-
     final buffer = StringBuffer();
     final classes = <String, Map<String, dynamic>>{};
     final classStack = [ClassInfo(classNameController.text, jsonData)];
-
     while (classStack.isNotEmpty) {
       final current = classStack.removeLast();
       if (classes.containsKey(current.name)) continue;
-
       final fields = _parseFields(current.data, classes, classStack, current.name);
-
       _writeClassHeader(current.name, buffer);
       _writeClassBody(current.name, fields, buffer);
       classes[current.name] = current.data;
     }
-
     return buffer.toString().trim();
   }
 
-  void _writeClassHeader(String className, StringBuffer buffer) {
-    buffer.writeln('class $className {');
-  }
+  void _writeClassHeader(String className, StringBuffer buffer) =>
+      buffer.writeln('class $className {');
 
   void _writeClassBody(String className, List<FieldInfo> fields, StringBuffer buffer) {
     // 字段声明
@@ -170,7 +169,6 @@ class JsonToDartLogic extends GetxController {
   };''');
       buffer.writeln('\n');
     }
-
     buffer.writeln('}');
     buffer.writeln('\n');
   }
@@ -196,13 +194,15 @@ class JsonToDartLogic extends GetxController {
       if (nonNullable.value) {
         line = '${f.name}: json[\'${f.jsonKey}\'] as List<${f.baseType}>';
       } else {
-        line = '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\'] as List<${f.baseType}> : null';
+        line =
+            '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\'] as List<${f.baseType}> : null';
       }
     } else {
       if (nonNullable.value) {
         line = '${f.name}: json[\'${f.jsonKey}\'] as ${f.baseType}';
       } else {
-        line = '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\'] as ${f.baseType} : null';
+        line =
+            '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\'] as ${f.baseType} : null';
       }
     }
     return '$line,'; // 添加逗号
@@ -284,7 +284,13 @@ class JsonToDartLogic extends GetxController {
 
     if (value is List) {
       if (value.isEmpty) {
-        return TypeInfo(type: 'List<dynamic>', baseType: 'List', isDynamic: true, isList: true, defaultValue: '[]');
+        return TypeInfo(
+          type: 'List<dynamic>',
+          baseType: 'List',
+          isDynamic: true,
+          isList: true,
+          defaultValue: '[]',
+        );
       }
 
       final firstElement = value.first;
@@ -367,71 +373,6 @@ class JsonToDartLogic extends GetxController {
   }
 
   String _sanitizeFieldName(String name) {
-    const reservedWords = {
-      'abstract',
-      'as',
-      'assert',
-      'async',
-      'await',
-      'break',
-      'case',
-      'catch',
-      'class',
-      'const',
-      'continue',
-      'covariant',
-      'default',
-      'deferred',
-      'do',
-      'dynamic',
-      'else',
-      'enum',
-      'export',
-      'extends',
-      'extension',
-      'external',
-      'factory',
-      'false',
-      'final',
-      'finally',
-      'for',
-      'function',
-      'get',
-      'hide',
-      'if',
-      'implements',
-      'import',
-      'in',
-      'interface',
-      'is',
-      'late',
-      'library',
-      'mixin',
-      'new',
-      'null',
-      'on',
-      'operator',
-      'part',
-      'required',
-      'rethrow',
-      'return',
-      'set',
-      'show',
-      'static',
-      'super',
-      'switch',
-      'sync',
-      'this',
-      'throw',
-      'true',
-      'try',
-      'typedef',
-      'var',
-      'void',
-      'while',
-      'with',
-      'yield',
-    };
     // 处理保留字
     if (reservedWords.contains(name)) {
       return '${name}Field';
@@ -482,10 +423,8 @@ class JsonToDartLogic extends GetxController {
 
   // 添加历史记录
   void addHistory() async {
-    if (jsonController.text.trim().isEmpty || dartCode.value.isEmpty || classNameController.text.trim().isEmpty) {
-      MessageUtil.showError(title: '操作提示', content: '请生成Dart类后再保存到历史记录');
-      return;
-    }
+    _jsonNullWarning();
+    _classNameNullWarning();
     final newItem = HistoryItem(
       title: classNameController.text,
       subtitle: DateTime.now().toString().substring(0, 10),
@@ -510,7 +449,9 @@ class JsonToDartLogic extends GetxController {
     final historyJson = prefs.getStringList(_historyKey) ?? [];
 
     // 更新控制器的 history 列表
-    history.assignAll(historyJson.map((jsonStr) => HistoryItem.fromJson(jsonDecode(jsonStr))).toList());
+    history.assignAll(
+      historyJson.map((jsonStr) => HistoryItem.fromJson(jsonDecode(jsonStr))).toList(),
+    );
   }
 
   //================ 本地存储实现 ================
@@ -537,7 +478,10 @@ class JsonToDartLogic extends GetxController {
         if (remove) {
           final prefs = await SharedPreferences.getInstance();
           await prefs.remove(_historyKey);
-          prefs.setStringList(_historyKey, history.map((item) => jsonEncode(item.toJson())).toList());
+          prefs.setStringList(
+            _historyKey,
+            history.map((item) => jsonEncode(item.toJson())).toList(),
+          );
         }
       },
     );
@@ -545,32 +489,14 @@ class JsonToDartLogic extends GetxController {
 
   ///预览Json
   void previewJson(BuildContext context) {
-    if (jsonController.text.trim().isEmpty) {
-      MessageUtil.showError(title: '操作提示', content: '请输入Json后预览');
-      return;
-    }
+    _jsonNullWarning();
     PreviewDialog.showPreviewJsonDialog(context, jsonController.text);
-  }
-
-  @override
-  void onClose() {
-    jsonController.removeListener(jsonListener);
-    classNameController.removeListener(classNameListener);
-    jsonController.dispose();
-    classNameController.dispose();
-    super.onClose();
   }
 
   /// 保存为文件
   void saveToFile(BuildContext context) async {
-    if (jsonController.text.trim().isEmpty) {
-      MessageUtil.showError(title: '操作提示', content: '请输入Json后保存');
-      return;
-    }
-    if (classNameController.text.trim().isEmpty) {
-      MessageUtil.showError(title: '操作提示', content: '请输入类名后保存');
-      return;
-    }
+    _jsonNullWarning();
+    _classNameNullWarning();
 
     // 生成文件名：大驼峰类名转下划线格式
     String fileName =
@@ -592,7 +518,6 @@ class JsonToDartLogic extends GetxController {
         ],
       );
       if (result == null) {
-        // Operation was canceled by the user.
         return;
       }
       final Uint8List fileData = Uint8List.fromList(dartCodeContent.codeUnits);
@@ -605,4 +530,34 @@ class JsonToDartLogic extends GetxController {
     }
   }
 
+  ///json为空的时候操作提示
+  void _jsonNullWarning() {
+    if (jsonController.text.trim().isEmpty) {
+      MessageUtil.showError(title: '操作提示', content: '请输入Json后操作');
+      return;
+    }
+  }
+
+  ///类名为空时的提示
+  void _classNameNullWarning() {
+    if (classNameController.text.trim().isEmpty) {
+      MessageUtil.showError(title: '操作提示', content: '请输入类名后操作');
+      return;
+    }
+  }
+
+  ///json为null或者格式异常，转换异常时的提示
+  void _jsonConvertWarning() {
+    dartCode.value = '';
+    MessageUtil.showWarning(title: '转换异常 ', content: '请输入正确格式的json后操作');
+  }
+
+  @override
+  void onClose() {
+    jsonController.removeListener(jsonListener);
+    classNameController.removeListener(classNameListener);
+    jsonController.dispose();
+    classNameController.dispose();
+    super.onClose();
+  }
 }

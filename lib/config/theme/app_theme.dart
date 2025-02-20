@@ -37,6 +37,7 @@ abstract final class AppTheme {
     lightIsWhite: true,
     fontFamily: "JetBrainsMono",
     subThemesData: const FlexSubThemesData(
+      cardElevation: 0,
       interactionEffects: true,
       tintedDisabledControls: true,
       scaffoldBackgroundSchemeColor: SchemeColor.primaryContainer,
