@@ -40,7 +40,10 @@ sealed class PreviewDialog {
                     fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                  doubleStyle: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.secondary),
+                  doubleStyle: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
                   intStyle: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.tertiary),
                   boolStyle: TextStyle(
                     fontSize: 14,
@@ -54,11 +57,18 @@ sealed class PreviewDialog {
                   ),
                   closeIcon: Icon(Icons.keyboard_arrow_down),
                   openIcon: Icon(Icons.keyboard_arrow_up),
-                  errorWidget: Text('error', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                  errorWidget: Text(
+                    'error',
+                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                  ),
                   errorBuilder:
                       (context, error) => Tooltip(
                         message: error.toString(),
-                        child: Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error, size: 16),
+                        child: Icon(
+                          Icons.error_outline,
+                          color: Theme.of(context).colorScheme.error,
+                          size: 16,
+                        ),
                       ),
                   loadingWidget: CircularProgressIndicator(
                     color: Theme.of(context).colorScheme.primary,
@@ -91,15 +101,27 @@ class _PreviewDialogContent extends GetView<JsonToDartLogic> {
           spacing: 10,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildCodeCard(title: 'JSON', content: item.json, onCopy: () => _copyToClipboard(item.json)),
-            _buildCodeCard(title: 'Dart', content: item.dartCode, onCopy: () => _copyToClipboard(item.dartCode)),
+            _buildCodeCard(
+              title: 'JSON',
+              content: item.json,
+              onCopy: () => _copyToClipboard(item.json),
+            ),
+            _buildCodeCard(
+              title: 'Dart',
+              content: item.dartCode,
+              onCopy: () => _copyToClipboard(item.dartCode),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildCodeCard({required String title, required String content, required VoidCallback onCopy}) {
+  Widget _buildCodeCard({
+    required String title,
+    required String content,
+    required VoidCallback onCopy,
+  }) {
     return Expanded(
       child: Card(
         elevation: 0,

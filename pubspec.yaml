@@ -2,7 +2,7 @@ name: json_to_dart
 description: "A Dart-based tool class."
 publish_to: "none"
 homepage: https://github.com/Matkurban/json_to_dart
-version: 1.0.2
+version: 1.0.3
 environment:
   sdk: ^3.7.0
 
@@ -12,7 +12,7 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   get: ^4.7.2
-  json_serializable: ^6.9.4
+  # json_serializable: ^6.9.4
   shared_preferences: ^2.5.2
   flex_color_scheme: ^8.1.1
   toastification: ^2.3.0
@@ -20,6 +20,7 @@ dependencies:
   package_info_plus: ^8.2.1
   flutter_json_view: ^1.1.5
   file_selector: ^1.0.3
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
