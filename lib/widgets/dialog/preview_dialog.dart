@@ -16,11 +16,11 @@ sealed class PreviewDialog {
     var size = MediaQuery.sizeOf(context);
     var themeData = Theme.of(context);
     var colorScheme = themeData.colorScheme;
-    var textTheme = themeData.textTheme;
     showDialog(
       context: context,
       builder: (context) {
         return Dialog(
+          backgroundColor: themeData.cardColor,
           child: Container(
             padding: AppStyle.defaultPadding,
             constraints: BoxConstraints(
@@ -32,34 +32,39 @@ sealed class PreviewDialog {
               child: JsonView.string(
                 json,
                 theme: JsonViewTheme(
+                  defaultTextStyle: TextStyle(fontFamily: "JetBrainsMono"),
                   viewType: JsonViewType.collapsible,
-                  defaultTextStyle: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: textTheme.bodyLarge?.color ?? Colors.black,
-                  ),
-                  keyStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: colorScheme.primary),
-                  doubleStyle: TextStyle(fontSize: 14, color: colorScheme.secondary),
-                  intStyle: TextStyle(fontSize: 14, color: colorScheme.tertiary),
-                  boolStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: colorScheme.error),
-                  stringStyle: TextStyle(
-                    fontSize: 14,
-                    color: colorScheme.onSurfaceVariant,
-                    fontStyle: FontStyle.italic,
-                  ),
-                  closeIcon: Icon(Icons.keyboard_arrow_down),
-                  openIcon: Icon(Icons.keyboard_arrow_up),
-                  errorWidget: Text('error', style: TextStyle(color: colorScheme.error)),
-                  errorBuilder:
-                      (context, error) => Tooltip(
-                        message: error.toString(),
-                        child: Icon(Icons.error_outline, color: colorScheme.error, size: 16),
-                      ),
-                  loadingWidget: CircularProgressIndicator(color: colorScheme.primary, strokeWidth: 2),
+                  keyStyle: TextStyle(color: colorScheme.primary),
+                  doubleStyle: TextStyle(color: colorScheme.secondary),
+                  intStyle: TextStyle(color: colorScheme.secondary),
+                  boolStyle: TextStyle(color: colorScheme.secondary),
+                  stringStyle: TextStyle(color: colorScheme.secondary),
+                  closeIcon: Icon(Icons.keyboard_arrow_down, size: 16),
+                  openIcon: Icon(Icons.keyboard_arrow_up, size: 16),
+                  separator: Text(':'),
                   backgroundColor: Colors.transparent,
                 ),
               ),
             ),
+          ),
+        );
+      },
+    );
+  }
+
+  static void showPreviewDartDialog(BuildContext context, Widget child) {
+    var size = MediaQuery.sizeOf(context);
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child: Container(
+            constraints: BoxConstraints(
+              maxWidth: size.width * 0.9,
+              maxHeight: size.height * 0.9,
+              minHeight: size.height * 0.9,
+            ),
+            child: child,
           ),
         );
       },

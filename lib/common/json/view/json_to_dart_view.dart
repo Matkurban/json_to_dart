@@ -1,12 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:json_to_dart/common/json/logic/json_to_dart_logic.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
-import 'package:json_to_dart/utils/message_util.dart';
 import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
 import 'package:json_to_dart/widgets/highlight/highlight_text.dart';
 
@@ -63,7 +61,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
 
   Widget _buildInputPanel(BuildContext context) {
     return Expanded(
-      flex: 5, // 输入区占比5份
+      flex: 5,
       child: Card(
         margin: EdgeInsets.zero,
         child: Padding(
@@ -105,9 +103,9 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
     );
   }
 
-  Widget _buildOutputPanel(BuildContext context) {
+  Widget _buildOutputPanel(BuildContext context, {bool showPreviewButton = true}) {
     return Expanded(
-      flex: 5, // 输出区占比5份
+      flex: 5,
       child: Card(
         margin: EdgeInsets.zero,
         child: Padding(
@@ -119,6 +117,14 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                 children: [
                   _buildInputLabel(context, l10n.dartOutput),
                   Spacer(),
+                  if (showPreviewButton)
+                    IconButton(
+                      onPressed: () {
+                        controller.previewDartCode(context, _buildOutputPanel(context, showPreviewButton: false));
+                      },
+                      icon: Icon(CupertinoIcons.eye),
+                      tooltip: l10n.previewDartCode,
+                    ),
                   if (!kIsWeb)
                     IconButton(
                       icon: const Icon(Icons.save_alt),
@@ -127,7 +133,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                     ),
                   IconButton(
                     icon: const Icon(Icons.copy_all),
-                    onPressed: () => _copyDartCode(context),
+                    onPressed: () => controller.copy(controller.dartCode.value),
                     tooltip: l10n.copyCode,
                   ),
                 ],
@@ -186,12 +192,12 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
             label: l10n.generateFromJson,
             onChanged: (v) => controller.generateFromJson.value = v!,
           ),
-           _buildCheckbox(
-          context,
-          value: controller.forceTypeCasting.value,
-          label: l10n.forceTypeCasting,
-          onChanged: (v) => controller.forceTypeCasting.value = v!,
-        ),
+          _buildCheckbox(
+            context,
+            value: controller.forceTypeCasting.value,
+            label: l10n.forceTypeCasting,
+            onChanged: (v) => controller.forceTypeCasting.value = v!,
+          ),
         ],
       );
     });
@@ -272,13 +278,6 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
     );
   }
 
-  void _copyDartCode(BuildContext context) {
-    if (controller.dartCode.isNotEmpty) {
-      Clipboard.setData(ClipboardData(text: controller.dartCode.value));
-      MessageUtil.showSuccess(title: l10n.operationPrompt, content: l10n.codeCopied);
-    }
-  }
-
   Widget _buildHistoryDrawer(BuildContext context) {
     var width = MediaQuery.sizeOf(context).width * 0.3;
     return Drawer(width: width, child: _buildHistoryPanel(context));
@@ -320,6 +319,17 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                                   icon: Icon(CupertinoIcons.eye, color: colorScheme.primary),
                                   tooltip: l10n.preview,
                                 ),
+                                IconButton(
+                                  onPressed: () => controller.copy(item.json),
+                                  icon: Icon(Icons.copy_all),
+                                  tooltip: l10n.copyJson,
+                                ),
+                                IconButton(
+                                  onPressed: () => controller.copy(item.dartCode),
+                                  icon: Icon(Icons.code),
+                                  tooltip: l10n.copyCode,
+                                ),
+
                                 IconButton(
                                   onPressed: () => controller.deleteOne(item),
                                   icon: Icon(Icons.remove, color: colorScheme.error),

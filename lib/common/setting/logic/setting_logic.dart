@@ -10,13 +10,18 @@ class SettingLogic extends GetxController {
   ///应用版本
   final RxString version = ''.obs;
 
+  ///使用语言的名字
+  final RxString languageName = ''.obs;
+
   final AppSetting _appSetting = Get.find<AppSetting>();
 
   @override
   void onInit() {
     super.onInit();
     convert(_appSetting.theme.value);
+    languageName(_appSetting.language.value.displayName);
     ever<ThemeMode>(_appSetting.theme, (mode) => convert(mode));
+    ever(_appSetting.language, (newValue) => languageName(newValue.displayName));
     getVersion();
   }
 
@@ -34,7 +39,7 @@ class SettingLogic extends GetxController {
     }
   }
 
-    void getVersion() async {
+  void getVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     version(packageInfo.version);
   }

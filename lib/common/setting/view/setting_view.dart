@@ -30,7 +30,10 @@ class SettingView extends GetView<SettingLogic> {
           Card(
             child: ListTile(
               title: Text(l10n.language),
-              trailing: Icon(Icons.keyboard_arrow_right),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [Obx(() => Text(controller.languageName.value)), Icon(Icons.keyboard_arrow_right)],
+              ),
               onTap: () => Get.toNamed(RouterNames.toggleLanguage),
             ),
           ),

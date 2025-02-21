@@ -50,5 +50,6 @@
   "githubRepo": "Github仓库",
   "language": "语言",
   "selectLanguage": "选择语言",
-  "forceTypeCasting": "强制类型转换 (as Type)"
+  "forceTypeCasting": "强制类型转换 (as Type)",
+  "previewDartCode": "预览Dart代码"
 }

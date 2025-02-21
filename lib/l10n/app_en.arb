@@ -50,5 +50,6 @@
   "githubRepo": "GitHub Repository",
   "language": "Language",
   "selectLanguage": "Select Language",
-  "forceTypeCasting": "Type Casting (as Type)"
+  "forceTypeCasting": "Type Casting (as Type)",
+  "previewDartCode": "Preview Dart Code"
 }

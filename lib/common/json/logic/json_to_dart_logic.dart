@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:file_selector/file_selector.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/model/domain/dart/class_info.dart';
@@ -63,37 +63,32 @@ class JsonToDartLogic extends GetxController {
 
   ///json输入框监听
   void jsonListener() {
-    _jsonIsEmpty();
-    generateDartClass();
+    String jsonText = jsonController.text.trim();
+    if (jsonText.isEmpty) {
+      dartCode('');
+    } else {
+      generateDartClass();
+    }
   }
 
   ///类名输入框监听
   void classNameListener() {
-    _classNameIsEmpty();
-    _jsonIsEmpty();
-    generateDartClass();
-  }
-
-  void _classNameIsEmpty() {
     String classNameText = classNameController.text.trim();
     if (classNameText.isEmpty) {
       dartCode('');
-      return;
-    }
-  }
-
-  void _jsonIsEmpty() {
-    String jsonText = jsonController.text.trim();
-    if (jsonText.isEmpty) {
-      dartCode('');
-      return;
+    } else {
+      generateDartClass();
     }
   }
 
   void generateDartClass() {
     try {
-      _jsonNullWarning();
-      _classNameNullWarning();
+      if (jsonController.text.trim().isEmpty) {
+        return;
+      }
+      if (classNameController.text.trim().isEmpty) {
+        return;
+      }
       final parsedJson = json.decode(jsonController.text.trim());
       dartCode.value = _generateCode(parsedJson);
     } catch (e) {
@@ -103,7 +98,9 @@ class JsonToDartLogic extends GetxController {
 
   void formatJson() {
     try {
-      _jsonNullWarning();
+      if (jsonController.text.trim().isEmpty) {
+        return;
+      }
       final parsedJson = json.decode(jsonController.text);
       jsonController.text = const JsonEncoder.withIndent('  ').convert(parsedJson);
     } catch (e) {
@@ -443,8 +440,12 @@ class JsonToDartLogic extends GetxController {
 
   // 添加历史记录
   void addHistory() async {
-    _jsonNullWarning();
-    _classNameNullWarning();
+    if (jsonController.text.trim().isEmpty) {
+      return;
+    }
+    if (classNameController.text.trim().isEmpty) {
+      return;
+    }
     final newItem = HistoryItem(
       title: classNameController.text,
       subtitle: DateTime.now().toString().substring(0, 10),
@@ -500,14 +501,17 @@ class JsonToDartLogic extends GetxController {
 
   ///预览Json
   void previewJson(BuildContext context) {
-    _jsonNullWarning();
+    if (jsonController.text.trim().isEmpty) {
+      return;
+    }
     PreviewDialog.showPreviewJsonDialog(context, jsonController.text);
   }
 
   /// 保存为文件
   void saveToFile(BuildContext context) async {
-    _jsonNullWarning();
-    _classNameNullWarning();
+    if (dartCode.isEmpty) {
+      return;
+    }
     // 生成文件名：大驼峰类名转下划线格式
     String fileName =
         classNameController.text
@@ -539,27 +543,26 @@ class JsonToDartLogic extends GetxController {
     }
   }
 
-  ///json为空的时候操作提示
-  void _jsonNullWarning() {
-    if (jsonController.text.trim().isEmpty) {
-      return;
-    }
-  }
-
-  ///类名为空时的提示
-  void _classNameNullWarning() {
-    if (classNameController.text.trim().isEmpty) {
-      return;
-    }
-  }
-
   ///json为null或者格式异常，转换异常时的提示
   void _jsonConvertWarning() {
     dartCode.value = '';
     if (jsonController.text.trim().isNotEmpty) {
       MessageUtil.showError(title: l10n.conversionError, content: l10n.enterValidJsonPrompt);
     }
-    return;
+  }
+
+  void previewDartCode(BuildContext context, Widget child) {
+    if (dartCode.value.isEmpty) {
+      return;
+    }
+    PreviewDialog.showPreviewDartDialog(context, child);
+  }
+
+  void copy(String text) {
+    if (text.isNotEmpty) {
+      Clipboard.setData(ClipboardData(text: text));
+      MessageUtil.showSuccess(title: l10n.operationPrompt, content: l10n.codeCopied);
+    }
   }
 
   @override
