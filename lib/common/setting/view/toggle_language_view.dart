@@ -22,6 +22,7 @@ class ToggleLanguageView extends GetView<AppSetting> {
               groupValue: controller.language.value,
               onChanged: (value) => controller.changeLanguage(value!),
               title: Text(values[index].displayName),
+              selected: values[index]==controller.language.value,
             );
           });
         },

@@ -20,6 +20,7 @@ class ToggleThemeView extends GetView<AppSetting> {
               groupValue: controller.theme.value,
               onChanged: (value) => controller.changeTheme(value!),
               title: Text(l10n.lightTheme),
+              selected: ThemeMode.light==controller.theme.value,
             );
           }),
           Obx(() {
@@ -28,6 +29,7 @@ class ToggleThemeView extends GetView<AppSetting> {
               groupValue: controller.theme.value,
               onChanged: (value) => controller.changeTheme(value!),
               title: Text(l10n.darkTheme),
+              selected: ThemeMode.dark==controller.theme.value,
             );
           }),
           Obx(() {
@@ -36,6 +38,7 @@ class ToggleThemeView extends GetView<AppSetting> {
               groupValue: controller.theme.value,
               onChanged: (value) => controller.changeTheme(value!),
               title: Text(l10n.systemTheme),
+              selected: ThemeMode.system==controller.theme.value,
             );
           }),
         ],

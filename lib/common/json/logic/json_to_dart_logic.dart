@@ -47,6 +47,8 @@ class JsonToDartLogic extends GetxController {
   // 新增强制类型转换选项
   RxBool forceTypeCasting = false.obs;
 
+  RxBool generateCopyWith = true.obs;
+
   @override
   void onInit() async {
     super.onInit();
@@ -58,6 +60,7 @@ class JsonToDartLogic extends GetxController {
     generateToJson.listen((newValue) => generateDartClass());
     generateFromJson.listen((newValue) => generateDartClass());
     forceTypeCasting.listen((newValue) => generateDartClass());
+    generateCopyWith.listen((newValue) => generateDartClass());
     loadHistory();
   }
 
@@ -102,7 +105,9 @@ class JsonToDartLogic extends GetxController {
         return;
       }
       final parsedJson = json.decode(jsonController.text);
-      jsonController.text = const JsonEncoder.withIndent('  ').convert(parsedJson);
+      jsonController.text = const JsonEncoder.withIndent(
+        '  ',
+      ).convert(parsedJson);
     } catch (e) {
       _jsonConvertWarning();
     }
@@ -110,7 +115,10 @@ class JsonToDartLogic extends GetxController {
 
   String _generateCode(dynamic jsonData) {
     if (jsonData is! Map<String, dynamic>) {
-      MessageUtil.showWarning(title: l10n.conversionError, content: l10n.enterValidJsonPrompt);
+      MessageUtil.showWarning(
+        title: l10n.conversionError,
+        content: l10n.enterValidJsonPrompt,
+      );
       return '';
     }
     final buffer = StringBuffer();
@@ -119,7 +127,12 @@ class JsonToDartLogic extends GetxController {
     while (classStack.isNotEmpty) {
       final current = classStack.removeLast();
       if (classes.containsKey(current.name)) continue;
-      final fields = _parseFields(current.data, classes, classStack, current.name);
+      final fields = _parseFields(
+        current.data,
+        classes,
+        classStack,
+        current.name,
+      );
       _writeClassHeader(current.name, buffer);
       _writeClassBody(current.name, fields, buffer);
       classes[current.name] = current.data;
@@ -127,9 +140,14 @@ class JsonToDartLogic extends GetxController {
     return buffer.toString().trim();
   }
 
-  void _writeClassHeader(String className, StringBuffer buffer) => buffer.writeln('class $className {');
+  void _writeClassHeader(String className, StringBuffer buffer) =>
+      buffer.writeln('class $className {');
 
-  void _writeClassBody(String className, List<FieldInfo> fields, StringBuffer buffer) {
+  void _writeClassBody(
+    String className,
+    List<FieldInfo> fields,
+    StringBuffer buffer,
+  ) {
     // 字段声明
     for (final f in fields) {
       final nullability =
@@ -170,42 +188,24 @@ class JsonToDartLogic extends GetxController {
   };''');
       buffer.writeln('\n');
     }
+
+    if (generateCopyWith.value) {
+      buffer.write('''
+  $className copyWith({
+    ${fields.map((f) => "${f.type}? ${f.name},").join('\n    ')}
+  }) {
+    return $className(
+      ${fields.map((f) => "${f.name}: ${f.name} ?? this.${f.name},").join('\n      ')}
+    );
+  }
+''');
+      buffer.writeln('\n');
+    }
+
     buffer.writeln('}');
     buffer.writeln('\n');
   }
 
-  /*  String _fromJsonLine(FieldInfo f) {
-    String line;
-    if (f.isCustomType) {
-      if (nonNullable.value) {
-        line = '${f.name}: ${f.type}.fromJson(json[\'${f.jsonKey}\'] as Map<String, dynamic>)';
-      } else {
-        line =
-            '${f.name}: json[\'${f.jsonKey}\'] != null ? ${f.type}.fromJson(json[\'${f.jsonKey}\'] as Map<String, dynamic>) : null';
-      }
-    } else if (f.isListOfCustomType) {
-      if (nonNullable.value) {
-        line =
-            '${f.name}: (json[\'${f.jsonKey}\'] as List).map((e) => ${f.listType}.fromJson(e as Map<String, dynamic>)).toList()';
-      } else {
-        line =
-            '${f.name}: json[\'${f.jsonKey}\'] != null ? (json[\'${f.jsonKey}\'] as List).map((e) => ${f.listType}.fromJson(e as Map<String, dynamic>)).toList() : null';
-      }
-    } else if (f.isList) {
-      if (nonNullable.value) {
-        line = '${f.name}: json[\'${f.jsonKey}\'] as List<${f.baseType}>';
-      } else {
-        line = '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\'] as List<${f.baseType}> : null';
-      }
-    } else {
-      if (nonNullable.value) {
-        line = '${f.name}: json[\'${f.jsonKey}\'] as ${f.baseType}';
-      } else {
-        line = '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\'] as ${f.baseType} : null';
-      }
-    }
-    return '$line,'; // 添加逗号
-  } */
   // json_to_dart_logic.dart
   String _fromJsonLine(FieldInfo f) {
     String line;
@@ -217,11 +217,13 @@ class JsonToDartLogic extends GetxController {
       if (nonNullable.value) {
         line = '${f.name}: ${f.type}.fromJson(json[\'${f.jsonKey}\']$mapCast)';
       } else {
-        line = '${f.name}: json[\'${f.jsonKey}\'] != null ? ${f.type}.fromJson(json[\'${f.jsonKey}\']$mapCast) : null';
+        line =
+            '${f.name}: json[\'${f.jsonKey}\'] != null ? ${f.type}.fromJson(json[\'${f.jsonKey}\']$mapCast) : null';
       }
     } else if (f.isListOfCustomType) {
       if (nonNullable.value) {
-        line = '${f.name}: (json[\'${f.jsonKey}\']$listCast).map((e) => ${f.listType}.fromJson(e$mapCast)).toList()';
+        line =
+            '${f.name}: (json[\'${f.jsonKey}\']$listCast).map((e) => ${f.listType}.fromJson(e$mapCast)).toList()';
       } else {
         line =
             '${f.name}: json[\'${f.jsonKey}\'] != null ? (json[\'${f.jsonKey}\']$listCast).map((e) => ${f.listType}.fromJson(e$mapCast)).toList() : null';
@@ -230,13 +232,15 @@ class JsonToDartLogic extends GetxController {
       if (nonNullable.value) {
         line = '${f.name}: json[\'${f.jsonKey}\']$listCast';
       } else {
-        line = '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\']$listCast : null';
+        line =
+            '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\']$listCast : null';
       }
     } else {
       if (nonNullable.value) {
         line = '${f.name}: json[\'${f.jsonKey}\']$typeCast';
       } else {
-        line = '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\']$typeCast : null';
+        line =
+            '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\']$typeCast : null';
       }
     }
     return '$line,';
@@ -275,7 +279,13 @@ class JsonToDartLogic extends GetxController {
     return data.entries.map((entry) {
       final jsonKey = entry.key;
       final value = entry.value;
-      final typeInfo = _resolveType(value, jsonKey, classes, classStack, parentClassName);
+      final typeInfo = _resolveType(
+        value,
+        jsonKey,
+        classes,
+        classStack,
+        parentClassName,
+      );
       final fieldName = _convertFieldName(jsonKey);
 
       return FieldInfo(
@@ -289,7 +299,10 @@ class JsonToDartLogic extends GetxController {
         isList: typeInfo.isList,
         isListOfCustomType: typeInfo.isListOfCustomType,
         isBasicListType: typeInfo.isBasicListType,
-        defaultValue: nonNullable.value && typeInfo.nullable ? typeInfo.defaultValue : null,
+        defaultValue:
+            nonNullable.value && typeInfo.nullable
+                ? typeInfo.defaultValue
+                : null,
       );
     }).toList();
   }
@@ -302,7 +315,12 @@ class JsonToDartLogic extends GetxController {
     String parentClassName,
   ) {
     if (value == null) {
-      return TypeInfo(type: 'dynamic', baseType: 'dynamic', isDynamic: true, nullable: true);
+      return TypeInfo(
+        type: 'dynamic',
+        baseType: 'dynamic',
+        isDynamic: true,
+        nullable: true,
+      );
     }
 
     if (value is Map) {
@@ -318,12 +336,20 @@ class JsonToDartLogic extends GetxController {
 
     if (value is List) {
       if (value.isEmpty) {
-        return TypeInfo(type: 'List<dynamic>', baseType: 'List', isDynamic: true, isList: true, defaultValue: '[]');
+        return TypeInfo(
+          type: 'List<dynamic>',
+          baseType: 'List',
+          isDynamic: true,
+          isList: true,
+          defaultValue: '[]',
+        );
       }
       final firstElement = value.first;
       if (firstElement is Map) {
         final className = '${_classNameFromKey(key, parentClassName)}Item';
-        classStack.add(ClassInfo(className, firstElement.cast<String, dynamic>()));
+        classStack.add(
+          ClassInfo(className, firstElement.cast<String, dynamic>()),
+        );
         return TypeInfo(
           type: 'List<$className>',
           baseType: 'List',
@@ -360,7 +386,8 @@ class JsonToDartLogic extends GetxController {
         .replaceAll(RegExp(r'[^a-zA-Z0-9]+'), '_') // 合并连续特殊字符为单个下划线
         .replaceAll(RegExp(r'_+'), '_'); // 确保没有连续下划线
     // 2. 分割下划线并过滤空片段
-    List<String> parts = sanitized.split('_').where((p) => p.isNotEmpty).toList();
+    List<String> parts =
+        sanitized.split('_').where((p) => p.isNotEmpty).toList();
     // 3. 处理每个片段
     List<String> processedParts =
         parts.map((part) {
@@ -378,7 +405,8 @@ class JsonToDartLogic extends GetxController {
           return part;
         }).toList();
     // 4. 转换为大驼峰格式（首字母大写）
-    processedParts = processedParts.map((p) => p[0].toUpperCase() + p.substring(1)).toList();
+    processedParts =
+        processedParts.map((p) => p[0].toUpperCase() + p.substring(1)).toList();
     // 5. 转换为小驼峰格式（首个字母小写）
     String camelCase =
         processedParts.isNotEmpty
@@ -467,7 +495,11 @@ class JsonToDartLogic extends GetxController {
     final prefs = Get.find<SharedPreferences>();
     final historyJson = prefs.getStringList(_historyKey) ?? [];
     // 更新控制器的 history 列表
-    history.assignAll(historyJson.map((jsonStr) => HistoryItem.fromJson(jsonDecode(jsonStr))).toList());
+    history.assignAll(
+      historyJson
+          .map((jsonStr) => HistoryItem.fromJson(jsonDecode(jsonStr)))
+          .toList(),
+    );
   }
 
   // 清空历史记录
@@ -493,7 +525,10 @@ class JsonToDartLogic extends GetxController {
         if (remove) {
           final prefs = await SharedPreferences.getInstance();
           await prefs.remove(_historyKey);
-          prefs.setStringList(_historyKey, history.map((item) => jsonEncode(item.toJson())).toList());
+          prefs.setStringList(
+            _historyKey,
+            history.map((item) => jsonEncode(item.toJson())).toList(),
+          );
         }
       },
     );
@@ -515,7 +550,10 @@ class JsonToDartLogic extends GetxController {
     // 生成文件名：大驼峰类名转下划线格式
     String fileName =
         classNameController.text
-            .replaceAllMapped(RegExp(r'([a-z])([A-Z])'), (Match m) => '${m[1]}_${m[2]}')
+            .replaceAllMapped(
+              RegExp(r'([a-z])([A-Z])'),
+              (Match m) => '${m[1]}_${m[2]}',
+            )
             .toLowerCase();
     if (!fileName.endsWith('.dart')) {
       fileName += '.dart';
@@ -535,11 +573,21 @@ class JsonToDartLogic extends GetxController {
       }
       final Uint8List fileData = Uint8List.fromList(dartCodeContent.codeUnits);
       const String mimeType = 'text/plain';
-      final XFile textFile = XFile.fromData(fileData, mimeType: mimeType, name: fileName);
+      final XFile textFile = XFile.fromData(
+        fileData,
+        mimeType: mimeType,
+        name: fileName,
+      );
       await textFile.saveTo(result.path);
-      MessageUtil.showSuccess(title: l10n.operationPrompt, content: l10n.fileSaveSuccess);
+      MessageUtil.showSuccess(
+        title: l10n.operationPrompt,
+        content: l10n.fileSaveSuccess,
+      );
     } catch (e) {
-      MessageUtil.showError(title: l10n.operationPrompt, content: l10n.fileSaveFailed);
+      MessageUtil.showError(
+        title: l10n.operationPrompt,
+        content: l10n.fileSaveFailed,
+      );
     }
   }
 
@@ -547,7 +595,10 @@ class JsonToDartLogic extends GetxController {
   void _jsonConvertWarning() {
     dartCode.value = '';
     if (jsonController.text.trim().isNotEmpty) {
-      MessageUtil.showError(title: l10n.conversionError, content: l10n.enterValidJsonPrompt);
+      MessageUtil.showError(
+        title: l10n.conversionError,
+        content: l10n.enterValidJsonPrompt,
+      );
     }
   }
 
@@ -561,7 +612,10 @@ class JsonToDartLogic extends GetxController {
   void copy(String text) {
     if (text.isNotEmpty) {
       Clipboard.setData(ClipboardData(text: text));
-      MessageUtil.showSuccess(title: l10n.operationPrompt, content: l10n.codeCopied);
+      MessageUtil.showSuccess(
+        title: l10n.operationPrompt,
+        content: l10n.codeCopied,
+      );
     }
   }
 

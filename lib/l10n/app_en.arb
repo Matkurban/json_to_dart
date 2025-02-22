@@ -51,5 +51,6 @@
   "language": "Language",
   "selectLanguage": "Select Language",
   "forceTypeCasting": "Type Casting (as Type)",
-  "previewDartCode": "Preview Dart Code"
+  "previewDartCode": "Preview Dart Code",
+  "generateCopyWith": "Generate CopyWith"
 }

@@ -51,5 +51,7 @@
   "language": "语言",
   "selectLanguage": "选择语言",
   "forceTypeCasting": "强制类型转换 (as Type)",
-  "previewDartCode": "预览Dart代码"
+  "previewDartCode": "预览Dart代码",
+  "generateCopyWith": "生成 CopyWith"
+
 }

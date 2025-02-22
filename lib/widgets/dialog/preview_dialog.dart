@@ -9,7 +9,10 @@ import 'package:json_to_dart/widgets/highlight/highlight_text.dart';
 
 sealed class PreviewDialog {
   static void showPreviewDialog(BuildContext context, HistoryItem item) {
-    showDialog(context: context, builder: (context) => _PreviewDialogContent(item: item));
+    showDialog(
+      context: context,
+      builder: (context) => _PreviewDialogContent(item: item),
+    );
   }
 
   static void showPreviewJsonDialog(BuildContext context, String json) {
@@ -83,10 +86,12 @@ class _PreviewDialogContent extends GetView<JsonToDartLogic> {
     return Dialog(
       child: Container(
         padding: AppStyle.defaultPadding,
-        constraints: BoxConstraints(maxWidth: size.width * 0.9, maxHeight: size.height * 0.9),
+        constraints: BoxConstraints(
+          maxWidth: size.width * 0.9,
+          maxHeight: size.height * 0.9,
+        ),
         child: Row(
           spacing: 10,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildCodeCard(
               title: 'JSON',
@@ -119,20 +124,41 @@ class _PreviewDialogContent extends GetView<JsonToDartLogic> {
         child: Padding(
           padding: AppStyle.defaultPadding,
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             spacing: 10,
             children: [
               // 标题栏
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  IconButton(icon: const Icon(Icons.copy), onPressed: onCopy, tooltip: tooltip),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.copy),
+                    onPressed: onCopy,
+                    tooltip: tooltip,
+                  ),
                 ],
               ),
               // 代码内容区域
               Expanded(
-                child: SingleChildScrollView(
-                  child: HighlightText(codeText: content, highlighter: controller.highlighter),
+                child: LayoutBuilder(
+                  builder: (context, con) {
+                    return SingleChildScrollView(
+                      child: SizedBox(
+                        width: con.maxWidth,
+                        child: HighlightText(
+                          codeText: content,
+                          highlighter: controller.highlighter,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],

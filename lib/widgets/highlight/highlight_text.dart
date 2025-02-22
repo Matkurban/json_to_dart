@@ -3,7 +3,11 @@ import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:syntax_highlight/syntax_highlight.dart';
 
 class HighlightText extends StatelessWidget {
-  const HighlightText({super.key, required this.codeText, required this.highlighter});
+  const HighlightText({
+    super.key,
+    required this.codeText,
+    required this.highlighter,
+  });
 
   final String codeText;
 
@@ -12,7 +16,11 @@ class HighlightText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SelectionArea(
-      child: Text.rich(highlighter.highlight(codeText), style: AppStyle.codeTextStyle),
+      child: Text.rich(
+        highlighter.highlight(codeText),
+        style: AppStyle.codeTextStyle,
+        textAlign: TextAlign.start,
+      ),
     );
   }
 }
