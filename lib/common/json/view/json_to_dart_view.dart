@@ -103,7 +103,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
     );
   }
 
-  Widget _buildOutputPanel(BuildContext context, {bool showPreviewButton = true}) {
+  Widget _buildOutputPanel(BuildContext context) {
     return Expanded(
       flex: 5,
       child: Card(
@@ -117,14 +117,11 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                 children: [
                   _buildInputLabel(context, l10n.dartOutput),
                   Spacer(),
-                  if (showPreviewButton)
-                    IconButton(
-                      onPressed: () {
-                        controller.previewDartCode(context, _buildOutputPanel(context, showPreviewButton: false));
-                      },
-                      icon: Icon(CupertinoIcons.eye),
-                      tooltip: l10n.previewDartCode,
-                    ),
+                  IconButton(
+                    onPressed: () => controller.previewDartCode(context, _buildPreviewDartPanel()),
+                    icon: Icon(CupertinoIcons.eye),
+                    tooltip: l10n.previewDartCode,
+                  ),
                   if (!kIsWeb)
                     IconButton(
                       icon: const Icon(Icons.save_alt),
@@ -153,6 +150,18 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPreviewDartPanel(){
+    return Padding(
+      padding: AppStyle.defaultPadding,
+      child: SingleChildScrollView(
+        child: SizedBox(
+          width: double.infinity,
+          child: HighlightText(codeText: controller.dartCode.value, highlighter: controller.highlighter),
         ),
       ),
     );
