@@ -34,9 +34,12 @@ abstract final class AppTheme {
       error: Color(0xFFBA1A1A),
       errorContainer: Color(0xFFFFF8F7),
     ),
+    lightIsWhite: true,
     subThemesData: const FlexSubThemesData(
+      cardElevation: 0,
       interactionEffects: true,
       tintedDisabledControls: true,
+      scaffoldBackgroundSchemeColor: SchemeColor.surfaceContainerHigh,
       useMaterial3Typography: true,
       useM2StyleDividerInM3: true,
       defaultRadius: 10.0,
@@ -58,7 +61,6 @@ abstract final class AppTheme {
     visualDensity: FlexColorScheme.comfortablePlatformDensity,
     cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
   );
-
   // The defined dark theme.
   static ThemeData dark = FlexThemeData.dark(
     colors: const FlexSchemeColor(
@@ -101,8 +103,8 @@ abstract final class AppTheme {
   );
 }
 
-/*{
-    "playground_data": "Themes Playground data exported 22.02.2025 22:10:48",
+/* {
+    "playground_data": "Themes Playground data exported 02.03.2025 21:10:52",
     "playground_version": "8.1.1",
     "blendLevelDark": 0,
     "blendLevelLight": 0,
@@ -172,11 +174,15 @@ abstract final class AppTheme {
     "keepDarkPrimary": false,
     "keepPrimary": false,
     "keepTertiary": false,
-    "scaffoldLightIsWhite": false,
+    "scaffoldBackgroundLightSchemeColor": {
+        "dart_type": "enum_scheme_color",
+        "value": "surfaceContainerHigh"
+    },
+    "scaffoldLightIsWhite": true,
     "schemeIndex": 58,
     "searchUseGlobalShape": true,
     "showSchemeInputColors": true,
-    "simulatorComponentsIndex": 1,
+    "simulatorComponentsIndex": 2,
     "sliderValueTinted": false,
     "snackBarSchemeColor": {
         "dart_type": "enum_scheme_color",
@@ -207,16 +213,16 @@ abstract final class AppTheme {
         "value": "onPrimary"
     },
     "tooltipsMatchBackground": false,
-    "topicIndexEndSide": 3,
-    "topicIndexStartSide": 4,
+    "topicIndexEndSide": 4,
+    "topicIndexStartSide": 10,
     "unselectedToggleIsColored": false,
-    "useError": false,
+    "useError": true,
     "useKeyColors": false,
     "useM3ErrorColors": true,
     "useMaterial3Typography": true,
-    "useSecondary": false,
-    "useTertiary": false,
+    "useSecondary": true,
+    "useTertiary": true,
     "useToDarkMethod": false,
     "usedColors": 6,
     "usedFlexToneSetup": 0
-}*/
+} */
