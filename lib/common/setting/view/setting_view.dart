@@ -39,6 +39,13 @@ class SettingView extends GetView<SettingLogic> {
           ),
           Card(
             child: ListTile(
+              title: Text('Flutter 移动端镜像配置'),
+              trailing: Icon(Icons.keyboard_arrow_right),
+              onTap: () => Get.toNamed(RouterNames.flutterMobile),
+            ),
+          ),
+          Card(
+            child: ListTile(
               title: Text(l10n.version),
               trailing: Obx(() => Text(controller.version.value)),
               onTap: () {},
