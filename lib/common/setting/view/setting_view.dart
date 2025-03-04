@@ -22,7 +22,10 @@ class SettingView extends GetView<SettingLogic> {
               title: Text(l10n.theme),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: [Obx(() => Text(controller.themeChineseString.value)), Icon(Icons.keyboard_arrow_right)],
+                children: [
+                  Obx(() => Text(controller.themeChineseString.value)),
+                  Icon(Icons.keyboard_arrow_right),
+                ],
               ),
               onTap: () => Get.toNamed(RouterNames.toggleTheme),
             ),
@@ -32,7 +35,10 @@ class SettingView extends GetView<SettingLogic> {
               title: Text(l10n.language),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: [Obx(() => Text(controller.languageName.value)), Icon(Icons.keyboard_arrow_right)],
+                children: [
+                  Obx(() => Text(controller.languageName.value)),
+                  Icon(Icons.keyboard_arrow_right),
+                ],
               ),
               onTap: () => Get.toNamed(RouterNames.toggleLanguage),
             ),
@@ -56,13 +62,6 @@ class SettingView extends GetView<SettingLogic> {
               title: Text(l10n.officialWebsite),
               trailing: Icon(CupertinoIcons.arrow_up_right),
               onTap: () => launchUrl(Uri.parse('https://jsontodart.cn')),
-            ),
-          ),
-          Card(
-            child: ListTile(
-              title: Text(l10n.githubRepo),
-              trailing: Icon(CupertinoIcons.arrow_up_right),
-              onTap: () => launchUrl(Uri.parse('https://github.com/Matkurban/json_to_dart')),
             ),
           ),
         ],
