@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
 import 'package:json_to_dart/utils/message_util.dart';
+import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
 
 // 定义时间格式化方法
 String formatTimeHHmm(DateTime time) {
@@ -17,6 +19,14 @@ AppLocalizations get l10n => AppLocalizations.of(Get.context!)!;
 Future<void> copyToClipboard(String text) async {
   await Clipboard.setData(ClipboardData(text: text));
   MessageUtil.showSuccess(title: l10n.operationPrompt, content: l10n.codeCopied);
+}
+
+///预览Json
+void previewJson(BuildContext context,TextEditingController jsonController) {
+  if (jsonController.text.trim().isEmpty) {
+    return;
+  }
+  PreviewDialog.showPreviewJsonDialog(context, jsonController.text);
 }
 
 const reservedWords = {

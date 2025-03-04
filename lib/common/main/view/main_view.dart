@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
 import 'package:json_to_dart/common/json/view/json_to_dart_view.dart';
+import 'package:json_to_dart/common/json/view/json_to_java_view.dart';
 import 'package:json_to_dart/common/main/logic/main_logic.dart';
 import 'package:json_to_dart/common/setting/view/setting_view.dart';
 import 'package:json_to_dart/config/global/constant.dart';
@@ -16,7 +17,7 @@ class MainView extends GetView<MainLogic> {
       body: PageView(
         controller: controller.pageController,
         onPageChanged: controller.onPageChanged,
-        children: [JsonToDartView(), SettingView()],
+        children: [JsonToDartView(), JsonToJavaView(), SettingView()],
       ),
       bottomNavigationBar: Obx(() {
         return BottomNavigationBar(
@@ -32,6 +33,7 @@ class MainView extends GetView<MainLogic> {
               icon: FaIcon(FontAwesomeIcons.dartLang, size: 18),
               label: l10n.home,
             ),
+            BottomNavigationBarItem(icon: FaIcon(FontAwesomeIcons.java), label: l10n.home),
             BottomNavigationBarItem(icon: Icon(Icons.settings), label: l10n.settings),
           ],
         );

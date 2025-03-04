@@ -10,14 +10,13 @@ import 'package:json_to_dart/model/domain/dart/dart_type.dart';
 import 'package:json_to_dart/model/domain/dart/field_info.dart';
 import 'package:json_to_dart/model/domain/dart/history_item.dart';
 import 'package:json_to_dart/model/domain/dart/type_info.dart';
-import 'package:json_to_dart/model/enum/programming_language.dart';
 import 'package:json_to_dart/utils/message_util.dart';
 import 'package:json_to_dart/widgets/dialog/confirm_dialog.dart';
 import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syntax_highlight/syntax_highlight.dart';
 
-class JsonToModelLogic extends GetxController {
+class JsonToDartLogic extends GetxController {
   ///json输入框控制器
   final jsonController = TextEditingController();
 
@@ -51,8 +50,6 @@ class JsonToModelLogic extends GetxController {
   ///是否生成copyWith
   final RxBool generateCopyWith = true.obs;
 
-  ///生成类的语言
-  final Rx<ProgrammingLanguage> generateLanguage = ProgrammingLanguage.dart.obs;
 
   @override
   void onInit() async {
@@ -211,7 +208,7 @@ class JsonToModelLogic extends GetxController {
     buffer.writeln('\n');
   }
 
-  // json_to_model_logic.dart
+  // json_to_dart_logic.dart
   String _fromJsonLine(FieldInfo f) {
     String line;
     final typeCast = forceTypeCasting.value ? " as ${f.baseType}" : "";
@@ -461,7 +458,7 @@ class JsonToModelLogic extends GetxController {
     return reservedWords.contains(baseName) ? '${baseName}Class' : baseName;
   }
 
-  // json_to_model_logic.dart
+  // json_to_dart_logic.dart
   static const _dartTypeMap = {
     String: DartType('String', 'String', ".toString()", "''"),
     int: DartType('int', 'int', " ?? 0", '0'),
@@ -539,13 +536,7 @@ class JsonToModelLogic extends GetxController {
     );
   }
 
-  ///预览Json
-  void previewJson(BuildContext context) {
-    if (jsonController.text.trim().isEmpty) {
-      return;
-    }
-    PreviewDialog.showPreviewJsonDialog(context, jsonController.text);
-  }
+
 
   /// 保存为文件
   void saveToFile(BuildContext context) async {
