@@ -2,13 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:json_to_dart/common/json/logic/json_to_dart_logic.dart';
+import 'package:json_to_dart/common/json/logic/json_to_model_logic.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
+import 'package:json_to_dart/model/enum/programming_language.dart';
 import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
 import 'package:json_to_dart/widgets/highlight/highlight_text.dart';
 
-class JsonToDartView extends GetView<JsonToDartLogic> {
+class JsonToDartView extends GetView<JsonToModelLogic> {
   const JsonToDartView({super.key});
 
   @override
@@ -88,11 +89,12 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
               Expanded(
                 child: TextField(
                   controller: controller.jsonController,
-                  minLines: 6,
+                  expands: true,
                   maxLines: null,
-                  keyboardType: TextInputType.multiline,
-                  style: AppStyle.codeTextStyle,
-                  decoration: InputDecoration(hintText: l10n.jsonInputPlaceholder),
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    hintText: l10n.jsonInputPlaceholder,
+                  ),
                 ),
               ),
               _buildClassNameField(context),
@@ -117,8 +119,29 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                 children: [
                   _buildInputLabel(context, l10n.dartOutput),
                   Spacer(),
+                  DropdownMenu<ProgrammingLanguage>(
+                    initialSelection: ProgrammingLanguage.dart,
+                    onSelected: (newValue) {},
+                    dropdownMenuEntries:
+                        <DropdownMenuEntry<ProgrammingLanguage>>[
+                          DropdownMenuEntry(
+                            value: ProgrammingLanguage.dart,
+                            label: ProgrammingLanguage.dart.name,
+                          ),
+                          DropdownMenuEntry(
+                            value: ProgrammingLanguage.java,
+                            label: ProgrammingLanguage.java.name,
+                            enabled: false,
+                          ),
+                        ],
+                  ),
+                  Spacer(),
                   IconButton(
-                    onPressed: () => controller.previewDartCode(context, _buildPreviewDartPanel()),
+                    onPressed:
+                        () => controller.previewDartCode(
+                          context,
+                          _buildPreviewDartPanel(),
+                        ),
                     icon: Icon(CupertinoIcons.eye),
                     tooltip: l10n.previewDartCode,
                   ),
@@ -143,7 +166,10 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                   return SingleChildScrollView(
                     child: SizedBox(
                       width: double.infinity,
-                      child: HighlightText(codeText: controller.dartCode.value, highlighter: controller.highlighter),
+                      child: HighlightText(
+                        codeText: controller.dartCode.value,
+                        highlighter: controller.highlighter,
+                      ),
                     ),
                   );
                 }),
@@ -155,13 +181,16 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
     );
   }
 
-  Widget _buildPreviewDartPanel(){
+  Widget _buildPreviewDartPanel() {
     return Padding(
       padding: AppStyle.defaultPadding,
       child: SingleChildScrollView(
         child: SizedBox(
           width: double.infinity,
-          child: HighlightText(codeText: controller.dartCode.value, highlighter: controller.highlighter),
+          child: HighlightText(
+            codeText: controller.dartCode.value,
+            highlighter: controller.highlighter,
+          ),
         ),
       ),
     );
@@ -173,7 +202,10 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
       child: Container(
         width: double.infinity,
         padding: AppStyle.defaultPadding,
-        child: Column(spacing: 10, children: [_buildOptionsRow(context), _buildActionButtons(context)]),
+        child: Column(
+          spacing: 10,
+          children: [_buildOptionsRow(context), _buildActionButtons(context)],
+        ),
       ),
     );
   }
@@ -266,15 +298,24 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
     return Row(
       spacing: 10,
       children: [
-        Text(l10n.mainClassNameLabel, style: Theme.of(context).textTheme.bodyLarge),
+        Text(
+          l10n.mainClassNameLabel,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
         Expanded(
           child: TextField(
             controller: controller.classNameController,
             style: AppStyle.codeTextStyle,
-            decoration: InputDecoration(hintText: l10n.mainClassNamePlaceholder),
+            decoration: InputDecoration(
+              hintText: l10n.mainClassNamePlaceholder,
+            ),
           ),
         ),
-        IconButton(onPressed: controller.classNameController.clear, icon: const Icon(Icons.clear), tooltip: '清空类名'),
+        IconButton(
+          onPressed: controller.classNameController.clear,
+          icon: const Icon(Icons.clear),
+          tooltip: '清空类名',
+        ),
       ],
     );
   }
@@ -306,7 +347,10 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
           ListTile(
             title: Text('${l10n.history} (${controller.history.length})'),
             trailing: IconButton(
-              icon: Icon(Icons.delete_forever_outlined, color: colorScheme.error),
+              icon: Icon(
+                Icons.delete_forever_outlined,
+                color: colorScheme.error,
+              ),
               onPressed: controller.clearHistory,
               tooltip: l10n.clearHistory,
             ),
@@ -314,24 +358,43 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
           Expanded(
             child:
                 controller.history.isEmpty
-                    ? Center(child: Text(l10n.noHistory, style: Theme.of(context).textTheme.bodyLarge))
+                    ? Center(
+                      child: Text(
+                        l10n.noHistory,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    )
                     : ListView.builder(
                       itemCount: controller.history.length,
                       itemBuilder: (context, index) {
                         final item = controller.history[index];
                         return Dismissible(
                           key: ValueKey(item.timestamp),
-                          onDismissed: (_) => controller.history.removeAt(index),
+                          onDismissed:
+                              (_) => controller.history.removeAt(index),
                           child: ListTile(
                             title: Text(item.title),
-                            subtitle: Text('${item.subtitle} ${formatTimeHHmm(item.timestamp)}'),
-                            onTap: () => PreviewDialog.showPreviewDialog(context, item),
+                            subtitle: Text(
+                              '${item.subtitle} ${formatTimeHHmm(item.timestamp)}',
+                            ),
+                            onTap:
+                                () => PreviewDialog.showPreviewDialog(
+                                  context,
+                                  item,
+                                ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                  onPressed: () => PreviewDialog.showPreviewDialog(context, item),
-                                  icon: Icon(CupertinoIcons.eye, color: colorScheme.primary),
+                                  onPressed:
+                                      () => PreviewDialog.showPreviewDialog(
+                                        context,
+                                        item,
+                                      ),
+                                  icon: Icon(
+                                    CupertinoIcons.eye,
+                                    color: colorScheme.primary,
+                                  ),
                                   tooltip: l10n.preview,
                                 ),
                                 IconButton(
@@ -340,14 +403,18 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                                   tooltip: l10n.copyJson,
                                 ),
                                 IconButton(
-                                  onPressed: () => controller.copy(item.dartCode),
+                                  onPressed:
+                                      () => controller.copy(item.dartCode),
                                   icon: Icon(Icons.code),
                                   tooltip: l10n.copyCode,
                                 ),
 
                                 IconButton(
                                   onPressed: () => controller.deleteOne(item),
-                                  icon: Icon(Icons.remove, color: colorScheme.error),
+                                  icon: Icon(
+                                    Icons.remove,
+                                    color: colorScheme.error,
+                                  ),
                                   tooltip: l10n.delete,
                                 ),
                               ],

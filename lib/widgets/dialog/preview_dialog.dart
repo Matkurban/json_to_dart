@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_json_view/flutter_json_view.dart';
 import 'package:get/get.dart';
-import 'package:json_to_dart/common/json/logic/json_to_dart_logic.dart';
+import 'package:json_to_dart/common/json/logic/json_to_model_logic.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/model/domain/dart/history_item.dart';
@@ -75,7 +75,7 @@ sealed class PreviewDialog {
   }
 }
 
-class _PreviewDialogContent extends GetView<JsonToDartLogic> {
+class _PreviewDialogContent extends GetView<JsonToModelLogic> {
   final HistoryItem item;
 
   const _PreviewDialogContent({required this.item});

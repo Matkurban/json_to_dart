@@ -24,9 +24,12 @@ sealed class MessageUtil {
     ToastificationType type = ToastificationType.info,
   }) {
     toastification.show(
+      type: type,
       title: Text(title),
       description: Text(content),
-      type: type,
+      alignment: Alignment.topCenter,
+      showProgressBar: false,
+      borderSide: BorderSide.none,
       autoCloseDuration: Duration(seconds: 2),
       style: ToastificationStyle.flatColored,
     );

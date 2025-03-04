@@ -1,7 +1,6 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 /// The [AppTheme] defines light and dark themes for the app.
 ///
 /// Theme setup for FlexColorScheme package v8.
@@ -19,8 +18,7 @@ import 'package:flutter/material.dart';
 abstract final class AppTheme {
   // The defined light theme.
   static ThemeData light = FlexThemeData.light(
-    colors: const FlexSchemeColor(
-      // Custom colors
+    colors: const FlexSchemeColor( // Custom colors
       primary: Color(0xFF4CAF50),
       primaryContainer: Color(0xFFC8FFC0),
       primaryLightRef: Color(0xFF4CAF50),
@@ -36,23 +34,29 @@ abstract final class AppTheme {
     ),
     lightIsWhite: true,
     subThemesData: const FlexSubThemesData(
-      cardElevation: 0,
       interactionEffects: true,
       tintedDisabledControls: true,
       scaffoldBackgroundSchemeColor: SchemeColor.surfaceContainerHigh,
       useMaterial3Typography: true,
       useM2StyleDividerInM3: true,
       defaultRadius: 10.0,
+      switchAdaptiveCupertinoLike: FlexAdaptive.all(),
+      sliderTrackHeight: 6,
       inputDecoratorIsFilled: true,
-      inputDecoratorBackgroundAlpha: 80,
+      inputDecoratorIsDense: true,
+      inputDecoratorBackgroundAlpha: 140,
       inputDecoratorBorderType: FlexInputBorderType.outline,
       inputDecoratorUnfocusedHasBorder: false,
       inputDecoratorFocusedHasBorder: false,
+      fabUseShape: true,
       alignedDropdown: true,
       tooltipSchemeColor: SchemeColor.onPrimary,
       tooltipOpacity: null,
       dialogBackgroundSchemeColor: SchemeColor.onPrimary,
       snackBarBackgroundSchemeColor: SchemeColor.onPrimary,
+      tabBarDividerColor: Color(0x00000000),
+      tabBarIndicatorAnimation: TabIndicatorAnimation.linear,
+      menuBarShadowColor: Color(0x00000000),
       searchUseGlobalShape: true,
       navigationRailUseIndicator: true,
       navigationRailLabelType: NavigationRailLabelType.all,
@@ -63,8 +67,7 @@ abstract final class AppTheme {
   );
   // The defined dark theme.
   static ThemeData dark = FlexThemeData.dark(
-    colors: const FlexSchemeColor(
-      // Custom colors
+    colors: const FlexSchemeColor( // Custom colors
       primary: Color(0xFF9FC9FF),
       primaryContainer: Color(0xFF00325B),
       primaryLightRef: Color(0xFF4CAF50),
@@ -85,14 +88,21 @@ abstract final class AppTheme {
       useMaterial3Typography: true,
       useM2StyleDividerInM3: true,
       defaultRadius: 10.0,
+      switchAdaptiveCupertinoLike: FlexAdaptive.all(),
+      sliderTrackHeight: 6,
       inputDecoratorIsFilled: true,
+      inputDecoratorIsDense: true,
       inputDecoratorBorderType: FlexInputBorderType.outline,
       inputDecoratorUnfocusedHasBorder: false,
       inputDecoratorFocusedHasBorder: false,
+      fabUseShape: true,
       alignedDropdown: true,
       tooltipSchemeColor: SchemeColor.onPrimary,
       tooltipOpacity: null,
       snackBarBackgroundSchemeColor: SchemeColor.onPrimary,
+      tabBarDividerColor: Color(0x00000000),
+      tabBarIndicatorAnimation: TabIndicatorAnimation.linear,
+      menuBarShadowColor: Color(0x00000000),
       searchUseGlobalShape: true,
       navigationRailUseIndicator: true,
       navigationRailLabelType: NavigationRailLabelType.all,
@@ -102,9 +112,8 @@ abstract final class AppTheme {
     cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
   );
 }
-
-/* {
-    "playground_data": "Themes Playground data exported 02.03.2025 21:10:52",
+/*{
+    "playground_data": "Themes Playground data exported 04.03.2025 16:20:36",
     "playground_version": "8.1.1",
     "blendLevelDark": 0,
     "blendLevelLight": 0,
@@ -168,21 +177,30 @@ abstract final class AppTheme {
         "dart_type": "enum_scheme_color",
         "value": "onPrimary"
     },
-    "inputDecoratorBackgroundAlphaLight": 80,
+    "floatingActionButtonAlwaysCircular": false,
+    "floatingActionButtonUseShape": true,
+    "inputDecoratorBackgroundAlphaLight": 140,
     "inputDecoratorFocusedHasBorder": false,
+    "inputDecoratorIsDense": true,
     "inputDecoratorUnfocusedHasBorder": false,
     "keepDarkPrimary": false,
     "keepPrimary": false,
     "keepTertiary": false,
+    "menuBarShadowColor": {
+        "dart_type": "color",
+        "value": "00000000"
+    },
     "scaffoldBackgroundLightSchemeColor": {
         "dart_type": "enum_scheme_color",
         "value": "surfaceContainerHigh"
     },
     "scaffoldLightIsWhite": true,
     "schemeIndex": 58,
+    "searchIsFullScreen": true,
     "searchUseGlobalShape": true,
     "showSchemeInputColors": true,
     "simulatorComponentsIndex": 2,
+    "sliderTrackHeight": 6,
     "sliderValueTinted": false,
     "snackBarSchemeColor": {
         "dart_type": "enum_scheme_color",
@@ -198,9 +216,22 @@ abstract final class AppTheme {
     },
     "swapLegacyColorsInM3": false,
     "swapPrimaryAndSecondaryLightColors": false,
+    "switchAdaptiveCupertinoLike": {
+        "dart_type": "enum_adaptive_response",
+        "value": "all"
+    },
+    "switchThumbFixedSize": false,
     "systemNavBarStyle": {
         "dart_type": "enum_flex_system_navbar_style",
         "value": "transparent"
+    },
+    "tabBarDividerColor": {
+        "dart_type": "color",
+        "value": "00000000"
+    },
+    "tabBarIndicatorAnimation": {
+        "dart_type": "enum_tabbar_indicator_animation",
+        "value": "linear"
     },
     "themeMode": {
         "dart_type": "enum_theme_mode",
@@ -214,7 +245,7 @@ abstract final class AppTheme {
     },
     "tooltipsMatchBackground": false,
     "topicIndexEndSide": 4,
-    "topicIndexStartSide": 10,
+    "topicIndexStartSide": 25,
     "unselectedToggleIsColored": false,
     "useError": true,
     "useKeyColors": false,
@@ -225,4 +256,4 @@ abstract final class AppTheme {
     "useToDarkMethod": false,
     "usedColors": 6,
     "usedFlexToneSetup": 0
-} */
+}*/

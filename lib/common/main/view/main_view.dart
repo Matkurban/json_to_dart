@@ -5,6 +5,7 @@ import 'package:json_to_dart/common/main/logic/main_logic.dart';
 import 'package:json_to_dart/common/setting/view/setting_view.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MainView extends GetView<MainLogic> {
   const MainView({super.key});
@@ -27,7 +28,10 @@ class MainView extends GetView<MainLogic> {
                 curve: Curves.bounceIn,
               ),
           items: [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: l10n.home),
+            BottomNavigationBarItem(
+              icon: FaIcon(FontAwesomeIcons.dartLang, size: 18),
+              label: l10n.home,
+            ),
             BottomNavigationBarItem(icon: Icon(Icons.settings), label: l10n.settings),
           ],
         );

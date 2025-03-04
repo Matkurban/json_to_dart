@@ -10,13 +10,14 @@ import 'package:json_to_dart/model/domain/dart/dart_type.dart';
 import 'package:json_to_dart/model/domain/dart/field_info.dart';
 import 'package:json_to_dart/model/domain/dart/history_item.dart';
 import 'package:json_to_dart/model/domain/dart/type_info.dart';
+import 'package:json_to_dart/model/enum/programming_language.dart';
 import 'package:json_to_dart/utils/message_util.dart';
 import 'package:json_to_dart/widgets/dialog/confirm_dialog.dart';
 import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syntax_highlight/syntax_highlight.dart';
 
-class JsonToDartLogic extends GetxController {
+class JsonToModelLogic extends GetxController {
   ///json输入框控制器
   final jsonController = TextEditingController();
 
@@ -24,30 +25,34 @@ class JsonToDartLogic extends GetxController {
   final classNameController = TextEditingController(text: 'MyModel');
 
   ///是否为空
-  RxBool nonNullable = true.obs;
+  final RxBool nonNullable = true.obs;
 
   ///是否生成toJson
-  RxBool generateToJson = true.obs;
+  final RxBool generateToJson = true.obs;
 
   ///是否生成formJson
-  RxBool generateFromJson = true.obs;
+  final RxBool generateFromJson = true.obs;
 
   ///生成的dart类
-  RxString dartCode = ''.obs;
+  final RxString dartCode = ''.obs;
 
-  // 历史记录
+  /// 历史记录
   final history = <HistoryItem>[].obs;
 
   ///历史记录的key
   final _historyKey = 'conversion_history';
 
-  ///高亮
+  ///代码高亮
   late Highlighter highlighter;
 
-  // 新增强制类型转换选项
-  RxBool forceTypeCasting = false.obs;
+  /// 是否强制类型转换
+  final RxBool forceTypeCasting = false.obs;
 
-  RxBool generateCopyWith = true.obs;
+  ///是否生成copyWith
+  final RxBool generateCopyWith = true.obs;
+
+  ///生成类的语言
+  final Rx<ProgrammingLanguage> generateLanguage = ProgrammingLanguage.dart.obs;
 
   @override
   void onInit() async {
@@ -206,7 +211,7 @@ class JsonToDartLogic extends GetxController {
     buffer.writeln('\n');
   }
 
-  // json_to_dart_logic.dart
+  // json_to_model_logic.dart
   String _fromJsonLine(FieldInfo f) {
     String line;
     final typeCast = forceTypeCasting.value ? " as ${f.baseType}" : "";
@@ -456,7 +461,7 @@ class JsonToDartLogic extends GetxController {
     return reservedWords.contains(baseName) ? '${baseName}Class' : baseName;
   }
 
-  // json_to_dart_logic.dart
+  // json_to_model_logic.dart
   static const _dartTypeMap = {
     String: DartType('String', 'String', ".toString()", "''"),
     int: DartType('int', 'int', " ?? 0", '0'),
@@ -604,6 +609,10 @@ class JsonToDartLogic extends GetxController {
 
   void previewDartCode(BuildContext context, Widget child) {
     if (dartCode.value.isEmpty) {
+      MessageUtil.showWarning(
+        title: l10n.operationPrompt,
+        content: '请生成类后预览',
+      );
       return;
     }
     PreviewDialog.showPreviewDartDialog(context, child);
