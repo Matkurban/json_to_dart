@@ -5,6 +5,9 @@ import 'package:get/get.dart';
 import 'package:json_to_dart/utils/message_util.dart';
 import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
 
+const String dartHistoryKey="dartHistory";
+const String javaHistoryKey="javaHistory";
+
 // 定义时间格式化方法
 String formatTimeHHmm(DateTime time) {
   // 获取小时并确保两位数格式

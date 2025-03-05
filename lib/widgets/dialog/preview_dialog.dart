@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_json_view/flutter_json_view.dart';
 import 'package:get/get.dart';
-import 'package:json_to_dart/common/json/logic/json_to_dart_logic.dart';
+import 'package:json_to_dart/screens/json/logic/json_to_dart_logic.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
-import 'package:json_to_dart/model/domain/dart/history_item.dart';
+import 'package:json_to_dart/model/domain/main/history_item.dart';
 import 'package:json_to_dart/widgets/highlight/highlight_text.dart';
 
 sealed class PreviewDialog {
@@ -101,8 +101,8 @@ class _PreviewDialogContent extends GetView<JsonToDartLogic> {
             ),
             _buildCodeCard(
               title: 'Dart',
-              content: item.dartCode,
-              onCopy: () => copyToClipboard(item.dartCode),
+              content: item.code,
+              onCopy: () => copyToClipboard(item.code),
               tooltip: l10n.copyCode,
             ),
           ],
