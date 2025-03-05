@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:json_to_dart/config/global/constant.dart';
+import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/widgets/highlight/highlight_text.dart';
 import 'package:syntax_highlight/syntax_highlight.dart';
 
@@ -14,10 +15,13 @@ class ModelViewPane extends StatelessWidget {
     if (code.isEmpty) {
       return Center(child: Text(l10n.generateDartHint));
     }
-    return SingleChildScrollView(
-      child: SizedBox(
-        width: double.infinity,
-        child: HighlightText(codeText: code, highlighter: highlighter),
+    return Padding(
+      padding: AppStyle.defaultPadding,
+      child: SingleChildScrollView(
+        child: SizedBox(
+          width: double.infinity,
+          child: HighlightText(codeText: code, highlighter: highlighter),
+        ),
       ),
     );
   }

@@ -8,6 +8,7 @@ import 'package:json_to_dart/screens/json/widgets/label_check_box.dart';
 import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
 import 'package:json_to_dart/screens/json/widgets/title_text.dart';
 import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
+import 'package:fluent_ui/fluent_ui.dart' as fluent;
 
 class JsonToDartView extends GetView<JsonToDartLogic> {
   const JsonToDartView({super.key});
@@ -83,12 +84,18 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                 ],
               ),
               Expanded(
-                child: TextField(
-                  controller: controller.jsonController,
-                  expands: true,
-                  maxLines: null,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(hintText: l10n.jsonInputPlaceholder),
+                child: fluent.FluentTheme(
+                  data: fluent.FluentThemeData(),
+                  child: fluent.TextBox(
+                    controller: controller.jsonController,
+                    expands: true,
+                    maxLines: null,
+                    keyboardType: TextInputType.text,
+                    placeholder:l10n.jsonInputPlaceholder ,
+                    foregroundDecoration: fluent.WidgetStatePropertyAll(
+                      fluent.BoxDecoration(border: Border.fromBorderSide(BorderSide.none)),
+                    ),
+                  ),
                 ),
               ),
               _buildClassNameField(context),
