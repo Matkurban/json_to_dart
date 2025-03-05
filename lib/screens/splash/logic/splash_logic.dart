@@ -11,7 +11,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syntax_highlight/syntax_highlight.dart';
 
 class SplashLogic extends GetxController {
-
   late HighlighterTheme highlighterTheme;
 
   /// Dart历史记录
@@ -29,7 +28,7 @@ class SplashLogic extends GetxController {
     highlighterTheme = await HighlighterTheme.loadLightTheme();
     await loadDartHistory();
     await loadJavaHistory();
-    Get.offAndToNamed(RouterNames.main);
+    Get.offAllNamed(RouterNames.main);
   }
 
   ///从缓存中加载主题模式，
@@ -72,7 +71,9 @@ class SplashLogic extends GetxController {
     final prefs = Get.find<SharedPreferences>();
     final historyJson = prefs.getStringList(dartHistoryKey) ?? [];
     // 更新控制器的 history 列表
-    dartHistory.assignAll(historyJson.map((jsonStr) => HistoryItem.fromJson(jsonDecode(jsonStr))).toList());
+    dartHistory.assignAll(
+      historyJson.map((jsonStr) => HistoryItem.fromJson(jsonDecode(jsonStr))).toList(),
+    );
   }
 
   // 加载历史记录
@@ -80,6 +81,8 @@ class SplashLogic extends GetxController {
     final prefs = Get.find<SharedPreferences>();
     final historyJson = prefs.getStringList(javaHistoryKey) ?? [];
     // 更新控制器的 history 列表
-    javaHistory.assignAll(historyJson.map((jsonStr) => HistoryItem.fromJson(jsonDecode(jsonStr))).toList());
+    javaHistory.assignAll(
+      historyJson.map((jsonStr) => HistoryItem.fromJson(jsonDecode(jsonStr))).toList(),
+    );
   }
 }
