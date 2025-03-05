@@ -5,8 +5,8 @@ import 'package:get/get.dart';
 import 'package:json_to_dart/utils/message_util.dart';
 import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
 
-const String dartHistoryKey="dartHistory";
-const String javaHistoryKey="javaHistory";
+const String dartHistoryKey = "dartHistory";
+const String javaHistoryKey = "javaHistory";
 
 // 定义时间格式化方法
 String formatTimeHHmm(DateTime time) {
@@ -20,16 +20,29 @@ String formatTimeHHmm(DateTime time) {
 AppLocalizations get l10n => AppLocalizations.of(Get.context!)!;
 
 Future<void> copyToClipboard(String text) async {
+  if (text.isEmpty) {
+    MessageUtil.showWarning(title: l10n.operationPrompt, content: '复制内容为空');
+    return;
+  }
   await Clipboard.setData(ClipboardData(text: text));
   MessageUtil.showSuccess(title: l10n.operationPrompt, content: l10n.codeCopied);
 }
 
 ///预览Json
-void previewJson(BuildContext context,TextEditingController jsonController) {
-  if (jsonController.text.trim().isEmpty) {
+void previewJson(BuildContext context, String json) {
+  if (json.trim().isEmpty) {
+    MessageUtil.showWarning(title: l10n.operationPrompt, content: l10n.enterJsonPrompt);
     return;
   }
-  PreviewDialog.showPreviewJsonDialog(context, jsonController.text);
+  PreviewDialog.showPreviewJsonDialog(context, json);
+}
+
+void previewCode(BuildContext context, String code) {
+  if (code.trim().isEmpty) {
+    MessageUtil.showWarning(title: l10n.operationPrompt, content: '请生成类后预览');
+    return;
+  }
+  PreviewDialog.showPreviewDartDialog(context, code);
 }
 
 const reservedWords = {

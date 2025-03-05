@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -45,11 +46,16 @@ class JsonToJavaLogic extends GetxController {
     Null: JavaType('Object', 'Object', 'null', 'null'),
   };
 
+  Timer? _jsonDebounce;
+  Timer? _classNameDebounce;
+  Timer? _packageNameDebounce;
+
   @override
   void onInit() async {
     super.onInit();
     highlighter = Highlighter(language: 'dart', theme: splashLogic.highlighterTheme);
     jsonController.addListener(jsonListener);
+    packageNameController.addListener(packageNameListener);
     classNameController.addListener(classNameListener);
     generateGetterSetter.listen((_) => generateJavaClass());
     generateBuilder.listen((_) => generateJavaClass());
@@ -65,21 +71,43 @@ class JsonToJavaLogic extends GetxController {
   }
 
   void jsonListener() {
-    String jsonText = jsonController.text.trim();
-    if (jsonText.isEmpty) {
-      javaCode.value = '';
-    } else {
-      generateJavaClass();
-    }
+    // Cancel any previous timer
+    _jsonDebounce?.cancel();
+
+    // Create a new timer
+    _jsonDebounce = Timer(const Duration(milliseconds: 500), () {
+      String jsonText = jsonController.text.trim();
+      if (jsonText.isEmpty) {
+        javaCode.value = '';
+      } else {
+        generateJavaClass();
+      }
+    });
   }
 
   void classNameListener() {
-    String classNameText = classNameController.text.trim();
-    if (classNameText.isEmpty) {
-      javaCode.value = '';
-    } else {
+    // Cancel any previous timer
+    _classNameDebounce?.cancel();
+
+    // Create a new timer
+    _classNameDebounce = Timer(const Duration(milliseconds: 500), () {
+      String classNameText = classNameController.text.trim();
+      if (classNameText.isEmpty) {
+        javaCode.value = '';
+      } else {
+        generateJavaClass();
+      }
+    });
+  }
+
+  void packageNameListener() {
+    // Cancel any previous timer
+    _packageNameDebounce?.cancel();
+
+    // Create a new timer
+    _packageNameDebounce = Timer(const Duration(milliseconds: 500), () {
       generateJavaClass();
-    }
+    });
   }
 
   void generateJavaClass() {
@@ -96,10 +124,7 @@ class JsonToJavaLogic extends GetxController {
 
   String _generateCode(dynamic jsonData) {
     if (jsonData is! Map<String, dynamic>) {
-      MessageUtil.showWarning(
-        title: 'Conversion Error',
-        content: 'Please enter a valid JSON object',
-      );
+      MessageUtil.showWarning(title: l10n.conversionError, content: l10n.enterValidJsonPrompt);
       return '';
     }
 
@@ -120,12 +145,10 @@ class JsonToJavaLogic extends GetxController {
     while (classStack.isNotEmpty) {
       final currentClass = classStack.removeLast();
       if (classes.containsKey(currentClass.name)) continue;
-
       classes[currentClass.name] = currentClass.data;
       _generateClass(currentClass.name, currentClass.data, buffer, classes, classStack);
       buffer.writeln();
     }
-
     return buffer.toString().trim();
   }
 
@@ -379,12 +402,11 @@ class JsonToJavaLogic extends GetxController {
   void _jsonConvertWarning() {
     javaCode.value = '';
     if (jsonController.text.trim().isNotEmpty) {
-      MessageUtil.showError(title: 'Conversion Error', content: 'Please enter valid JSON');
+      MessageUtil.showError(title: l10n.conversionError, content: l10n.enterValidJsonPrompt);
     }
   }
 
   // 在 JsonToJavaLogic 类中添加以下方法
-
   void addToHistory() async {
     if (jsonController.text.trim().isEmpty ||
         classNameController.text.trim().isEmpty ||
@@ -408,17 +430,27 @@ class JsonToJavaLogic extends GetxController {
 
     // 更新历史记录列表
     history.add(newItem);
+    MessageUtil.showSuccess(title: l10n.operationPrompt, content: '已保存到历史记录');
   }
 
+  // 清空历史记录
   void clearHistory() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(javaHistoryKey);
-    history.clear();
+    if (history.isEmpty) {
+      return;
+    }
+    ConfirmDialog.showConfirmDialog(
+      title: l10n.confirmClear,
+      content: l10n.clearWarning,
+      onConfirm: () async {
+        history.clear();
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove(javaHistoryKey);
+      },
+    );
   }
 
   void removeHistoryItem(int index) async {
     history.removeAt(index);
-
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(
       javaHistoryKey,
@@ -452,6 +484,9 @@ class JsonToJavaLogic extends GetxController {
     jsonController.dispose();
     classNameController.dispose();
     packageNameController.dispose();
+    _jsonDebounce?.cancel();
+    _classNameDebounce?.cancel();
+    _packageNameDebounce?.cancel();
     super.onClose();
   }
 }

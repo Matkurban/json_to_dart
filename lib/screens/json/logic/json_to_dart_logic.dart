@@ -1,8 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 
-import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/model/domain/dart/class_info.dart';
@@ -13,7 +12,6 @@ import 'package:json_to_dart/model/domain/main/history_item.dart';
 import 'package:json_to_dart/screens/splash/logic/splash_logic.dart';
 import 'package:json_to_dart/utils/message_util.dart';
 import 'package:json_to_dart/widgets/dialog/confirm_dialog.dart';
-import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syntax_highlight/syntax_highlight.dart';
 
@@ -50,6 +48,9 @@ class JsonToDartLogic extends GetxController {
 
   final SplashLogic splashLogic = Get.find<SplashLogic>();
 
+  Timer? _jsonDebounceTimer;
+  Timer? _classNameDebounceTimer;
+
   @override
   void onInit() async {
     super.onInit();
@@ -69,32 +70,50 @@ class JsonToDartLogic extends GetxController {
     history.assignAll(splashLogic.dartHistory);
   }
 
-  ///json输入框监听
+  ///json输入框监听（带防抖）
   void jsonListener() {
-    String jsonText = jsonController.text.trim();
-    if (jsonText.isEmpty) {
-      dartCode('');
-    } else {
-      generateDartClass();
+    // 取消之前的定时器
+    if (_jsonDebounceTimer?.isActive ?? false) {
+      _jsonDebounceTimer?.cancel();
     }
+
+    // 设置新的定时器，延迟500毫秒执行
+    _jsonDebounceTimer = Timer(const Duration(milliseconds: 500), () {
+      String jsonText = jsonController.text.trim();
+      if (jsonText.isEmpty) {
+        dartCode('');
+      } else {
+        generateDartClass();
+      }
+    });
   }
 
-  ///类名输入框监听
+  ///类名输入框监听（带防抖）
   void classNameListener() {
-    String classNameText = classNameController.text.trim();
-    if (classNameText.isEmpty) {
-      dartCode('');
-    } else {
-      generateDartClass();
+    // 取消之前的定时器
+    if (_classNameDebounceTimer?.isActive ?? false) {
+      _classNameDebounceTimer?.cancel();
     }
+
+    // 设置新的定时器，延迟500毫秒执行
+    _classNameDebounceTimer = Timer(const Duration(milliseconds: 500), () {
+      String classNameText = classNameController.text.trim();
+      if (classNameText.isEmpty) {
+        dartCode('');
+      } else {
+        generateDartClass();
+      }
+    });
   }
 
   void generateDartClass() {
     try {
       if (jsonController.text.trim().isEmpty) {
+        MessageUtil.showWarning(title: l10n.operationPrompt, content: l10n.enterJsonPrompt);
         return;
       }
       if (classNameController.text.trim().isEmpty) {
+        MessageUtil.showWarning(title: l10n.operationPrompt, content: l10n.enterClassNamePrompt);
         return;
       }
       final parsedJson = json.decode(jsonController.text.trim());
@@ -107,6 +126,7 @@ class JsonToDartLogic extends GetxController {
   void formatJson() {
     try {
       if (jsonController.text.trim().isEmpty) {
+        MessageUtil.showWarning(title: l10n.operationPrompt, content: l10n.enterJsonPrompt);
         return;
       }
       final parsedJson = json.decode(jsonController.text);
@@ -440,9 +460,11 @@ class JsonToDartLogic extends GetxController {
   // 添加历史记录
   void addHistory() async {
     if (jsonController.text.trim().isEmpty) {
+      MessageUtil.showWarning(title: l10n.operationPrompt, content: l10n.enterJsonPrompt);
       return;
     }
     if (classNameController.text.trim().isEmpty) {
+      MessageUtil.showWarning(title: l10n.operationPrompt, content: l10n.enterClassNamePrompt);
       return;
     }
     final newItem = HistoryItem(
@@ -459,10 +481,14 @@ class JsonToDartLogic extends GetxController {
     await prefs.setStringList(dartHistoryKey, historyJson);
     // 更新控制器列表
     history.add(newItem);
+    MessageUtil.showSuccess(title: l10n.operationPrompt, content: '已保存到历史记录');
   }
 
   // 清空历史记录
   void clearHistory() async {
+    if (history.isEmpty) {
+      return;
+    }
     ConfirmDialog.showConfirmDialog(
       title: l10n.confirmClear,
       content: l10n.clearWarning,
@@ -493,42 +519,6 @@ class JsonToDartLogic extends GetxController {
     );
   }
 
-  /// 保存为文件
-  void saveToFile(BuildContext context) async {
-    if (dartCode.isEmpty) {
-      return;
-    }
-    // 生成文件名：大驼峰类名转下划线格式
-    String fileName =
-        classNameController.text
-            .replaceAllMapped(RegExp(r'([a-z])([A-Z])'), (Match m) => '${m[1]}_${m[2]}')
-            .toLowerCase();
-    if (!fileName.endsWith('.dart')) {
-      fileName += '.dart';
-    }
-
-    // 获取Dart代码内容
-    final dartCodeContent = dartCode.value;
-    try {
-      final FileSaveLocation? result = await getSaveLocation(
-        suggestedName: fileName,
-        acceptedTypeGroups: [
-          XTypeGroup(label: 'dart', extensions: ['.dart']),
-        ],
-      );
-      if (result == null) {
-        return;
-      }
-      final Uint8List fileData = Uint8List.fromList(dartCodeContent.codeUnits);
-      const String mimeType = 'text/plain';
-      final XFile textFile = XFile.fromData(fileData, mimeType: mimeType, name: fileName);
-      await textFile.saveTo(result.path);
-      MessageUtil.showSuccess(title: l10n.operationPrompt, content: l10n.fileSaveSuccess);
-    } catch (e) {
-      MessageUtil.showError(title: l10n.operationPrompt, content: l10n.fileSaveFailed);
-    }
-  }
-
   ///json为null或者格式异常，转换异常时的提示
   void _jsonConvertWarning() {
     dartCode.value = '';
@@ -537,20 +527,14 @@ class JsonToDartLogic extends GetxController {
     }
   }
 
-  void previewDartCode(BuildContext context, Widget child) {
-    if (dartCode.value.isEmpty) {
-      MessageUtil.showWarning(title: l10n.operationPrompt, content: '请生成类后预览');
-      return;
-    }
-    PreviewDialog.showPreviewDartDialog(context, child);
-  }
-
   @override
   void onClose() {
     jsonController.removeListener(jsonListener);
     classNameController.removeListener(classNameListener);
     jsonController.dispose();
     classNameController.dispose();
+    _jsonDebounceTimer?.cancel();
+    _classNameDebounceTimer?.cancel();
     super.onClose();
   }
 }

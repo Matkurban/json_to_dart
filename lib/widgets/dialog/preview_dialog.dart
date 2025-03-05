@@ -5,14 +5,14 @@ import 'package:json_to_dart/screens/json/logic/json_to_dart_logic.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/model/domain/main/history_item.dart';
+import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
+import 'package:json_to_dart/screens/splash/logic/splash_logic.dart';
 import 'package:json_to_dart/widgets/highlight/highlight_text.dart';
+import 'package:syntax_highlight/syntax_highlight.dart';
 
 sealed class PreviewDialog {
   static void showPreviewDialog(BuildContext context, HistoryItem item) {
-    showDialog(
-      context: context,
-      builder: (context) => _PreviewDialogContent(item: item),
-    );
+    showDialog(context: context, builder: (context) => _PreviewDialogContent(item: item));
   }
 
   static void showPreviewJsonDialog(BuildContext context, String json) {
@@ -55,8 +55,10 @@ sealed class PreviewDialog {
     );
   }
 
-  static void showPreviewDartDialog(BuildContext context, Widget child) {
+  static void showPreviewDartDialog(BuildContext context, String code) {
     var size = MediaQuery.sizeOf(context);
+    SplashLogic splashLogic = Get.find<SplashLogic>();
+    Highlighter highlighter = Highlighter(language: 'dart', theme: splashLogic.highlighterTheme);
     showDialog(
       context: context,
       builder: (context) {
@@ -67,7 +69,7 @@ sealed class PreviewDialog {
               maxHeight: size.height * 0.9,
               minHeight: size.height * 0.9,
             ),
-            child: child,
+            child: ModelViewPane(code: code, highlighter: highlighter),
           ),
         );
       },
@@ -86,10 +88,7 @@ class _PreviewDialogContent extends GetView<JsonToDartLogic> {
     return Dialog(
       child: Container(
         padding: AppStyle.defaultPadding,
-        constraints: BoxConstraints(
-          maxWidth: size.width * 0.9,
-          maxHeight: size.height * 0.9,
-        ),
+        constraints: BoxConstraints(maxWidth: size.width * 0.9, maxHeight: size.height * 0.9),
         child: Row(
           spacing: 10,
           children: [
@@ -131,18 +130,8 @@ class _PreviewDialogContent extends GetView<JsonToDartLogic> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.copy),
-                    onPressed: onCopy,
-                    tooltip: tooltip,
-                  ),
+                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  IconButton(icon: const Icon(Icons.copy), onPressed: onCopy, tooltip: tooltip),
                 ],
               ),
               // 代码内容区域

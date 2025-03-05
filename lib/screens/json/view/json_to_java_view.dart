@@ -5,6 +5,7 @@ import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/screens/json/widgets/label_check_box.dart';
 import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
+import 'package:json_to_dart/screens/json/widgets/title_text.dart';
 import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
 import '../logic/json_to_java_logic.dart';
 
@@ -15,7 +16,7 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('JSON to Java Converter'),
+        title: const Text('JSON 转 Java'),
         centerTitle: true,
         actions: [
           Builder(
@@ -62,14 +63,29 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
             spacing: 10,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('JSON Input'),
+              Row(
+                children: [
+                  const TitleText(text: 'JSON 输入'),
+                  Spacer(),
+                  IconButton(
+                    onPressed: () => previewJson(context, controller.jsonController.text),
+                    icon: Icon(CupertinoIcons.eye),
+                    tooltip: l10n.previewJsonView,
+                  ),
+                  IconButton(
+                    onPressed: controller.jsonController.clear,
+                    icon: Icon(Icons.clear),
+                    tooltip: l10n.clearInput,
+                  ),
+                ],
+              ),
               Expanded(
                 child: TextField(
                   controller: controller.jsonController,
                   expands: true,
                   maxLines: null,
                   keyboardType: TextInputType.text,
-                  decoration: const InputDecoration(hintText: 'Enter JSON here'),
+                  decoration: InputDecoration(hintText: l10n.jsonInputPlaceholder),
                 ),
               ),
               Row(
@@ -78,13 +94,13 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                   Expanded(
                     child: TextField(
                       controller: controller.classNameController,
-                      decoration: const InputDecoration(labelText: 'Class Name'),
+                      decoration: InputDecoration(labelText: l10n.mainClassNameLabel),
                     ),
                   ),
                   Expanded(
                     child: TextField(
                       controller: controller.packageNameController,
-                      decoration: const InputDecoration(labelText: 'Package Name (Optional)'),
+                      decoration: const InputDecoration(labelText: '包名'),
                     ),
                   ),
                 ],
@@ -108,12 +124,17 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
             children: [
               Row(
                 children: [
-                  const Text('Java Code'),
+                  const TitleText(text: 'Java 代码'),
                   const Spacer(),
+                  IconButton(
+                    onPressed: () => previewCode(context, controller.javaCode.value),
+                    icon: Icon(CupertinoIcons.eye),
+                    tooltip: l10n.previewCode,
+                  ),
                   IconButton(
                     icon: const Icon(Icons.copy),
                     onPressed: () => copyToClipboard(controller.javaCode.value),
-                    tooltip: 'Copy Code',
+                    tooltip: l10n.copyCode,
                   ),
                 ],
               ),
@@ -147,35 +168,35 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
               children: [
                 Obx(
                   () => LabelCheckBox(
-                    label: 'Use Lombok',
+                    label: '使用 Lombok',
                     value: controller.useLombok.value,
                     onChanged: (value) => controller.useLombok.value = value!,
                   ),
                 ),
                 Obx(
                   () => LabelCheckBox(
-                    label: 'Generate Getter/Setter',
+                    label: '生成 Getter/Setter',
                     value: controller.generateGetterSetter.value,
                     onChanged: (value) => controller.generateGetterSetter.value = value!,
                   ),
                 ),
                 Obx(
                   () => LabelCheckBox(
-                    label: 'Generate Builder',
+                    label: '生成 Builder',
                     value: controller.generateBuilder.value,
                     onChanged: (value) => controller.generateBuilder.value = value!,
                   ),
                 ),
                 Obx(
                   () => LabelCheckBox(
-                    label: 'Generate ToString',
+                    label: '生成 ToString',
                     value: controller.generateToString.value,
                     onChanged: (value) => controller.generateToString.value = value!,
                   ),
                 ),
                 Obx(
                   () => LabelCheckBox(
-                    label: 'Use Optional',
+                    label: '使用 Optional',
                     value: controller.useOptional.value,
                     onChanged: (value) => controller.useOptional.value = value!,
                   ),
@@ -190,19 +211,19 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
               children: [
                 FilledButton.icon(
                   icon: const Icon(Icons.format_align_left),
-                  label: const Text('Format JSON'),
+                  label: const Text('格式化 JSON'),
                   onPressed: controller.formatJson,
                   style: FilledButton.styleFrom(backgroundColor: colorScheme.primary),
                 ),
                 FilledButton.icon(
                   icon: const Icon(Icons.code),
-                  label: const Text('Generate Java Class'),
+                  label: const Text('生成 Java 类'),
                   onPressed: controller.generateJavaClass,
                   style: FilledButton.styleFrom(backgroundColor: colorScheme.secondary),
                 ),
                 FilledButton.icon(
                   icon: const Icon(Icons.save),
-                  label: const Text('Save to History'),
+                  label: Text(l10n.addToHistory),
                   onPressed: controller.addToHistory,
                   style: FilledButton.styleFrom(backgroundColor: colorScheme.primary),
                 ),

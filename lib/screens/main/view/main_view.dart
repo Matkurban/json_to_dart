@@ -31,9 +31,9 @@ class MainView extends GetView<MainLogic> {
           items: [
             BottomNavigationBarItem(
               icon: FaIcon(FontAwesomeIcons.dartLang, size: 18),
-              label: l10n.home,
+              label: l10n.dart,
             ),
-            BottomNavigationBarItem(icon: FaIcon(FontAwesomeIcons.java), label: l10n.home),
+            BottomNavigationBarItem(icon: FaIcon(FontAwesomeIcons.java), label: l10n.java),
             BottomNavigationBarItem(icon: Icon(Icons.settings), label: l10n.settings),
           ],
         );

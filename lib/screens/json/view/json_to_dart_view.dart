@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:json_to_dart/config/global/constant.dart';
@@ -7,8 +6,8 @@ import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/screens/json/logic/json_to_dart_logic.dart';
 import 'package:json_to_dart/screens/json/widgets/label_check_box.dart';
 import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
+import 'package:json_to_dart/screens/json/widgets/title_text.dart';
 import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
-import 'package:json_to_dart/widgets/highlight/highlight_text.dart';
 
 class JsonToDartView extends GetView<JsonToDartLogic> {
   const JsonToDartView({super.key});
@@ -69,10 +68,10 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
             children: [
               Row(
                 children: [
-                  _buildInputLabel(context, l10n.jsonInput),
+                  TitleText(text: l10n.jsonInput),
                   Spacer(),
                   IconButton(
-                    onPressed: () => previewJson(context, controller.jsonController),
+                    onPressed: () => previewJson(context, controller.jsonController.text),
                     icon: Icon(CupertinoIcons.eye),
                     tooltip: l10n.previewJsonView,
                   ),
@@ -112,19 +111,13 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
             children: [
               Row(
                 children: [
-                  _buildInputLabel(context, l10n.dartOutput),
+                  TitleText(text: l10n.dartOutput),
                   Spacer(),
                   IconButton(
-                    onPressed: () => controller.previewDartCode(context, _buildPreviewDartPanel()),
+                    onPressed: () => previewCode(context, controller.dartCode.value),
                     icon: Icon(CupertinoIcons.eye),
-                    tooltip: l10n.previewDartCode,
+                    tooltip: l10n.previewCode,
                   ),
-                  if (!kIsWeb)
-                    IconButton(
-                      icon: const Icon(Icons.save_alt),
-                      onPressed: () => controller.saveToFile(context),
-                      tooltip: l10n.saveAsFile,
-                    ),
                   IconButton(
                     icon: const Icon(Icons.copy_all),
                     onPressed: () => copyToClipboard(controller.dartCode.value),
@@ -141,21 +134,6 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPreviewDartPanel() {
-    return Padding(
-      padding: AppStyle.defaultPadding,
-      child: SingleChildScrollView(
-        child: SizedBox(
-          width: double.infinity,
-          child: HighlightText(
-            codeText: controller.dartCode.value,
-            highlighter: controller.highlighter,
           ),
         ),
       ),
@@ -252,12 +230,11 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
     return Row(
       spacing: 10,
       children: [
-        Text(l10n.mainClassNameLabel, style: Theme.of(context).textTheme.bodyLarge),
         Expanded(
           child: TextField(
             controller: controller.classNameController,
             style: AppStyle.codeTextStyle,
-            decoration: InputDecoration(hintText: l10n.mainClassNamePlaceholder),
+            decoration: InputDecoration(labelText: l10n.mainClassNameLabel),
           ),
         ),
         IconButton(
@@ -266,20 +243,6 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
           tooltip: '清空类名',
         ),
       ],
-    );
-  }
-
-  Widget _buildInputLabel(BuildContext context, String text) {
-    var themeData = Theme.of(context);
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Text(
-        text,
-        style: themeData.textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.bold,
-          color: themeData.colorScheme.primary,
-        ),
-      ),
     );
   }
 
