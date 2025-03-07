@@ -58,6 +58,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
   }
 
   Widget _buildInputPanel(BuildContext context) {
+
     return Expanded(
       flex: 5,
       child: Card(
@@ -87,10 +88,10 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                 child: fluent.FluentTheme(
                   data: fluent.FluentThemeData(),
                   child: fluent.TextBox(
+                    textInputAction: fluent.TextInputAction.newline,
                     controller: controller.jsonController,
                     expands: true,
                     maxLines: null,
-                    keyboardType: TextInputType.text,
                     placeholder:l10n.jsonInputPlaceholder ,
                     foregroundDecoration: fluent.WidgetStatePropertyAll(
                       fluent.BoxDecoration(border: Border.fromBorderSide(BorderSide.none)),

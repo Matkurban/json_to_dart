@@ -1,7 +1,7 @@
 name: json_to_dart
 description: "A Dart-based tool class."
 publish_to: "none"
-version: 1.0.9
+version: 1.1.0
 environment:
   sdk: ^3.7.0
 
@@ -21,13 +21,13 @@ dependencies:
   syntax_highlight: ^0.4.0
   package_info_plus: ^8.3.0
   flutter_json_view: ^1.1.5
-  file_selector: ^1.0.3
   url_launcher: ^6.3.1
-  flutter_markdown: ^0.7.6+2
   font_awesome_flutter: ^10.8.0
   fluent_ui: ^4.11.2
+  markdown_widget: ^2.3.2+6
   flutter_highlight: ^0.7.0
-  markdown: ^7.3.0
+  animate_do: ^4.2.0
+
 
 dev_dependencies:
   flutter_test:

@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_json_view/flutter_json_view.dart';
 import 'package:get/get.dart';
@@ -22,30 +23,32 @@ sealed class PreviewDialog {
     showDialog(
       context: context,
       builder: (context) {
-        return Dialog(
-          backgroundColor: themeData.cardColor,
-          child: Container(
-            padding: AppStyle.defaultPadding,
-            constraints: BoxConstraints(
-              maxWidth: size.width * 0.9,
-              maxHeight: size.height * 0.9,
-              minHeight: size.height * 0.9,
-            ),
-            child: SingleChildScrollView(
-              child: JsonView.string(
-                json,
-                theme: JsonViewTheme(
-                  defaultTextStyle: TextStyle(fontFamily: "JetBrainsMono"),
-                  viewType: JsonViewType.collapsible,
-                  keyStyle: TextStyle(color: colorScheme.primary),
-                  doubleStyle: TextStyle(color: colorScheme.secondary),
-                  intStyle: TextStyle(color: colorScheme.secondary),
-                  boolStyle: TextStyle(color: colorScheme.secondary),
-                  stringStyle: TextStyle(color: colorScheme.secondary),
-                  closeIcon: Icon(Icons.keyboard_arrow_down, size: 16),
-                  openIcon: Icon(Icons.keyboard_arrow_up, size: 16),
-                  separator: Text(':'),
-                  backgroundColor: Colors.transparent,
+        return ZoomIn(
+          child: Dialog(
+            backgroundColor: themeData.cardColor,
+            child: Container(
+              padding: AppStyle.defaultPadding,
+              constraints: BoxConstraints(
+                maxWidth: size.width * 0.9,
+                maxHeight: size.height * 0.9,
+                minHeight: size.height * 0.9,
+              ),
+              child: SingleChildScrollView(
+                child: JsonView.string(
+                  json,
+                  theme: JsonViewTheme(
+                    defaultTextStyle: TextStyle(fontFamily: "JetBrainsMono"),
+                    viewType: JsonViewType.collapsible,
+                    keyStyle: TextStyle(color: colorScheme.primary),
+                    doubleStyle: TextStyle(color: colorScheme.secondary),
+                    intStyle: TextStyle(color: colorScheme.secondary),
+                    boolStyle: TextStyle(color: colorScheme.secondary),
+                    stringStyle: TextStyle(color: colorScheme.secondary),
+                    closeIcon: Icon(Icons.keyboard_arrow_down, size: 16),
+                    openIcon: Icon(Icons.keyboard_arrow_up, size: 16),
+                    separator: Text(':'),
+                    backgroundColor: Colors.transparent,
+                  ),
                 ),
               ),
             ),
@@ -62,14 +65,16 @@ sealed class PreviewDialog {
     showDialog(
       context: context,
       builder: (context) {
-        return Dialog(
-          child: Container(
-            constraints: BoxConstraints(
-              maxWidth: size.width * 0.9,
-              maxHeight: size.height * 0.9,
-              minHeight: size.height * 0.9,
+        return ZoomIn(
+          child: Dialog(
+            child: Container(
+              constraints: BoxConstraints(
+                maxWidth: size.width * 0.9,
+                maxHeight: size.height * 0.9,
+                minHeight: size.height * 0.9,
+              ),
+              child: ModelViewPane(code: code, highlighter: highlighter),
             ),
-            child: ModelViewPane(code: code, highlighter: highlighter),
           ),
         );
       },
@@ -85,26 +90,28 @@ class _PreviewDialogContent extends GetView<JsonToDartLogic> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.sizeOf(context);
-    return Dialog(
-      child: Container(
-        padding: AppStyle.defaultPadding,
-        constraints: BoxConstraints(maxWidth: size.width * 0.9, maxHeight: size.height * 0.9),
-        child: Row(
-          spacing: 10,
-          children: [
-            _buildCodeCard(
-              title: 'JSON',
-              content: item.json,
-              onCopy: () => copyToClipboard(item.json),
-              tooltip: l10n.copyJson,
-            ),
-            _buildCodeCard(
-              title: 'Dart',
-              content: item.code,
-              onCopy: () => copyToClipboard(item.code),
-              tooltip: l10n.copyCode,
-            ),
-          ],
+    return ZoomIn(
+      child: Dialog(
+        child: Container(
+          padding: AppStyle.defaultPadding,
+          constraints: BoxConstraints(maxWidth: size.width * 0.9, maxHeight: size.height * 0.9),
+          child: Row(
+            spacing: 10,
+            children: [
+              _buildCodeCard(
+                title: 'JSON',
+                content: item.json,
+                onCopy: () => copyToClipboard(item.json),
+                tooltip: l10n.copyJson,
+              ),
+              _buildCodeCard(
+                title: 'Dart',
+                content: item.code,
+                onCopy: () => copyToClipboard(item.code),
+                tooltip: l10n.copyCode,
+              ),
+            ],
+          ),
         ),
       ),
     );

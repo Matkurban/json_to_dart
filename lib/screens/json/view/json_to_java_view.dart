@@ -85,9 +85,9 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                   data: fluent.FluentThemeData(),
                   child: fluent.TextBox(
                     controller: controller.jsonController,
+                    textInputAction: fluent.TextInputAction.newline,
                     expands: true,
                     maxLines: null,
-                    keyboardType: TextInputType.text,
                     placeholder: l10n.jsonInputPlaceholder,
                     foregroundDecoration: fluent.WidgetStatePropertyAll(
                       fluent.BoxDecoration(border: Border.fromBorderSide(BorderSide.none)),
