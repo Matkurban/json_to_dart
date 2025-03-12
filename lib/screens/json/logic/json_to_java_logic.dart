@@ -22,10 +22,10 @@ class JsonToJavaLogic extends GetxController {
 
   // Configuration flags
   final RxBool generateGetterSetter = true.obs;
-  final RxBool generateBuilder = true.obs;
+  final RxBool generateBuilder = false.obs;
   final RxBool generateToString = true.obs;
   final RxBool useOptional = false.obs;
-  final RxBool useLombok = true.obs;
+  final RxBool useLombok = false.obs;
 
   // Generated code
   final RxString javaCode = ''.obs;
@@ -57,11 +57,30 @@ class JsonToJavaLogic extends GetxController {
     jsonController.addListener(jsonListener);
     packageNameController.addListener(packageNameListener);
     classNameController.addListener(classNameListener);
-    generateGetterSetter.listen((_) => generateJavaClass());
-    generateBuilder.listen((_) => generateJavaClass());
+    generateGetterSetter.listen((newvAlue) {
+      generateJavaClass();
+      if (newvAlue) {
+        generateBuilder(false);
+        useLombok(false);
+      }
+    });
+    generateBuilder.listen((newValue) {
+      generateJavaClass();
+      if (newValue) {
+        useLombok(true);
+        generateGetterSetter(false);
+        generateToString(false);
+      }
+    });
     generateToString.listen((_) => generateJavaClass());
     useOptional.listen((_) => generateJavaClass());
-    useLombok.listen((_) => generateJavaClass());
+    useLombok.listen((newValue) {
+      generateJavaClass();
+      if (newValue) {
+        generateGetterSetter(false);
+        generateToString(false);
+      }
+    });
   }
 
   @override

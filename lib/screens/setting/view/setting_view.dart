@@ -50,11 +50,12 @@ class SettingView extends GetView<SettingLogic> {
               onTap: () => Get.toNamed(RouterNames.flutterMobile),
             ),
           ),
+
           Card(
             child: ListTile(
-              title: Text(l10n.version),
-              trailing: Obx(() => Text(controller.version.value)),
-              onTap: () {},
+              title: Text("AndroidStudio 创建Dart文件模板"),
+              trailing: Icon(Icons.keyboard_arrow_right),
+              onTap: () => Get.toNamed(RouterNames.studioTemplate),
             ),
           ),
           Card(
@@ -62,6 +63,13 @@ class SettingView extends GetView<SettingLogic> {
               title: Text(l10n.officialWebsite),
               trailing: Icon(CupertinoIcons.arrow_up_right),
               onTap: () => launchUrl(Uri.parse('https://jsontodart.cn')),
+            ),
+          ),
+          Card(
+            child: ListTile(
+              title: Text(l10n.version),
+              trailing: Obx(() => Text(controller.version.value)),
+              onTap: () {},
             ),
           ),
         ],
