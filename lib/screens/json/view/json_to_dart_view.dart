@@ -8,7 +8,6 @@ import 'package:json_to_dart/screens/json/widgets/label_check_box.dart';
 import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
 import 'package:json_to_dart/screens/json/widgets/title_text.dart';
 import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
-import 'package:fluent_ui/fluent_ui.dart' as fluent;
 
 class JsonToDartView extends GetView<JsonToDartLogic> {
   const JsonToDartView({super.key});
@@ -58,7 +57,6 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
   }
 
   Widget _buildInputPanel(BuildContext context) {
-
     return Expanded(
       flex: 5,
       child: Card(
@@ -85,18 +83,13 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                 ],
               ),
               Expanded(
-                child: fluent.FluentTheme(
-                  data: fluent.FluentThemeData(),
-                  child: fluent.TextBox(
-                    textInputAction: fluent.TextInputAction.newline,
-                    controller: controller.jsonController,
-                    expands: true,
-                    maxLines: null,
-                    placeholder:l10n.jsonInputPlaceholder ,
-                    foregroundDecoration: fluent.WidgetStatePropertyAll(
-                      fluent.BoxDecoration(border: Border.fromBorderSide(BorderSide.none)),
-                    ),
-                  ),
+                child: TextField(
+                  textInputAction: TextInputAction.newline,
+                  controller: controller.jsonController,
+                  expands: true,
+                  maxLines: null,
+                  textAlignVertical: TextAlignVertical.top,
+                  decoration: InputDecoration(hintText: l10n.jsonInputPlaceholder),
                 ),
               ),
               _buildClassNameField(context),

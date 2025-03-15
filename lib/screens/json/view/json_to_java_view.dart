@@ -8,7 +8,6 @@ import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/screens/json/widgets/title_text.dart';
 import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
 import '../logic/json_to_java_logic.dart';
-import 'package:fluent_ui/fluent_ui.dart' as fluent;
 
 class JsonToJavaView extends GetView<JsonToJavaLogic> {
   const JsonToJavaView({super.key});
@@ -66,7 +65,7 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
             children: [
               Row(
                 children: [
-                  const TitleText(text: 'JSON 输入'),
+                  TitleText(text: l10n.jsonInput),
                   Spacer(),
                   IconButton(
                     onPressed: () => previewJson(context, controller.jsonController.text),
@@ -81,18 +80,13 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                 ],
               ),
               Expanded(
-                child: fluent.FluentTheme(
-                  data: fluent.FluentThemeData(),
-                  child: fluent.TextBox(
-                    controller: controller.jsonController,
-                    textInputAction: fluent.TextInputAction.newline,
-                    expands: true,
-                    maxLines: null,
-                    placeholder: l10n.jsonInputPlaceholder,
-                    foregroundDecoration: fluent.WidgetStatePropertyAll(
-                      fluent.BoxDecoration(border: Border.fromBorderSide(BorderSide.none)),
-                    ),
-                  ),
+                child: TextField(
+                  controller: controller.jsonController,
+                  textInputAction: TextInputAction.newline,
+                  expands: true,
+                  maxLines: null,
+                  textAlignVertical: TextAlignVertical.top,
+                  decoration: InputDecoration(hintText: l10n.jsonInputPlaceholder),
                 ),
               ),
               Row(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
+import 'package:json_to_dart/config/assets/image_assets.dart';
 import 'package:json_to_dart/screens/json/view/json_to_dart_view.dart';
 import 'package:json_to_dart/screens/json/view/json_to_java_view.dart';
 import 'package:json_to_dart/screens/main/logic/main_logic.dart';
@@ -13,31 +14,55 @@ class MainView extends GetView<MainLogic> {
 
   @override
   Widget build(BuildContext context) {
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      body: PageView(
-        controller: controller.pageController,
-        onPageChanged: controller.onPageChanged,
-        children: [JsonToDartView(), JsonToJavaView(), SettingView()],
-      ),
-      bottomNavigationBar: Obx(() {
-        return BottomNavigationBar(
-          currentIndex: controller.currentIndex.value,
-          onTap:
-              (value) => controller.pageController.animateToPage(
-                value,
-                duration: Duration(milliseconds: 200),
-                curve: Curves.bounceIn,
+      body: Row(
+        children: [
+          Obx(() {
+            return NavigationRail(
+              leading: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Image(image: AssetImage(ImageAssets.logo), width: 48, height: 48),
               ),
-          items: [
-            BottomNavigationBarItem(
-              icon: FaIcon(FontAwesomeIcons.dartLang, size: 18),
-              label: l10n.dart,
+              destinations: [
+                NavigationRailDestination(
+                  icon: Icon(FontAwesomeIcons.dartLang, size: 18),
+                  selectedIcon: FaIcon(
+                    FontAwesomeIcons.dartLang,
+                    size: 18,
+                    color: colorScheme.primary,
+                  ),
+                  label: Text(l10n.dart),
+                ),
+                NavigationRailDestination(
+                  icon: FaIcon(FontAwesomeIcons.java),
+                  selectedIcon: FaIcon(FontAwesomeIcons.java, color: colorScheme.primary),
+                  label: Text(l10n.java),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.settings),
+                  selectedIcon: Icon(Icons.settings, color: colorScheme.primary),
+                  label: Text(l10n.settings),
+                ),
+              ],
+              selectedIndex: controller.currentIndex.value,
+              onDestinationSelected:
+                  (value) => controller.pageController.animateToPage(
+                    value,
+                    duration: Duration(milliseconds: 200),
+                    curve: Curves.bounceIn,
+                  ),
+            );
+          }),
+          Expanded(
+            child: PageView(
+              controller: controller.pageController,
+              onPageChanged: controller.onPageChanged,
+              children: [JsonToDartView(), JsonToJavaView(), SettingView()],
             ),
-            BottomNavigationBarItem(icon: FaIcon(FontAwesomeIcons.java), label: l10n.java),
-            BottomNavigationBarItem(icon: Icon(Icons.settings), label: l10n.settings),
-          ],
-        );
-      }),
+          ),
+        ],
+      ),
       floatingActionButton: TextButton(
         onPressed: () => launchUrl(Uri.parse('https://beian.miit.gov.cn')),
         child: Text('新ICP备2023004640号'),
