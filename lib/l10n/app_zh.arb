@@ -26,7 +26,7 @@
   "nonNullableFields": "非空字段",
   "generateToJson": "生成toJson",
   "generateFromJson": "生成fromJson",
-  "formatJson": "格式化JSON",
+  "formatJson": "格式化 JSON",
   "generateDartClass": "生成 Dart 类",
   "addToHistory": "保存到历史记录",
   "mainClassNameLabel": "类名",
@@ -64,5 +64,8 @@
   "useOptional": "使用 Optional",
   "generateJavaClass": "生成 Java 类",
   "clearClassName": "清空类名",
-  "noHistoryYet": "暂无历史记录"
+  "noHistoryYet": "暂无历史记录",
+  "flutterMobileMirrorConfig": "Flutter 移动端镜像配置",
+  "androidStudioDartTemplate": "AndroidStudio 创建Dart文件模板",
+  "jsonToJava": "JSON 转 Java"
 }

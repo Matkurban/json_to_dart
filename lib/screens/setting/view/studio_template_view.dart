@@ -9,6 +9,7 @@ import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:flutter_highlight/themes/a11y-light.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class StudioTemplateView extends GetView<StudioTemplateLogic> {
   const StudioTemplateView({super.key});
@@ -16,7 +17,7 @@ class StudioTemplateView extends GetView<StudioTemplateLogic> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('AndroidStudio 创建Dart文件模板')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.androidStudioDartTemplate)),
       body: Padding(
         padding: AppStyle.defaultPadding,
         child: controller.obx(

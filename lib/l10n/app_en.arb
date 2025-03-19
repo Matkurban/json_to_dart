@@ -64,5 +64,8 @@
   "clearClassName": "Clear Class Name",
   "noHistoryYet": "No History Yet",
   "forceTypeCasting": "Force Type Casting",
-  "generateCopyWith": "Generate copyWith"
+  "generateCopyWith": "Generate copyWith",
+  "flutterMobileMirrorConfig": "Flutter Mobile Mirror Config",
+  "androidStudioDartTemplate": "AndroidStudio Dart File Template",
+  "jsonToJava": "JSON to Java"
 }

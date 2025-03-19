@@ -6,6 +6,7 @@ import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/router/router_names.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingView extends GetView<SettingLogic> {
   const SettingView({super.key});
@@ -22,10 +23,7 @@ class SettingView extends GetView<SettingLogic> {
               title: Text(l10n.theme),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: [
-                  Obx(() => Text(controller.themeChineseString.value)),
-                  Icon(Icons.keyboard_arrow_right),
-                ],
+                children: [Obx(() => Text(controller.themeChineseString.value)), Icon(Icons.keyboard_arrow_right)],
               ),
               onTap: () => Get.toNamed(RouterNames.toggleTheme),
             ),
@@ -35,17 +33,14 @@ class SettingView extends GetView<SettingLogic> {
               title: Text(l10n.language),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: [
-                  Obx(() => Text(controller.languageName.value)),
-                  Icon(Icons.keyboard_arrow_right),
-                ],
+                children: [Obx(() => Text(controller.languageName.value)), Icon(Icons.keyboard_arrow_right)],
               ),
               onTap: () => Get.toNamed(RouterNames.toggleLanguage),
             ),
           ),
           Card(
             child: ListTile(
-              title: Text('Flutter 移动端镜像配置'),
+              title: Text(AppLocalizations.of(context)!.flutterMobileMirrorConfig),
               trailing: Icon(Icons.keyboard_arrow_right),
               onTap: () => Get.toNamed(RouterNames.flutterMobile),
             ),
@@ -53,7 +48,7 @@ class SettingView extends GetView<SettingLogic> {
 
           Card(
             child: ListTile(
-              title: Text("AndroidStudio 创建Dart文件模板"),
+              title: Text(AppLocalizations.of(context)!.androidStudioDartTemplate),
               trailing: Icon(Icons.keyboard_arrow_right),
               onTap: () => Get.toNamed(RouterNames.studioTemplate),
             ),

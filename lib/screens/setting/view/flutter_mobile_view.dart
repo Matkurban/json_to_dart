@@ -9,6 +9,7 @@ import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:flutter_highlight/themes/a11y-light.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FlutterMobileView extends GetView<FlutterMobileLogic> {
   const FlutterMobileView({super.key});
@@ -16,7 +17,7 @@ class FlutterMobileView extends GetView<FlutterMobileLogic> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Flutter 移动端镜像配置')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.flutterMobileMirrorConfig)),
       body: Padding(
         padding: AppStyle.defaultPadding,
         child: controller.obx(
