@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
 import 'package:json_to_dart/config/assets/image_assets.dart';
+import 'package:json_to_dart/screens/json/view/json_generator_view.dart';
 import 'package:json_to_dart/screens/json/view/json_to_dart_view.dart';
 import 'package:json_to_dart/screens/json/view/json_to_java_view.dart';
 import 'package:json_to_dart/screens/main/logic/main_logic.dart';
@@ -25,6 +26,15 @@ class MainView extends GetView<MainLogic> {
                 child: Image(image: AssetImage(ImageAssets.logo), width: 48, height: 48),
               ),
               destinations: [
+                NavigationRailDestination(
+                  icon: Icon(FontAwesomeIcons.font, size: 18),
+                  selectedIcon: FaIcon(
+                    FontAwesomeIcons.font,
+                    size: 18,
+                    color: colorScheme.primary,
+                  ),
+                  label: Text(l10n.jsonGenerator),
+                ),
                 NavigationRailDestination(
                   icon: Icon(FontAwesomeIcons.dartLang, size: 18),
                   selectedIcon: FaIcon(
@@ -58,7 +68,7 @@ class MainView extends GetView<MainLogic> {
             child: PageView(
               controller: controller.pageController,
               onPageChanged: controller.onPageChanged,
-              children: [JsonToDartView(), JsonToJavaView(), SettingView()],
+              children: [JsonGeneratorView(),JsonToDartView(), JsonToJavaView(), SettingView()],
             ),
           ),
         ],

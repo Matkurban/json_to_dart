@@ -8,10 +8,16 @@ import 'package:json_to_dart/screens/splash/view/splash_view.dart';
 import 'package:json_to_dart/services/storage_services.dart';
 import 'package:toastification/toastification.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:json_to_dart/config/bindings/shared_preferences_binding.dart';
 
 void main() async {
   usePathUrlStrategy();
   await initServices();
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 初始化 SharedPreferences
+  SharedPreferencesBinding().dependencies();
+
   runApp(const JsonToDartApp());
 }
 

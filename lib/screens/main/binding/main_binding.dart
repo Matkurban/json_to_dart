@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:json_to_dart/screens/json/binding/json_generator_binding.dart';
 import 'package:json_to_dart/screens/json/binding/json_to_dart_binding.dart';
 import 'package:json_to_dart/screens/json/binding/json_to_java_binding.dart';
 import 'package:json_to_dart/screens/main/logic/main_logic.dart';
@@ -11,5 +12,6 @@ class MainBinding extends Bindings {
     JsonToDartBinding().dependencies();
     JsonToJavaBinding().dependencies();
     SettingBinding().dependencies();
+    JsonGeneratorBinding().dependencies();
   }
 }

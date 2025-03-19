@@ -257,6 +257,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
     return Obx(() {
       return Column(
         children: [
+        
           ListTile(
             title: Text('${l10n.history} (${controller.history.length})'),
             trailing: IconButton(
