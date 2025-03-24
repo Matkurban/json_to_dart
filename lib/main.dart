@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
+import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_theme.dart';
 import 'package:json_to_dart/router/router_pages.dart';
 import 'package:json_to_dart/screens/splash/binding/splash_binding.dart';
@@ -32,7 +33,7 @@ class JsonToDartApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ToastificationWrapper(
       child: GetMaterialApp(
-        onGenerateTitle: (context) => AppLocalizations.of(context)!.advancedJsonConversionTool,
+        onGenerateTitle: (context) => l10n.advancedJsonConversionTool,
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
         themeMode: ThemeMode.system,

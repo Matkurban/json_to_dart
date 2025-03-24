@@ -25,13 +25,19 @@ Future<void> copyToClipboard(String text) async {
     return;
   }
   await Clipboard.setData(ClipboardData(text: text));
-  MessageUtil.showSuccess(title: l10n.operationPrompt, content: l10n.codeCopied);
+  MessageUtil.showSuccess(
+    title: l10n.operationPrompt,
+    content: l10n.codeCopied,
+  );
 }
 
 ///预览Json
 void previewJson(BuildContext context, String json) {
   if (json.trim().isEmpty) {
-    MessageUtil.showWarning(title: l10n.operationPrompt, content: l10n.enterJsonPrompt);
+    MessageUtil.showWarning(
+      title: l10n.operationPrompt,
+      content: l10n.enterJsonPrompt,
+    );
     return;
   }
   PreviewDialog.showPreviewJsonDialog(context, json);

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/screens/splash/logic/splash_logic.dart';
 import 'package:json_to_dart/screens/json/model/json_history.dart';
 import 'dart:convert';
@@ -190,8 +190,6 @@ class JsonGeneratorLogic extends GetxController {
   }
 
   void selectType(int index) {
-    final context = Get.context!;
-    final l10n = AppLocalizations.of(context)!;
 
     Get.dialog(
       AlertDialog(
@@ -275,9 +273,6 @@ class JsonGeneratorLogic extends GetxController {
   }
 
   void copyToClipboard(String text) {
-    final context = Get.context!;
-    final l10n = AppLocalizations.of(context)!;
-
     Clipboard.setData(ClipboardData(text: text));
     Get.snackbar(l10n.success, l10n.copiedToClipboard, snackPosition: SnackPosition.BOTTOM);
   }

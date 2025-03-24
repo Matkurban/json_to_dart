@@ -5,8 +5,9 @@ import 'package:json_to_dart/screens/setting/logic/setting_logic.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/router/router_names.dart';
+import 'package:json_to_dart/screens/setting/view/flutter_mobile_view.dart';
+import 'package:json_to_dart/screens/setting/view/studio_template_view.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingView extends GetView<SettingLogic> {
   const SettingView({super.key});
@@ -23,7 +24,10 @@ class SettingView extends GetView<SettingLogic> {
               title: Text(l10n.theme),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: [Obx(() => Text(controller.themeChineseString.value)), Icon(Icons.keyboard_arrow_right)],
+                children: [
+                  Obx(() => Text(controller.themeChineseString.value)),
+                  Icon(Icons.keyboard_arrow_right),
+                ],
               ),
               onTap: () => Get.toNamed(RouterNames.toggleTheme),
             ),
@@ -33,24 +37,27 @@ class SettingView extends GetView<SettingLogic> {
               title: Text(l10n.language),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: [Obx(() => Text(controller.languageName.value)), Icon(Icons.keyboard_arrow_right)],
+                children: [
+                  Obx(() => Text(controller.languageName.value)),
+                  Icon(Icons.keyboard_arrow_right),
+                ],
               ),
               onTap: () => Get.toNamed(RouterNames.toggleLanguage),
             ),
           ),
           Card(
             child: ListTile(
-              title: Text(AppLocalizations.of(context)!.flutterMobileMirrorConfig),
+              title: Text(l10n.flutterMobileMirrorConfig),
               trailing: Icon(Icons.keyboard_arrow_right),
-              onTap: () => Get.toNamed(RouterNames.flutterMobile),
+              onTap: () => Get.to(() => FlutterMobileView()),
             ),
           ),
 
           Card(
             child: ListTile(
-              title: Text(AppLocalizations.of(context)!.androidStudioDartTemplate),
+              title: Text(l10n.androidStudioDartTemplate),
               trailing: Icon(Icons.keyboard_arrow_right),
-              onTap: () => Get.toNamed(RouterNames.studioTemplate),
+              onTap: () => Get.to(() => StudioTemplateView()),
             ),
           ),
           Card(

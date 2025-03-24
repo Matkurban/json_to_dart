@@ -5,7 +5,6 @@ import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
 import 'package:json_to_dart/screens/json/widgets/title_text.dart';
 import '../logic/json_generator_logic.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
   const JsonGeneratorView({super.key});
@@ -14,7 +13,7 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.jsonGenerator),
+        title: Text(l10n.jsonGenerator),
         centerTitle: true,
         actions: [
           Builder(
@@ -22,7 +21,7 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
               return IconButton(
                 icon: const Icon(Icons.history),
                 onPressed: () => Scaffold.of(context).openEndDrawer(),
-                tooltip: AppLocalizations.of(context)!.history,
+                tooltip: l10n.history,
               );
             }
           ),
@@ -50,7 +49,7 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
             decoration: BoxDecoration(color: Theme.of(context).primaryColor),
             child: Center(
               child: Text(
-                AppLocalizations.of(context)!.history,
+                l10n.history,
                 style: const TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
@@ -94,22 +93,22 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
           children: [
             Row(
               children: [
-                TitleText(text: AppLocalizations.of(context)!.jsonOutput),
+                TitleText(text: l10n.jsonOutput),
                 const Spacer(),
                 IconButton(
                   onPressed: () => previewJson(context, controller.jsonOutput.value),
                   icon: const Icon(Icons.visibility),
-                  tooltip: AppLocalizations.of(context)!.previewJsonView,
+                  tooltip: l10n.previewJsonView,
                 ),
                 IconButton(
                   icon: const Icon(Icons.copy),
                   onPressed: () => controller.copyToClipboard(controller.jsonOutput.value),
-                  tooltip: AppLocalizations.of(context)!.copyJson,
+                  tooltip: l10n.copyJson,
                 ),
                 IconButton(
                   icon: const Icon(Icons.save),
                   onPressed: () => _showSaveDialog(context),
-                  tooltip: AppLocalizations.of(context)!.saveToHistory,
+                  tooltip: l10n.saveToHistory,
                 ),
               ],
             ),
@@ -133,17 +132,17 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
           children: [
             Row(
               children: [
-                TitleText(text: AppLocalizations.of(context)!.jsonFields),
+                TitleText(text: l10n.jsonFields),
                 const Spacer(),
                 IconButton(
                   icon: const Icon(Icons.add),
                   onPressed: controller.addField,
-                  tooltip: AppLocalizations.of(context)!.addField,
+                  tooltip: l10n.addField,
                 ),
                 IconButton(
                   icon: const Icon(Icons.clear_all),
                   onPressed: controller.clearFields,
-                  tooltip: AppLocalizations.of(context)!.clearFields,
+                  tooltip: l10n.clearFields,
                 ),
               ],
             ),
@@ -165,8 +164,8 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
                               child: TextField(
                                 controller: field.keyController,
                                 decoration: InputDecoration(
-                                  labelText: AppLocalizations.of(context)!.key,
-                                  hintText: AppLocalizations.of(context)!.enterKey,
+                                  labelText: l10n.key,
+                                  hintText: l10n.enterKey,
                                 ),
                               ),
                             ),
@@ -176,8 +175,8 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
                               child: TextField(
                                 controller: field.valueController,
                                 decoration: InputDecoration(
-                                  labelText: AppLocalizations.of(context)!.value,
-                                  hintText: AppLocalizations.of(context)!.enterValue,
+                                  labelText: l10n.value,
+                                  hintText: l10n.enterValue,
                                 ),
                               ),
                             ),
@@ -185,12 +184,12 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
                             IconButton(
                               icon: const Icon(Icons.type_specimen),
                               onPressed: () => controller.selectType(index),
-                              tooltip: AppLocalizations.of(context)!.selectType,
+                              tooltip: l10n.selectType,
                             ),
                             IconButton(
                               icon: const Icon(Icons.delete),
                               onPressed: () => controller.removeField(index),
-                              tooltip: AppLocalizations.of(context)!.delete,
+                              tooltip: l10n.delete,
                             ),
                           ],
                         ),
@@ -210,16 +209,16 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
     final nameController = TextEditingController();
     Get.dialog(
       AlertDialog(
-        title: Text(AppLocalizations.of(context)!.saveToHistory),
+        title: Text(l10n.saveToHistory),
         content: TextField(
           controller: nameController,
           decoration: InputDecoration(
-            labelText: AppLocalizations.of(context)!.name,
-            hintText: AppLocalizations.of(context)!.enterName,
+            labelText: l10n.name,
+            hintText: l10n.enterName,
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: Text(AppLocalizations.of(context)!.cancel)),
+          TextButton(onPressed: () => Get.back(), child: Text(l10n.cancel)),
           TextButton(
             onPressed: () {
               if (nameController.text.isNotEmpty) {
@@ -227,7 +226,7 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
                 Get.back();
               }
             },
-            child: Text(AppLocalizations.of(context)!.save),
+            child: Text(l10n.save),
           ),
         ],
       ),

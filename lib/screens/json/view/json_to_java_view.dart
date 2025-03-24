@@ -8,7 +8,6 @@ import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/screens/json/widgets/title_text.dart';
 import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
 import '../logic/json_to_java_logic.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class JsonToJavaView extends GetView<JsonToJavaLogic> {
   const JsonToJavaView({super.key});
@@ -17,7 +16,7 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.jsonToJava),
+        title: Text(l10n.jsonToJava),
         centerTitle: true,
         actions: [
           Builder(
@@ -29,7 +28,7 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                     Scaffold.of(context).openEndDrawer();
                   }
                 },
-                tooltip: AppLocalizations.of(context)!.history,
+                tooltip: l10n.history,
               );
             },
           ),
@@ -61,17 +60,17 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
             children: [
               Row(
                 children: [
-                  TitleText(text: AppLocalizations.of(context)!.jsonInput),
+                  TitleText(text: l10n.jsonInput),
                   Spacer(),
                   IconButton(
                     onPressed: () => previewJson(context, controller.jsonController.text),
                     icon: Icon(CupertinoIcons.eye),
-                    tooltip: AppLocalizations.of(context)!.previewJsonView,
+                    tooltip: l10n.previewJsonView,
                   ),
                   IconButton(
                     onPressed: controller.jsonController.clear,
                     icon: Icon(Icons.clear),
-                    tooltip: AppLocalizations.of(context)!.clearInput,
+                    tooltip: l10n.clearInput,
                   ),
                 ],
               ),
@@ -82,7 +81,7 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                   expands: true,
                   maxLines: null,
                   textAlignVertical: TextAlignVertical.top,
-                  decoration: InputDecoration(hintText: AppLocalizations.of(context)!.jsonInputPlaceholder),
+                  decoration: InputDecoration(hintText: l10n.jsonInputPlaceholder),
                 ),
               ),
               Row(
@@ -91,13 +90,13 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                   Expanded(
                     child: TextField(
                       controller: controller.classNameController,
-                      decoration: InputDecoration(labelText: AppLocalizations.of(context)!.mainClassNameLabel),
+                      decoration: InputDecoration(labelText: l10n.mainClassNameLabel),
                     ),
                   ),
                   Expanded(
                     child: TextField(
                       controller: controller.packageNameController,
-                      decoration: InputDecoration(labelText: AppLocalizations.of(context)!.packageName),
+                      decoration: InputDecoration(labelText: l10n.packageName),
                     ),
                   ),
                 ],
@@ -121,17 +120,17 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
             children: [
               Row(
                 children: [
-                  TitleText(text: AppLocalizations.of(context)!.javaCode),
+                  TitleText(text: l10n.javaCode),
                   const Spacer(),
                   IconButton(
                     onPressed: () => previewCode(context, controller.javaCode.value),
                     icon: Icon(CupertinoIcons.eye),
-                    tooltip: AppLocalizations.of(context)!.previewCode,
+                    tooltip: l10n.previewCode,
                   ),
                   IconButton(
                     icon: const Icon(Icons.copy),
                     onPressed: () => copyToClipboard(controller.javaCode.value),
-                    tooltip: AppLocalizations.of(context)!.copyCode,
+                    tooltip: l10n.copyCode,
                   ),
                 ],
               ),
@@ -160,35 +159,35 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
               children: [
                 Obx(
                   () => LabelCheckBox(
-                    label: AppLocalizations.of(context)!.useLombok,
+                    label: l10n.useLombok,
                     value: controller.useLombok.value,
                     onChanged: (value) => controller.useLombok.value = value!,
                   ),
                 ),
                 Obx(
                   () => LabelCheckBox(
-                    label: AppLocalizations.of(context)!.generateGetterSetter,
+                    label: l10n.generateGetterSetter,
                     value: controller.generateGetterSetter.value,
                     onChanged: (value) => controller.generateGetterSetter.value = value!,
                   ),
                 ),
                 Obx(
                   () => LabelCheckBox(
-                    label: AppLocalizations.of(context)!.generateBuilder,
+                    label: l10n.generateBuilder,
                     value: controller.generateBuilder.value,
                     onChanged: (value) => controller.generateBuilder.value = value!,
                   ),
                 ),
                 Obx(
                   () => LabelCheckBox(
-                    label: AppLocalizations.of(context)!.generateToString,
+                    label: l10n.generateToString,
                     value: controller.generateToString.value,
                     onChanged: (value) => controller.generateToString.value = value!,
                   ),
                 ),
                 Obx(
                   () => LabelCheckBox(
-                    label: AppLocalizations.of(context)!.useOptional,
+                    label: l10n.useOptional,
                     value: controller.useOptional.value,
                     onChanged: (value) => controller.useOptional.value = value!,
                   ),
@@ -203,19 +202,19 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
               children: [
                 FilledButton.icon(
                   icon: const Icon(Icons.format_align_left),
-                  label: Text(AppLocalizations.of(context)!.formatJson),
+                  label: Text(l10n.formatJson),
                   onPressed: controller.formatJson,
                   style: FilledButton.styleFrom(backgroundColor: colorScheme.primary),
                 ),
                 FilledButton.icon(
                   icon: const Icon(Icons.code),
-                  label: Text(AppLocalizations.of(context)!.generateJavaClass),
+                  label: Text(l10n.generateJavaClass),
                   onPressed: controller.generateJavaClass,
                   style: FilledButton.styleFrom(backgroundColor: colorScheme.secondary),
                 ),
                 FilledButton.icon(
                   icon: const Icon(Icons.save),
-                  label: Text(AppLocalizations.of(context)!.addToHistory),
+                  label: Text(l10n.addToHistory),
                   onPressed: controller.addToHistory,
                   style: FilledButton.styleFrom(backgroundColor: colorScheme.primary),
                 ),
@@ -238,11 +237,11 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
       return Column(
         children: [
           ListTile(
-            title: Text('${AppLocalizations.of(context)!.history} (${controller.history.length})'),
+            title: Text('${l10n.history} (${controller.history.length})'),
             trailing: IconButton(
               icon: Icon(Icons.delete_forever_outlined, color: colorScheme.error),
               onPressed: controller.clearHistory,
-              tooltip: AppLocalizations.of(context)!.clearHistory,
+              tooltip: l10n.clearHistory,
             ),
           ),
           Expanded(
@@ -250,7 +249,7 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                 controller.history.isEmpty
                     ? Center(
                       child: Text(
-                        AppLocalizations.of(context)!.noHistory,
+                        l10n.noHistory,
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     )
@@ -271,23 +270,23 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                                 IconButton(
                                   onPressed: () => PreviewDialog.showPreviewDialog(context, item),
                                   icon: Icon(CupertinoIcons.eye, color: colorScheme.primary),
-                                  tooltip: AppLocalizations.of(context)!.preview,
+                                  tooltip: l10n.preview,
                                 ),
                                 IconButton(
                                   onPressed: () => copyToClipboard(item.json),
                                   icon: Icon(Icons.copy_all),
-                                  tooltip: AppLocalizations.of(context)!.copyJson,
+                                  tooltip: l10n.copyJson,
                                 ),
                                 IconButton(
                                   onPressed: () => copyToClipboard(item.code),
                                   icon: Icon(Icons.code),
-                                  tooltip: AppLocalizations.of(context)!.copyCode,
+                                  tooltip: l10n.copyCode,
                                 ),
 
                                 IconButton(
                                   onPressed: () => controller.deleteOne(item),
                                   icon: Icon(Icons.remove, color: colorScheme.error),
-                                  tooltip: AppLocalizations.of(context)!.delete,
+                                  tooltip: l10n.delete,
                                 ),
                               ],
                             ),
