@@ -27,9 +27,9 @@ class JsonToDartApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ToastificationWrapper(
       child: GetMaterialApp(
-        onGenerateTitle:
-            (context) =>
-                AppLocalizations.of(context)!.advancedJsonConversionTool,
+        onGenerateTitle: (context) {
+          return AppLocalizations.of(context)!.advancedJsonConversionTool;
+        },
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
         themeMode: ThemeMode.system,
