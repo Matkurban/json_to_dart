@@ -5,9 +5,8 @@ import 'package:json_to_dart/screens/setting/logic/setting_logic.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/router/router_names.dart';
-import 'package:json_to_dart/screens/setting/view/flutter_mobile_view.dart';
-import 'package:json_to_dart/screens/setting/view/studio_template_view.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class SettingView extends GetView<SettingLogic> {
   const SettingView({super.key});
@@ -49,7 +48,9 @@ class SettingView extends GetView<SettingLogic> {
             child: ListTile(
               title: Text(l10n.flutterMobileMirrorConfig),
               trailing: Icon(Icons.keyboard_arrow_right),
-              onTap: () => Get.to(() => FlutterMobileView()),
+              onTap: () {
+                launchUrlString('https://www.jsontodart.cn/archives/flutter-android-guo-nei-gou-jian-zhi-nan');
+              },
             ),
           ),
 
@@ -57,7 +58,9 @@ class SettingView extends GetView<SettingLogic> {
             child: ListTile(
               title: Text(l10n.androidStudioDartTemplate),
               trailing: Icon(Icons.keyboard_arrow_right),
-              onTap: () => Get.to(() => StudioTemplateView()),
+              onTap: () {
+                launchUrlString('https://www.jsontodart.cn/archives/androidstudio-chuang-jian-dart-wen-jian-mo-ban');
+              },
             ),
           ),
           Card(

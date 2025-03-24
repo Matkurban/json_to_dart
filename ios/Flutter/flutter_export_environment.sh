@@ -1,7 +1,7 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=N:\flutter\sdk\flutter_windows_stable\flutter"
-export "FLUTTER_APPLICATION_PATH=N:\flutter\projects\json_to_dart"
+export "FLUTTER_ROOT=E:\flutter\sdk\flutter_windows_stable\flutter"
+export "FLUTTER_APPLICATION_PATH=E:\flutter\projects\json_to_dart"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_TARGET=lib\main.dart"
 export "FLUTTER_BUILD_DIR=build"
