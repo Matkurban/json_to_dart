@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
+import 'package:json_to_dart/screens/json/logic/json_generator_logic.dart';
 import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
 import 'package:json_to_dart/screens/json/widgets/title_text.dart';
-import '../logic/json_generator_logic.dart';
 
 class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
   const JsonGeneratorView({super.key});

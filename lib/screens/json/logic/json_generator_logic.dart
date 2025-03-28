@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syntax_highlight/syntax_highlight.dart';
 import 'package:uuid/uuid.dart';
+
 class JsonField {
   final TextEditingController keyController;
   final TextEditingController valueController;
@@ -190,7 +191,6 @@ class JsonGeneratorLogic extends GetxController {
   }
 
   void selectType(int index) {
-
     Get.dialog(
       AlertDialog(
         title: Text(l10n.selectType),
@@ -263,7 +263,11 @@ class JsonGeneratorLogic extends GetxController {
         return field.valueController.text.toLowerCase() == 'true';
       case 'array':
         try {
-          return field.valueController.text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+          return field.valueController.text
+              .split(',')
+              .map((e) => e.trim())
+              .where((e) => e.isNotEmpty)
+              .toList();
         } catch (e) {
           return [];
         }

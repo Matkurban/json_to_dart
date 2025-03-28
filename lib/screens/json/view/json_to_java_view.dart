@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:json_to_dart/config/global/constant.dart';
+import 'package:json_to_dart/screens/json/logic/json_to_java_logic.dart';
 import 'package:json_to_dart/screens/json/widgets/label_check_box.dart';
 import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/screens/json/widgets/title_text.dart';
 import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
-import '../logic/json_to_java_logic.dart';
 
 class JsonToJavaView extends GetView<JsonToJavaLogic> {
   const JsonToJavaView({super.key});
@@ -39,7 +39,12 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
         child: Column(
           spacing: 10,
           children: [
-            Expanded(child: Row(spacing: 10, children: [_buildInputPanel(context), _buildOutputPanel(context)])),
+            Expanded(
+              child: Row(
+                spacing: 10,
+                children: [_buildInputPanel(context), _buildOutputPanel(context)],
+              ),
+            ),
             _buildControlPanel(context),
           ],
         ),
@@ -135,7 +140,12 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                 ],
               ),
               Expanded(
-                child: Obx(() => ModelViewPane(code: controller.javaCode.value, highlighter: controller.highlighter)),
+                child: Obx(
+                  () => ModelViewPane(
+                    code: controller.javaCode.value,
+                    highlighter: controller.highlighter,
+                  ),
+                ),
               ),
             ],
           ),
@@ -248,10 +258,7 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
             child:
                 controller.history.isEmpty
                     ? Center(
-                      child: Text(
-                        l10n.noHistory,
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
+                      child: Text(l10n.noHistory, style: Theme.of(context).textTheme.bodyLarge),
                     )
                     : ListView.builder(
                       itemCount: controller.history.length,
