@@ -15,8 +15,8 @@ dependencies:
   intl: any
   cupertino_icons: ^1.0.8
   get: ^4.7.2
-  shared_preferences: ^2.5.2
-  flex_color_scheme: ^8.1.1
+  shared_preferences: ^2.5.3
+  flex_color_scheme: ^8.2.0
   toastification: ^3.0.2
   syntax_highlight: ^0.4.0
   package_info_plus: ^8.3.0
