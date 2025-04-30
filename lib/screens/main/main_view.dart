@@ -31,19 +31,17 @@ class MainView extends GetView<MainLogic> {
               ),
               destinations: [
                 NavigationRailDestination(
-                  icon: Icon(FontAwesomeIcons.font, size: 18),
+                  icon: Icon(FontAwesomeIcons.font),
                   selectedIcon: FaIcon(
                     FontAwesomeIcons.font,
-                    size: 18,
                     color: colorScheme.primary,
                   ),
                   label: Text(l10n.jsonGenerator),
                 ),
                 NavigationRailDestination(
-                  icon: Icon(FontAwesomeIcons.dartLang, size: 18),
+                  icon: Icon(FontAwesomeIcons.dartLang),
                   selectedIcon: FaIcon(
                     FontAwesomeIcons.dartLang,
-                    size: 18,
                     color: colorScheme.primary,
                   ),
                   label: Text(l10n.dart),

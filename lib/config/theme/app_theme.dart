@@ -38,7 +38,7 @@ abstract final class AppTheme {
     subThemesData: const FlexSubThemesData(
       interactionEffects: true,
       tintedDisabledControls: true,
-      scaffoldBackgroundSchemeColor: SchemeColor.tertiary,
+      scaffoldBackgroundSchemeColor: SchemeColor.surfaceContainerHigh,
       useMaterial3Typography: true,
       useM2StyleDividerInM3: true,
       defaultRadius: 10.0,
