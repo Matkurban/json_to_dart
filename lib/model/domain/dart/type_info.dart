@@ -1,4 +1,3 @@
-// Helper Classes
 class TypeInfo {
   final String type;
   final String baseType;

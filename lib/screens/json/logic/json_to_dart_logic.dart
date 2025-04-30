@@ -1,19 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
+import 'package:json_to_dart/utils/message_util.dart';
+import 'package:syntax_highlight/syntax_highlight.dart';
 import 'package:json_to_dart/config/global/constant.dart';
-import 'package:json_to_dart/model/domain/dart/class_info.dart';
-import 'package:json_to_dart/model/domain/dart/dart_type.dart';
-import 'package:json_to_dart/model/domain/dart/field_info.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:json_to_dart/model/domain/dart/type_info.dart';
+import 'package:json_to_dart/model/domain/dart/dart_type.dart';
+import 'package:json_to_dart/model/domain/dart/class_info.dart';
+import 'package:json_to_dart/model/domain/dart/field_info.dart';
+import 'package:json_to_dart/widgets/dialog/confirm_dialog.dart';
 import 'package:json_to_dart/model/domain/main/history_item.dart';
 import 'package:json_to_dart/screens/splash/logic/splash_logic.dart';
-import 'package:json_to_dart/utils/message_util.dart';
-import 'package:json_to_dart/widgets/dialog/confirm_dialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:syntax_highlight/syntax_highlight.dart';
 
 class JsonToDartLogic extends GetxController {
   ///json输入框控制器
@@ -54,7 +54,10 @@ class JsonToDartLogic extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-    highlighter = Highlighter(language: 'dart', theme: splashLogic.highlighterTheme);
+    highlighter = Highlighter(
+      language: 'dart',
+      theme: splashLogic.highlighterTheme,
+    );
     jsonController.addListener(jsonListener);
     classNameController.addListener(classNameListener);
     nonNullable.listen((newValue) => generateDartClass());
@@ -109,11 +112,17 @@ class JsonToDartLogic extends GetxController {
   void generateDartClass() {
     try {
       if (jsonController.text.trim().isEmpty) {
-        MessageUtil.showWarning(title: l10n.operationPrompt, content: l10n.enterJsonPrompt);
+        MessageUtil.showWarning(
+          title: l10n.operationPrompt,
+          content: l10n.enterJsonPrompt,
+        );
         return;
       }
       if (classNameController.text.trim().isEmpty) {
-        MessageUtil.showWarning(title: l10n.operationPrompt, content: l10n.enterClassNamePrompt);
+        MessageUtil.showWarning(
+          title: l10n.operationPrompt,
+          content: l10n.enterClassNamePrompt,
+        );
         return;
       }
       final parsedJson = json.decode(jsonController.text.trim());
@@ -126,11 +135,16 @@ class JsonToDartLogic extends GetxController {
   void formatJson() {
     try {
       if (jsonController.text.trim().isEmpty) {
-        MessageUtil.showWarning(title: l10n.operationPrompt, content: l10n.enterJsonPrompt);
+        MessageUtil.showWarning(
+          title: l10n.operationPrompt,
+          content: l10n.enterJsonPrompt,
+        );
         return;
       }
       final parsedJson = json.decode(jsonController.text);
-      jsonController.text = const JsonEncoder.withIndent('  ').convert(parsedJson);
+      jsonController.text = const JsonEncoder.withIndent(
+        '  ',
+      ).convert(parsedJson);
     } catch (e) {
       _jsonConvertWarning();
     }
@@ -138,7 +152,10 @@ class JsonToDartLogic extends GetxController {
 
   String _generateCode(dynamic jsonData) {
     if (jsonData is! Map<String, dynamic>) {
-      MessageUtil.showWarning(title: l10n.conversionError, content: l10n.enterValidJsonPrompt);
+      MessageUtil.showWarning(
+        title: l10n.conversionError,
+        content: l10n.enterValidJsonPrompt,
+      );
       return '';
     }
     final buffer = StringBuffer();
@@ -147,7 +164,12 @@ class JsonToDartLogic extends GetxController {
     while (classStack.isNotEmpty) {
       final current = classStack.removeLast();
       if (classes.containsKey(current.name)) continue;
-      final fields = _parseFields(current.data, classes, classStack, current.name);
+      final fields = _parseFields(
+        current.data,
+        classes,
+        classStack,
+        current.name,
+      );
       _writeClassHeader(current.name, buffer);
       _writeClassBody(current.name, fields, buffer);
       classes[current.name] = current.data;
@@ -158,7 +180,11 @@ class JsonToDartLogic extends GetxController {
   void _writeClassHeader(String className, StringBuffer buffer) =>
       buffer.writeln('class $className {');
 
-  void _writeClassBody(String className, List<FieldInfo> fields, StringBuffer buffer) {
+  void _writeClassBody(
+    String className,
+    List<FieldInfo> fields,
+    StringBuffer buffer,
+  ) {
     // 字段声明
     for (final f in fields) {
       final nullability =
@@ -243,13 +269,15 @@ class JsonToDartLogic extends GetxController {
       if (nonNullable.value) {
         line = '${f.name}: json[\'${f.jsonKey}\']$listCast';
       } else {
-        line = '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\']$listCast : null';
+        line =
+            '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\']$listCast : null';
       }
     } else {
       if (nonNullable.value) {
         line = '${f.name}: json[\'${f.jsonKey}\']$typeCast';
       } else {
-        line = '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\']$typeCast : null';
+        line =
+            '${f.name}: json[\'${f.jsonKey}\'] != null ? json[\'${f.jsonKey}\']$typeCast : null';
       }
     }
     return '$line,';
@@ -288,7 +316,13 @@ class JsonToDartLogic extends GetxController {
     return data.entries.map((entry) {
       final jsonKey = entry.key;
       final value = entry.value;
-      final typeInfo = _resolveType(value, jsonKey, classes, classStack, parentClassName);
+      final typeInfo = _resolveType(
+        value,
+        jsonKey,
+        classes,
+        classStack,
+        parentClassName,
+      );
       final fieldName = _convertFieldName(jsonKey);
 
       return FieldInfo(
@@ -302,7 +336,10 @@ class JsonToDartLogic extends GetxController {
         isList: typeInfo.isList,
         isListOfCustomType: typeInfo.isListOfCustomType,
         isBasicListType: typeInfo.isBasicListType,
-        defaultValue: nonNullable.value && typeInfo.nullable ? typeInfo.defaultValue : null,
+        defaultValue:
+            nonNullable.value && typeInfo.nullable
+                ? typeInfo.defaultValue
+                : null,
       );
     }).toList();
   }
@@ -315,7 +352,12 @@ class JsonToDartLogic extends GetxController {
     String parentClassName,
   ) {
     if (value == null) {
-      return TypeInfo(type: 'dynamic', baseType: 'dynamic', isDynamic: true, nullable: true);
+      return TypeInfo(
+        type: 'dynamic',
+        baseType: 'dynamic',
+        isDynamic: true,
+        nullable: true,
+      );
     }
 
     if (value is Map) {
@@ -342,7 +384,9 @@ class JsonToDartLogic extends GetxController {
       final firstElement = value.first;
       if (firstElement is Map) {
         final className = '${_classNameFromKey(key, parentClassName)}Item';
-        classStack.add(ClassInfo(className, firstElement.cast<String, dynamic>()));
+        classStack.add(
+          ClassInfo(className, firstElement.cast<String, dynamic>()),
+        );
         return TypeInfo(
           type: 'List<$className>',
           baseType: 'List',
@@ -379,7 +423,8 @@ class JsonToDartLogic extends GetxController {
         .replaceAll(RegExp(r'[^a-zA-Z0-9]+'), '_') // 合并连续特殊字符为单个下划线
         .replaceAll(RegExp(r'_+'), '_'); // 确保没有连续下划线
     // 2. 分割下划线并过滤空片段
-    List<String> parts = sanitized.split('_').where((p) => p.isNotEmpty).toList();
+    List<String> parts =
+        sanitized.split('_').where((p) => p.isNotEmpty).toList();
     // 3. 处理每个片段
     List<String> processedParts =
         parts.map((part) {
@@ -397,7 +442,8 @@ class JsonToDartLogic extends GetxController {
           return part;
         }).toList();
     // 4. 转换为大驼峰格式（首字母大写）
-    processedParts = processedParts.map((p) => p[0].toUpperCase() + p.substring(1)).toList();
+    processedParts =
+        processedParts.map((p) => p[0].toUpperCase() + p.substring(1)).toList();
     // 5. 转换为小驼峰格式（首个字母小写）
     String camelCase =
         processedParts.isNotEmpty
@@ -460,11 +506,17 @@ class JsonToDartLogic extends GetxController {
   // 添加历史记录
   void addHistory() async {
     if (jsonController.text.trim().isEmpty) {
-      MessageUtil.showWarning(title: l10n.operationPrompt, content: l10n.enterJsonPrompt);
+      MessageUtil.showWarning(
+        title: l10n.operationPrompt,
+        content: l10n.enterJsonPrompt,
+      );
       return;
     }
     if (classNameController.text.trim().isEmpty) {
-      MessageUtil.showWarning(title: l10n.operationPrompt, content: l10n.enterClassNamePrompt);
+      MessageUtil.showWarning(
+        title: l10n.operationPrompt,
+        content: l10n.enterClassNamePrompt,
+      );
       return;
     }
     final newItem = HistoryItem(
@@ -482,22 +534,6 @@ class JsonToDartLogic extends GetxController {
     // 更新控制器列表
     history.add(newItem);
     MessageUtil.showSuccess(title: l10n.operationPrompt, content: '已保存到历史记录');
-  }
-
-  // 清空历史记录
-  void clearHistory() async {
-    if (history.isEmpty) {
-      return;
-    }
-    ConfirmDialog.showConfirmDialog(
-      title: l10n.confirmClear,
-      content: l10n.clearWarning,
-      onConfirm: () async {
-        history.clear();
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.remove(dartHistoryKey);
-      },
-    );
   }
 
   ///删除单个历史记录
@@ -523,7 +559,10 @@ class JsonToDartLogic extends GetxController {
   void _jsonConvertWarning() {
     dartCode.value = '';
     if (jsonController.text.trim().isNotEmpty) {
-      MessageUtil.showError(title: l10n.conversionError, content: l10n.enterValidJsonPrompt);
+      MessageUtil.showError(
+        title: l10n.conversionError,
+        content: l10n.enterValidJsonPrompt,
+      );
     }
   }
 

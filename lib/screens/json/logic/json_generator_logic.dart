@@ -1,53 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:flutter/services.dart';
-import 'package:json_to_dart/config/global/constant.dart';
-import 'package:json_to_dart/screens/splash/logic/splash_logic.dart';
-import 'package:json_to_dart/screens/json/model/json_history.dart';
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:syntax_highlight/syntax_highlight.dart';
+import 'package:get/get.dart';
+import 'package:json_to_dart/model/domain/main/json_field.dart';
 import 'package:uuid/uuid.dart';
-
-class JsonField {
-  final TextEditingController keyController;
-  final TextEditingController valueController;
-  String type;
-  final int index;
-  final int level;
-
-  JsonField({
-    required this.keyController,
-    required this.valueController,
-    this.type = 'string',
-    required this.index,
-    required this.level,
-  });
-
-  void dispose() {
-    keyController.dispose();
-    valueController.dispose();
-  }
-
-  JsonField createNewInstance({String? newType, int? newIndex, int? newLevel}) {
-    final newField = JsonField(
-      keyController: TextEditingController(text: keyController.text),
-      valueController: TextEditingController(text: valueController.text),
-      type: newType ?? type,
-      index: newIndex ?? index,
-      level: newLevel ?? level,
-    );
-
-    // 为新创建的字段添加监听器
-    newField.keyController.addListener(() => Get.find<JsonGeneratorLogic>().updateJsonOutput());
-    newField.valueController.addListener(() => Get.find<JsonGeneratorLogic>().updateJsonOutput());
-
-    return newField;
-  }
-}
+import 'package:flutter/material.dart';
+import 'package:syntax_highlight/syntax_highlight.dart';
+import 'package:json_to_dart/config/global/constant.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:json_to_dart/model/domain/main/json_history.dart';
+import 'package:json_to_dart/screens/splash/logic/splash_logic.dart';
 
 class JsonGeneratorLogic extends GetxController {
-  static JsonGeneratorLogic get to => Get.find();
   final fields = <JsonField>[].obs;
   final jsonOutput = ''.obs;
   final histories = <JsonHistory>[].obs;
@@ -61,7 +23,10 @@ class JsonGeneratorLogic extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    highlighter = Highlighter(language: 'dart', theme: splashLogic.highlighterTheme);
+    highlighter = Highlighter(
+      language: 'dart',
+      theme: splashLogic.highlighterTheme,
+    );
     addField();
     loadHistories();
   }
@@ -79,7 +44,9 @@ class JsonGeneratorLogic extends GetxController {
       final prefs = Get.find<SharedPreferences>();
       final historyJsonList = prefs.getStringList('json_histories') ?? [];
       histories.value =
-          historyJsonList.map((json) => JsonHistory.fromJson(jsonDecode(json))).toList()
+          historyJsonList
+              .map((json) => JsonHistory.fromJson(jsonDecode(json)))
+              .toList()
             ..sort((a, b) => b.createTime.compareTo(a.createTime));
     } catch (e) {
       debugPrint('Error loading histories: $e');
@@ -89,7 +56,8 @@ class JsonGeneratorLogic extends GetxController {
   Future<void> saveHistories() async {
     try {
       final prefs = Get.find<SharedPreferences>();
-      final historyJsonList = histories.map((history) => jsonEncode(history.toJson())).toList();
+      final historyJsonList =
+          histories.map((history) => jsonEncode(history.toJson())).toList();
       await prefs.setStringList('json_histories', historyJsonList);
     } catch (e) {
       debugPrint('Error saving histories: $e');
@@ -235,7 +203,10 @@ class JsonGeneratorLogic extends GetxController {
     try {
       if (fields.length > index) {
         final targetField = fields[index];
-        final newField = targetField.createNewInstance(newType: newType, newIndex: index);
+        final newField = targetField.createNewInstance(
+          newType: newType,
+          newIndex: index,
+        );
         fields[index] = newField;
         updateJsonOutput();
         fields.refresh();
@@ -274,10 +245,5 @@ class JsonGeneratorLogic extends GetxController {
       default:
         return field.valueController.text;
     }
-  }
-
-  void copyToClipboard(String text) {
-    Clipboard.setData(ClipboardData(text: text));
-    Get.snackbar(l10n.success, l10n.copiedToClipboard, snackPosition: SnackPosition.BOTTOM);
   }
 }

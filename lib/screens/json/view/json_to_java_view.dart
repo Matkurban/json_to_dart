@@ -1,13 +1,13 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:json_to_dart/config/global/constant.dart';
-import 'package:json_to_dart/screens/json/logic/json_to_java_logic.dart';
-import 'package:json_to_dart/screens/json/widgets/label_check_box.dart';
-import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/screens/json/widgets/title_text.dart';
-import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
+import 'package:json_to_dart/screens/json/widgets/label_check_box.dart';
+import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
+import 'package:json_to_dart/screens/json/logic/json_to_java_logic.dart';
+import 'package:json_to_dart/screens/json/view/widgets/json_to_java_drawer.dart';
 
 class JsonToJavaView extends GetView<JsonToJavaLogic> {
   const JsonToJavaView({super.key});
@@ -35,21 +35,24 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
         ],
       ),
       body: Padding(
-        padding: AppStyle.defaultPadding,
+        padding: AppStyle.smallPadding,
         child: Column(
-          spacing: 10,
           children: [
             Expanded(
               child: Row(
-                spacing: 10,
-                children: [_buildInputPanel(context), _buildOutputPanel(context)],
+                children: [
+                  _buildInputPanel(context),
+                  VerticalDivider(width: 3),
+                  _buildOutputPanel(context),
+                ],
               ),
             ),
+            Divider(height: 3),
             _buildControlPanel(context),
           ],
         ),
       ),
-      endDrawer: _buildHistoryDrawer(context),
+      endDrawer: const JsonToJavaDrawer(),
     );
   }
 
@@ -58,7 +61,7 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
       child: Card(
         margin: EdgeInsets.zero,
         child: Padding(
-          padding: AppStyle.defaultPadding,
+          padding: AppStyle.smallPadding,
           child: Column(
             spacing: 10,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,7 +71,9 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                   TitleText(text: l10n.jsonInput),
                   Spacer(),
                   IconButton(
-                    onPressed: () => previewJson(context, controller.jsonController.text),
+                    onPressed: () {
+                      previewJson(context, controller.jsonController.text);
+                    },
                     icon: Icon(CupertinoIcons.eye),
                     tooltip: l10n.previewJsonView,
                   ),
@@ -86,16 +91,20 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                   expands: true,
                   maxLines: null,
                   textAlignVertical: TextAlignVertical.top,
-                  decoration: InputDecoration(hintText: l10n.jsonInputPlaceholder),
+                  decoration: InputDecoration(
+                    hintText: l10n.jsonInputPlaceholder,
+                  ),
                 ),
               ),
               Row(
-                spacing: 10,
+                spacing: 6,
                 children: [
                   Expanded(
                     child: TextField(
                       controller: controller.classNameController,
-                      decoration: InputDecoration(labelText: l10n.mainClassNameLabel),
+                      decoration: InputDecoration(
+                        labelText: l10n.mainClassNameLabel,
+                      ),
                     ),
                   ),
                   Expanded(
@@ -118,17 +127,16 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
       child: Card(
         margin: EdgeInsets.zero,
         child: Padding(
-          padding: AppStyle.defaultPadding,
+          padding: AppStyle.smallPadding,
           child: Column(
-            spacing: 10,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   TitleText(text: l10n.javaCode),
                   const Spacer(),
                   IconButton(
-                    onPressed: () => previewCode(context, controller.javaCode.value),
+                    onPressed:
+                        () => previewCode(context, controller.javaCode.value),
                     icon: Icon(CupertinoIcons.eye),
                     tooltip: l10n.previewCode,
                   ),
@@ -140,12 +148,12 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                 ],
               ),
               Expanded(
-                child: Obx(
-                  () => ModelViewPane(
+                child: Obx(() {
+                  return ModelViewPane(
                     code: controller.javaCode.value,
                     highlighter: controller.highlighter,
-                  ),
-                ),
+                  );
+                }),
               ),
             ],
           ),
@@ -160,48 +168,51 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
       margin: EdgeInsets.zero,
       child: Container(
         width: double.infinity,
-        padding: AppStyle.defaultPadding,
+        padding: AppStyle.smallPadding,
         child: Column(
-          spacing: 10,
           children: [
             Wrap(
-              spacing: 20,
+              spacing: 10,
               children: [
-                Obx(
-                  () => LabelCheckBox(
+                Obx(() {
+                  return LabelCheckBox(
                     label: l10n.useLombok,
                     value: controller.useLombok.value,
                     onChanged: (value) => controller.useLombok.value = value!,
-                  ),
-                ),
-                Obx(
-                  () => LabelCheckBox(
+                  );
+                }),
+                Obx(() {
+                  return LabelCheckBox(
                     label: l10n.generateGetterSetter,
                     value: controller.generateGetterSetter.value,
-                    onChanged: (value) => controller.generateGetterSetter.value = value!,
-                  ),
-                ),
-                Obx(
-                  () => LabelCheckBox(
+                    onChanged:
+                        (value) =>
+                            controller.generateGetterSetter.value = value!,
+                  );
+                }),
+                Obx(() {
+                  return LabelCheckBox(
                     label: l10n.generateBuilder,
                     value: controller.generateBuilder.value,
-                    onChanged: (value) => controller.generateBuilder.value = value!,
-                  ),
-                ),
-                Obx(
-                  () => LabelCheckBox(
+                    onChanged:
+                        (value) => controller.generateBuilder.value = value!,
+                  );
+                }),
+                Obx(() {
+                  return LabelCheckBox(
                     label: l10n.generateToString,
                     value: controller.generateToString.value,
-                    onChanged: (value) => controller.generateToString.value = value!,
-                  ),
-                ),
-                Obx(
-                  () => LabelCheckBox(
+                    onChanged:
+                        (value) => controller.generateToString.value = value!,
+                  );
+                }),
+                Obx(() {
+                  return LabelCheckBox(
                     label: l10n.useOptional,
                     value: controller.useOptional.value,
                     onChanged: (value) => controller.useOptional.value = value!,
-                  ),
-                ),
+                  );
+                }),
               ],
             ),
 
@@ -214,19 +225,25 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                   icon: const Icon(Icons.format_align_left),
                   label: Text(l10n.formatJson),
                   onPressed: controller.formatJson,
-                  style: FilledButton.styleFrom(backgroundColor: colorScheme.primary),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: colorScheme.primary,
+                  ),
                 ),
                 FilledButton.icon(
                   icon: const Icon(Icons.code),
                   label: Text(l10n.generateJavaClass),
                   onPressed: controller.generateJavaClass,
-                  style: FilledButton.styleFrom(backgroundColor: colorScheme.secondary),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: colorScheme.secondary,
+                  ),
                 ),
                 FilledButton.icon(
                   icon: const Icon(Icons.save),
                   label: Text(l10n.addToHistory),
                   onPressed: controller.addToHistory,
-                  style: FilledButton.styleFrom(backgroundColor: colorScheme.primary),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: colorScheme.primary,
+                  ),
                 ),
               ],
             ),
@@ -234,76 +251,5 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
         ),
       ),
     );
-  }
-
-  Widget _buildHistoryDrawer(BuildContext context) {
-    var width = MediaQuery.sizeOf(context).width * 0.3;
-    return Drawer(width: width, child: _buildHistoryPanel(context));
-  }
-
-  Widget _buildHistoryPanel(BuildContext context) {
-    var colorScheme = Theme.of(context).colorScheme;
-    return Obx(() {
-      return Column(
-        children: [
-          ListTile(
-            title: Text('${l10n.history} (${controller.history.length})'),
-            trailing: IconButton(
-              icon: Icon(Icons.delete_forever_outlined, color: colorScheme.error),
-              onPressed: controller.clearHistory,
-              tooltip: l10n.clearHistory,
-            ),
-          ),
-          Expanded(
-            child:
-                controller.history.isEmpty
-                    ? Center(
-                      child: Text(l10n.noHistory, style: Theme.of(context).textTheme.bodyLarge),
-                    )
-                    : ListView.builder(
-                      itemCount: controller.history.length,
-                      itemBuilder: (context, index) {
-                        final item = controller.history[index];
-                        return Dismissible(
-                          key: ValueKey(item.timestamp),
-                          onDismissed: (_) => controller.history.removeAt(index),
-                          child: ListTile(
-                            title: Text(item.title),
-                            subtitle: Text('${item.subtitle} ${formatTimeHHmm(item.timestamp)}'),
-                            onTap: () => PreviewDialog.showPreviewDialog(context, item),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  onPressed: () => PreviewDialog.showPreviewDialog(context, item),
-                                  icon: Icon(CupertinoIcons.eye, color: colorScheme.primary),
-                                  tooltip: l10n.preview,
-                                ),
-                                IconButton(
-                                  onPressed: () => copyToClipboard(item.json),
-                                  icon: Icon(Icons.copy_all),
-                                  tooltip: l10n.copyJson,
-                                ),
-                                IconButton(
-                                  onPressed: () => copyToClipboard(item.code),
-                                  icon: Icon(Icons.code),
-                                  tooltip: l10n.copyCode,
-                                ),
-
-                                IconButton(
-                                  onPressed: () => controller.deleteOne(item),
-                                  icon: Icon(Icons.remove, color: colorScheme.error),
-                                  tooltip: l10n.delete,
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-          ),
-        ],
-      );
-    });
   }
 }

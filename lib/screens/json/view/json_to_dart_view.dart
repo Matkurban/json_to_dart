@@ -1,13 +1,13 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
-import 'package:json_to_dart/screens/json/logic/json_to_dart_logic.dart';
+import 'package:json_to_dart/screens/json/widgets/title_text.dart';
 import 'package:json_to_dart/screens/json/widgets/label_check_box.dart';
 import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
-import 'package:json_to_dart/screens/json/widgets/title_text.dart';
-import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
+import 'package:json_to_dart/screens/json/logic/json_to_dart_logic.dart';
+import 'package:json_to_dart/screens/json/view/widgets/json_to_dart_drawer.dart';
 
 class JsonToDartView extends GetView<JsonToDartLogic> {
   const JsonToDartView({super.key});
@@ -20,39 +20,40 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
         centerTitle: true,
         actions: [
           Builder(
-            builder:
-                (context) => IconButton(
-                  icon: const Icon(Icons.history),
-                  onPressed: () {
-                    if (Scaffold.of(context).hasEndDrawer) {
-                      Scaffold.of(context).openEndDrawer();
-                    }
-                  },
-                  tooltip: l10n.history,
-                ),
+            builder: (context) {
+              return IconButton(
+                icon: const Icon(Icons.history),
+                onPressed: () {
+                  if (Scaffold.of(context).hasEndDrawer) {
+                    Scaffold.of(context).openEndDrawer();
+                  }
+                },
+                tooltip: l10n.history,
+              );
+            },
           ),
         ],
       ),
       body: Padding(
-        padding: AppStyle.defaultPadding,
+        padding: AppStyle.smallPadding,
         child: Column(
-          spacing: 10,
           children: [
             // 输入输出分栏
             Expanded(
               child: Row(
-                spacing: 10,
                 children: [
-                  _buildInputPanel(context), // 左侧输入区
+                  _buildInputPanel(context),
+                  VerticalDivider(width: 3),
                   _buildOutputPanel(context), // 右侧输出区
                 ],
               ),
             ),
+            Divider(height: 3),
             _buildControlPanel(context), // 底部控制区
           ],
         ),
       ),
-      endDrawer: _buildHistoryDrawer(context),
+      endDrawer: const JsonToDartDrawer(),
     );
   }
 
@@ -62,7 +63,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
       child: Card(
         margin: EdgeInsets.zero,
         child: Padding(
-          padding: AppStyle.defaultPadding,
+          padding: AppStyle.smallPadding,
           child: Column(
             spacing: 10,
             children: [
@@ -71,7 +72,9 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                   TitleText(text: l10n.jsonInput),
                   Spacer(),
                   IconButton(
-                    onPressed: () => previewJson(context, controller.jsonController.text),
+                    onPressed: () {
+                      previewJson(context, controller.jsonController.text);
+                    },
                     icon: Icon(CupertinoIcons.eye),
                     tooltip: l10n.previewJsonView,
                   ),
@@ -89,7 +92,9 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                   expands: true,
                   maxLines: null,
                   textAlignVertical: TextAlignVertical.top,
-                  decoration: InputDecoration(hintText: l10n.jsonInputPlaceholder),
+                  decoration: InputDecoration(
+                    hintText: l10n.jsonInputPlaceholder,
+                  ),
                 ),
               ),
               _buildClassNameField(context),
@@ -106,16 +111,17 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
       child: Card(
         margin: EdgeInsets.zero,
         child: Padding(
-          padding: AppStyle.defaultPadding,
+          padding: AppStyle.smallPadding,
           child: Column(
-            spacing: 10,
             children: [
               Row(
                 children: [
                   TitleText(text: l10n.dartOutput),
                   Spacer(),
                   IconButton(
-                    onPressed: () => previewCode(context, controller.dartCode.value),
+                    onPressed: () {
+                      previewCode(context, controller.dartCode.value);
+                    },
                     icon: Icon(CupertinoIcons.eye),
                     tooltip: l10n.previewCode,
                   ),
@@ -127,12 +133,12 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                 ],
               ),
               Expanded(
-                child: Obx(
-                  () => ModelViewPane(
+                child: Obx(() {
+                  return ModelViewPane(
                     code: controller.dartCode.value,
                     highlighter: controller.highlighter,
-                  ),
-                ),
+                  );
+                }),
               ),
             ],
           ),
@@ -146,9 +152,8 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
       margin: EdgeInsets.zero,
       child: Container(
         width: double.infinity,
-        padding: AppStyle.defaultPadding,
+        padding: AppStyle.smallPadding,
         child: Column(
-          spacing: 10,
           children: [_buildOptionsRow(context), _buildActionButtons(context)],
         ),
       ),
@@ -157,43 +162,43 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
 
   Widget _buildOptionsRow(BuildContext context) {
     return Wrap(
-      spacing: 20,
+      spacing: 10,
       children: [
-        Obx(
-          () => LabelCheckBox(
+        Obx(() {
+          return LabelCheckBox(
             value: controller.nonNullable.value,
             label: l10n.nonNullableFields,
             onChanged: (v) => controller.nonNullable.value = v!,
-          ),
-        ),
-        Obx(
-          () => LabelCheckBox(
+          );
+        }),
+        Obx(() {
+          return LabelCheckBox(
             value: controller.generateToJson.value,
             label: l10n.generateToJson,
             onChanged: (v) => controller.generateToJson.value = v!,
-          ),
-        ),
-        Obx(
-          () => LabelCheckBox(
+          );
+        }),
+        Obx(() {
+          return LabelCheckBox(
             value: controller.generateFromJson.value,
             label: l10n.generateFromJson,
             onChanged: (v) => controller.generateFromJson.value = v!,
-          ),
-        ),
-        Obx(
-          () => LabelCheckBox(
+          );
+        }),
+        Obx(() {
+          return LabelCheckBox(
             value: controller.forceTypeCasting.value,
             label: l10n.forceTypeCasting,
             onChanged: (v) => controller.forceTypeCasting.value = v!,
-          ),
-        ),
-        Obx(
-          () => LabelCheckBox(
+          );
+        }),
+        Obx(() {
+          return LabelCheckBox(
             value: controller.generateCopyWith.value,
             label: l10n.generateCopyWith,
             onChanged: (v) => controller.generateCopyWith.value = v!,
-          ),
-        ),
+          );
+        }),
       ],
     );
   }
@@ -229,93 +234,21 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
 
   Widget _buildClassNameField(BuildContext context) {
     return Row(
-      spacing: 10,
+      spacing: 6,
       children: [
         Expanded(
           child: TextField(
-            controller: controller.classNameController,
             style: AppStyle.codeTextStyle,
+            controller: controller.classNameController,
             decoration: InputDecoration(labelText: l10n.mainClassNameLabel),
           ),
         ),
         IconButton(
-          onPressed: controller.classNameController.clear,
-          icon: const Icon(Icons.clear),
           tooltip: '清空类名',
+          icon: const Icon(Icons.clear),
+          onPressed: controller.classNameController.clear,
         ),
       ],
     );
-  }
-
-  Widget _buildHistoryDrawer(BuildContext context) {
-    var width = MediaQuery.sizeOf(context).width * 0.3;
-    return Drawer(width: width, child: _buildHistoryPanel(context));
-  }
-
-  Widget _buildHistoryPanel(BuildContext context) {
-    var colorScheme = Theme.of(context).colorScheme;
-    return Obx(() {
-      return Column(
-        children: [
-        
-          ListTile(
-            title: Text('${l10n.history} (${controller.history.length})'),
-            trailing: IconButton(
-              icon: Icon(Icons.delete_forever_outlined, color: colorScheme.error),
-              onPressed: controller.clearHistory,
-              tooltip: l10n.clearHistory,
-            ),
-          ),
-          Expanded(
-            child:
-                controller.history.isEmpty
-                    ? Center(
-                      child: Text(l10n.noHistory, style: Theme.of(context).textTheme.bodyLarge),
-                    )
-                    : ListView.builder(
-                      itemCount: controller.history.length,
-                      itemBuilder: (context, index) {
-                        final item = controller.history[index];
-                        return Dismissible(
-                          key: ValueKey(item.timestamp),
-                          onDismissed: (_) => controller.history.removeAt(index),
-                          child: ListTile(
-                            title: Text(item.title),
-                            subtitle: Text('${item.subtitle} ${formatTimeHHmm(item.timestamp)}'),
-                            onTap: () => PreviewDialog.showPreviewDialog(context, item),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  onPressed: () => PreviewDialog.showPreviewDialog(context, item),
-                                  icon: Icon(CupertinoIcons.eye, color: colorScheme.primary),
-                                  tooltip: l10n.preview,
-                                ),
-                                IconButton(
-                                  onPressed: () => copyToClipboard(item.json),
-                                  icon: Icon(Icons.copy_all),
-                                  tooltip: l10n.copyJson,
-                                ),
-                                IconButton(
-                                  onPressed: () => copyToClipboard(item.code),
-                                  icon: Icon(Icons.code),
-                                  tooltip: l10n.copyCode,
-                                ),
-
-                                IconButton(
-                                  onPressed: () => controller.deleteOne(item),
-                                  icon: Icon(Icons.remove, color: colorScheme.error),
-                                  tooltip: l10n.delete,
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-          ),
-        ],
-      );
-    });
   }
 }

@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:json_to_dart/config/global/app_setting.dart';
+import 'package:flutter/material.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
+import 'package:json_to_dart/config/global/app_setting.dart';
 
 class ToggleThemeView extends GetView<AppSetting> {
   const ToggleThemeView({super.key});
@@ -20,7 +20,7 @@ class ToggleThemeView extends GetView<AppSetting> {
               groupValue: controller.theme.value,
               onChanged: (value) => controller.changeTheme(value!),
               title: Text(l10n.lightTheme),
-              selected: ThemeMode.light==controller.theme.value,
+              selected: ThemeMode.light == controller.theme.value,
             );
           }),
           Obx(() {
@@ -29,7 +29,7 @@ class ToggleThemeView extends GetView<AppSetting> {
               groupValue: controller.theme.value,
               onChanged: (value) => controller.changeTheme(value!),
               title: Text(l10n.darkTheme),
-              selected: ThemeMode.dark==controller.theme.value,
+              selected: ThemeMode.dark == controller.theme.value,
             );
           }),
           Obx(() {
@@ -38,7 +38,7 @@ class ToggleThemeView extends GetView<AppSetting> {
               groupValue: controller.theme.value,
               onChanged: (value) => controller.changeTheme(value!),
               title: Text(l10n.systemTheme),
-              selected: ThemeMode.system==controller.theme.value,
+              selected: ThemeMode.system == controller.theme.value,
             );
           }),
         ],

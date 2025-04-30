@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:json_to_dart/config/global/app_setting.dart';
+import 'package:flutter/material.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/model/enum/app_language.dart';
+import 'package:json_to_dart/config/global/app_setting.dart';
 
 class ToggleLanguageView extends GetView<AppSetting> {
   const ToggleLanguageView({super.key});
@@ -22,7 +22,7 @@ class ToggleLanguageView extends GetView<AppSetting> {
               groupValue: controller.language.value,
               onChanged: (value) => controller.changeLanguage(value!),
               title: Text(values[index].displayName),
-              selected: values[index]==controller.language.value,
+              selected: values[index] == controller.language.value,
             );
           });
         },

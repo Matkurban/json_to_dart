@@ -1,14 +1,14 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:json_to_dart/config/global/app_setting.dart';
-import 'package:json_to_dart/config/global/constant.dart';
-import 'package:json_to_dart/model/domain/main/history_item.dart';
-import 'package:json_to_dart/model/enum/app_language.dart';
+import 'package:flutter/material.dart';
 import 'package:json_to_dart/router/router_names.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syntax_highlight/syntax_highlight.dart';
+import 'package:json_to_dart/config/global/constant.dart';
+import 'package:json_to_dart/model/enum/app_language.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:json_to_dart/config/global/app_setting.dart';
+import 'package:json_to_dart/model/domain/main/history_item.dart';
 
 class SplashLogic extends GetxController {
   late HighlighterTheme highlighterTheme;
@@ -72,7 +72,9 @@ class SplashLogic extends GetxController {
     final historyJson = prefs.getStringList(dartHistoryKey) ?? [];
     // 更新控制器的 history 列表
     dartHistory.assignAll(
-      historyJson.map((jsonStr) => HistoryItem.fromJson(jsonDecode(jsonStr))).toList(),
+      historyJson.map((jsonStr) {
+        return HistoryItem.fromJson(jsonDecode(jsonStr));
+      }).toList(),
     );
   }
 
@@ -82,7 +84,9 @@ class SplashLogic extends GetxController {
     final historyJson = prefs.getStringList(javaHistoryKey) ?? [];
     // 更新控制器的 history 列表
     javaHistory.assignAll(
-      historyJson.map((jsonStr) => HistoryItem.fromJson(jsonDecode(jsonStr))).toList(),
+      historyJson.map((jsonStr) {
+        return HistoryItem.fromJson(jsonDecode(jsonStr));
+      }).toList(),
     );
   }
 }

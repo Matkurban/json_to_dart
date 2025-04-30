@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
-import 'package:json_to_dart/screens/json/logic/json_generator_logic.dart';
-import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
 import 'package:json_to_dart/screens/json/widgets/title_text.dart';
+import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
+import 'package:json_to_dart/screens/json/logic/json_generator_logic.dart';
+import 'package:json_to_dart/screens/json/view/widgets/json_generator_drawer.dart';
 
 class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
   const JsonGeneratorView({super.key});
@@ -23,62 +24,20 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
                 onPressed: () => Scaffold.of(context).openEndDrawer(),
                 tooltip: l10n.history,
               );
-            }
+            },
           ),
         ],
       ),
-      endDrawer: _buildDrawer(context),
+      endDrawer: const JsonGeneratorDrawer(),
       body: Padding(
-        padding: AppStyle.defaultPadding,
+        padding: AppStyle.smallPadding,
         child: Row(
-          spacing: 10,
           children: [
             Expanded(flex: 1, child: _buildOutputPanel(context)),
+            VerticalDivider(width: 3),
             Expanded(flex: 1, child: _buildInputPanel(context)),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildDrawer(BuildContext context) {
-    return Drawer(
-      child: Column(
-        children: [
-          DrawerHeader(
-            decoration: BoxDecoration(color: Theme.of(context).primaryColor),
-            child: Center(
-              child: Text(
-                l10n.history,
-                style: const TextStyle(color: Colors.white, fontSize: 24),
-              ),
-            ),
-          ),
-          Expanded(
-            child: Obx(
-              () => ListView.builder(
-                itemCount: controller.histories.length,
-                itemBuilder: (context, index) {
-                  final history = controller.histories[index];
-                  return ListTile(
-                    title: Text(history.name),
-                    subtitle: Text(
-                      '${history.createTime.year}-${history.createTime.month}-${history.createTime.day} ${history.createTime.hour}:${history.createTime.minute}',
-                    ),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => controller.deleteHistory(history),
-                    ),
-                    onTap: () {
-                      controller.loadFromHistory(history);
-                      Navigator.pop(context);
-                    },
-                  );
-                },
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -87,7 +46,7 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
     return Card(
       margin: EdgeInsets.zero,
       child: Padding(
-        padding: AppStyle.defaultPadding,
+        padding: AppStyle.smallPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -96,13 +55,17 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
                 TitleText(text: l10n.jsonOutput),
                 const Spacer(),
                 IconButton(
-                  onPressed: () => previewJson(context, controller.jsonOutput.value),
+                  onPressed: () {
+                    previewJson(context, controller.jsonOutput.value);
+                  },
                   icon: const Icon(Icons.visibility),
                   tooltip: l10n.previewJsonView,
                 ),
                 IconButton(
                   icon: const Icon(Icons.copy),
-                  onPressed: () => controller.copyToClipboard(controller.jsonOutput.value),
+                  onPressed: () {
+                    copyToClipboard(controller.jsonOutput.value);
+                  },
                   tooltip: l10n.copyJson,
                 ),
                 IconButton(
@@ -114,7 +77,12 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: Obx(() => ModelViewPane(code: controller.jsonOutput.value, highlighter: controller.highlighter)),
+              child: Obx(() {
+                return ModelViewPane(
+                  code: controller.jsonOutput.value,
+                  highlighter: controller.highlighter,
+                );
+              }),
             ),
           ],
         ),
@@ -126,7 +94,7 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
     return Card(
       margin: EdgeInsets.zero,
       child: Padding(
-        padding: AppStyle.defaultPadding,
+        padding: AppStyle.smallPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -148,8 +116,8 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: Obx(
-                () => ListView.builder(
+              child: Obx(() {
+                return ListView.builder(
                   itemCount: controller.fields.length,
                   itemBuilder: (context, index) {
                     final field = controller.fields[index];
@@ -196,8 +164,8 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
                       ),
                     );
                   },
-                ),
-              ),
+                );
+              }),
             ),
           ],
         ),

@@ -5,9 +5,9 @@ class JavaType {
   final String literalValue;
 
   const JavaType(
-      this.type,
-      this.primitiveType,
-      this.defaultValue,
-      this.literalValue,
-      );
+    this.type,
+    this.primitiveType,
+    this.defaultValue,
+    this.literalValue,
+  );
 }

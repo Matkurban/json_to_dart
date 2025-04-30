@@ -4,10 +4,20 @@ class JsonHistory {
   final String jsonContent;
   final DateTime createTime;
 
-  JsonHistory({required this.id, required this.name, required this.jsonContent, required this.createTime});
+  JsonHistory({
+    required this.id,
+    required this.name,
+    required this.jsonContent,
+    required this.createTime,
+  });
 
   Map<String, dynamic> toJson() {
-    return {'id': id, 'name': name, 'jsonContent': jsonContent, 'createTime': createTime.toIso8601String()};
+    return {
+      'id': id,
+      'name': name,
+      'jsonContent': jsonContent,
+      'createTime': createTime.toIso8601String(),
+    };
   }
 
   factory JsonHistory.fromJson(Map<String, dynamic> json) {

@@ -1,6 +1,7 @@
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 /// The [AppTheme] defines light and dark themes for the app.
 ///
 /// Theme setup for FlexColorScheme package v8.
@@ -18,7 +19,8 @@ import 'package:flutter/material.dart';
 abstract final class AppTheme {
   // The defined light theme.
   static ThemeData light = FlexThemeData.light(
-    colors: const FlexSchemeColor( // Custom colors
+    colors: const FlexSchemeColor(
+      // Custom colors
       primary: Color(0xFF4CAF50),
       primaryContainer: Color(0xFFC8FFC0),
       primaryLightRef: Color(0xFF4CAF50),
@@ -36,7 +38,7 @@ abstract final class AppTheme {
     subThemesData: const FlexSubThemesData(
       interactionEffects: true,
       tintedDisabledControls: true,
-      scaffoldBackgroundSchemeColor: SchemeColor.surfaceContainerHigh,
+      scaffoldBackgroundSchemeColor: SchemeColor.tertiary,
       useMaterial3Typography: true,
       useM2StyleDividerInM3: true,
       defaultRadius: 10.0,
@@ -60,6 +62,8 @@ abstract final class AppTheme {
       searchUseGlobalShape: true,
       navigationRailUseIndicator: true,
       navigationRailLabelType: NavigationRailLabelType.all,
+      cardRadius: 0,
+      cardElevation: 0,
     ),
     useMaterial3ErrorColors: true,
     visualDensity: FlexColorScheme.comfortablePlatformDensity,
@@ -67,7 +71,8 @@ abstract final class AppTheme {
   );
   // The defined dark theme.
   static ThemeData dark = FlexThemeData.dark(
-    colors: const FlexSchemeColor( // Custom colors
+    colors: const FlexSchemeColor(
+      // Custom colors
       primary: Color(0xFF9FC9FF),
       primaryContainer: Color(0xFF00325B),
       primaryLightRef: Color(0xFF4CAF50),
@@ -112,6 +117,7 @@ abstract final class AppTheme {
     cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
   );
 }
+
 /*{
     "playground_data": "Themes Playground data exported 04.03.2025 16:20:36",
     "playground_version": "8.1.1",

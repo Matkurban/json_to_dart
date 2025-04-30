@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:json_to_dart/config/global/app_setting.dart';
+import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:json_to_dart/config/global/app_setting.dart';
 
 class SettingLogic extends GetxController {
   ///主题的中文名字
@@ -21,11 +21,15 @@ class SettingLogic extends GetxController {
     convert(_appSetting.theme.value);
     languageName(_appSetting.language.value.displayName);
     ever<ThemeMode>(_appSetting.theme, (mode) => convert(mode));
-    ever(_appSetting.language, (newValue) => languageName(newValue.displayName));
+    ever(
+      _appSetting.language,
+      (newValue) => languageName(newValue.displayName),
+    );
     getVersion();
   }
 
-  void convert(ThemeMode mode) => themeChineseString(themeConvertToString(mode));
+  void convert(ThemeMode mode) =>
+      themeChineseString(themeConvertToString(mode));
 
   ///主题转换为中文字符串
   String themeConvertToString(ThemeMode mode) {

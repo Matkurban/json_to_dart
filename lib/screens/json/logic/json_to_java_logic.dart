@@ -1,18 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:json_to_dart/config/global/constant.dart';
-import 'package:json_to_dart/model/domain/dart/class_info.dart';
-import 'package:json_to_dart/model/domain/main/history_item.dart';
-import 'package:json_to_dart/model/domain/java/java_field_info.dart';
-import 'package:json_to_dart/model/domain/java/java_type.dart';
-import 'package:json_to_dart/model/domain/java/java_type_info.dart';
-import 'package:json_to_dart/screens/splash/logic/splash_logic.dart';
+import 'package:flutter/material.dart';
 import 'package:json_to_dart/utils/message_util.dart';
-import 'package:json_to_dart/widgets/dialog/confirm_dialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syntax_highlight/syntax_highlight.dart';
+import 'package:json_to_dart/config/global/constant.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:json_to_dart/model/domain/java/java_type.dart';
+import 'package:json_to_dart/model/domain/dart/class_info.dart';
+import 'package:json_to_dart/widgets/dialog/confirm_dialog.dart';
+import 'package:json_to_dart/model/domain/main/history_item.dart';
+import 'package:json_to_dart/model/domain/java/java_type_info.dart';
+import 'package:json_to_dart/model/domain/java/java_field_info.dart';
+import 'package:json_to_dart/screens/splash/logic/splash_logic.dart';
 
 class JsonToJavaLogic extends GetxController {
   // Controllers
@@ -53,13 +53,16 @@ class JsonToJavaLogic extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-    highlighter = Highlighter(language: 'dart', theme: splashLogic.highlighterTheme);
+    highlighter = Highlighter(
+      language: 'dart',
+      theme: splashLogic.highlighterTheme,
+    );
     jsonController.addListener(jsonListener);
     packageNameController.addListener(packageNameListener);
     classNameController.addListener(classNameListener);
-    generateGetterSetter.listen((newvAlue) {
+    generateGetterSetter.listen((newValue) {
       generateJavaClass();
-      if (newvAlue) {
+      if (newValue) {
         generateBuilder(false);
         useLombok(false);
       }
@@ -131,7 +134,8 @@ class JsonToJavaLogic extends GetxController {
 
   void generateJavaClass() {
     try {
-      if (jsonController.text.trim().isEmpty || classNameController.text.trim().isEmpty) {
+      if (jsonController.text.trim().isEmpty ||
+          classNameController.text.trim().isEmpty) {
         return;
       }
       final parsedJson = json.decode(jsonController.text.trim());
@@ -143,13 +147,18 @@ class JsonToJavaLogic extends GetxController {
 
   String _generateCode(dynamic jsonData) {
     if (jsonData is! Map<String, dynamic>) {
-      MessageUtil.showWarning(title: l10n.conversionError, content: l10n.enterValidJsonPrompt);
+      MessageUtil.showWarning(
+        title: l10n.conversionError,
+        content: l10n.enterValidJsonPrompt,
+      );
       return '';
     }
 
     final buffer = StringBuffer();
     final classes = <String, Map<String, dynamic>>{}; // 存储所有需要生成的类
-    final classStack = [ClassInfo(classNameController.text.trim(), jsonData)]; // 用于处理嵌套类
+    final classStack = [
+      ClassInfo(classNameController.text.trim(), jsonData),
+    ]; // 用于处理嵌套类
 
     // Add package declaration if provided
     if (packageNameController.text.isNotEmpty) {
@@ -165,7 +174,13 @@ class JsonToJavaLogic extends GetxController {
       final currentClass = classStack.removeLast();
       if (classes.containsKey(currentClass.name)) continue;
       classes[currentClass.name] = currentClass.data;
-      _generateClass(currentClass.name, currentClass.data, buffer, classes, classStack);
+      _generateClass(
+        currentClass.name,
+        currentClass.data,
+        buffer,
+        classes,
+        classStack,
+      );
       buffer.writeln();
     }
     return buffer.toString().trim();
@@ -190,7 +205,12 @@ class JsonToJavaLogic extends GetxController {
     buffer.writeln();
 
     // Generate fields and collect nested classes
-    List<JavaFieldInfo> fields = _parseFields(jsonData, classes, classStack, className);
+    List<JavaFieldInfo> fields = _parseFields(
+      jsonData,
+      classes,
+      classStack,
+      className,
+    );
 
     for (var field in fields) {
       _writeField(field, buffer);
@@ -244,7 +264,9 @@ class JsonToJavaLogic extends GetxController {
       } else if (value is List && value.isNotEmpty && value[0] is Map) {
         // 处理对象数组
         final itemClassName = '$parentClassName${jsonKey.capitalize}Item';
-        classStack.add(ClassInfo(itemClassName, value[0] as Map<String, dynamic>));
+        classStack.add(
+          ClassInfo(itemClassName, value[0] as Map<String, dynamic>),
+        );
 
         return JavaFieldInfo(
           name: fieldName,
@@ -292,7 +314,8 @@ class JsonToJavaLogic extends GetxController {
   }
 
   void _writeGetterSetter(JavaFieldInfo field, StringBuffer buffer) {
-    final capitalizedField = field.name[0].toUpperCase() + field.name.substring(1);
+    final capitalizedField =
+        field.name[0].toUpperCase() + field.name.substring(1);
 
     // Generate getter
     buffer.writeln();
@@ -306,12 +329,18 @@ class JsonToJavaLogic extends GetxController {
 
     // Generate setter
     buffer.writeln();
-    buffer.writeln('    public void set$capitalizedField(${field.type} ${field.name}) {');
+    buffer.writeln(
+      '    public void set$capitalizedField(${field.type} ${field.name}) {',
+    );
     buffer.writeln('        this.${field.name} = ${field.name};');
     buffer.writeln('    }');
   }
 
-  void _writeBuilder(String className, List<JavaFieldInfo> fields, StringBuffer buffer) {
+  void _writeBuilder(
+    String className,
+    List<JavaFieldInfo> fields,
+    StringBuffer buffer,
+  ) {
     buffer.writeln();
     buffer.writeln('    public static class ${className}Builder {');
 
@@ -348,7 +377,11 @@ class JsonToJavaLogic extends GetxController {
     buffer.writeln('    }');
   }
 
-  void _writeToString(String className, List<JavaFieldInfo> fields, StringBuffer buffer) {
+  void _writeToString(
+    String className,
+    List<JavaFieldInfo> fields,
+    StringBuffer buffer,
+  ) {
     buffer.writeln();
     buffer.writeln('    @Override');
     buffer.writeln('    public String toString() {');
@@ -374,7 +407,9 @@ class JsonToJavaLogic extends GetxController {
     try {
       if (jsonController.text.trim().isEmpty) return;
       final parsedJson = json.decode(jsonController.text);
-      jsonController.text = const JsonEncoder.withIndent('  ').convert(parsedJson);
+      jsonController.text = const JsonEncoder.withIndent(
+        '  ',
+      ).convert(parsedJson);
     } catch (e) {
       _jsonConvertWarning();
     }
@@ -410,7 +445,8 @@ class JsonToJavaLogic extends GetxController {
         final itemClassName = '$parentClassName${key.capitalize}Item';
         return JavaTypeInfo(type: 'List<$itemClassName>', isCustomType: true);
       }
-      final elementType = _javaTypeMap[firstElement.runtimeType]?.type ?? 'Object';
+      final elementType =
+          _javaTypeMap[firstElement.runtimeType]?.type ?? 'Object';
       return JavaTypeInfo(type: 'List<$elementType>', isCustomType: false);
     }
 
@@ -421,7 +457,10 @@ class JsonToJavaLogic extends GetxController {
   void _jsonConvertWarning() {
     javaCode.value = '';
     if (jsonController.text.trim().isNotEmpty) {
-      MessageUtil.showError(title: l10n.conversionError, content: l10n.enterValidJsonPrompt);
+      MessageUtil.showError(
+        title: l10n.conversionError,
+        content: l10n.enterValidJsonPrompt,
+      );
     }
   }
 
@@ -452,30 +491,6 @@ class JsonToJavaLogic extends GetxController {
     MessageUtil.showSuccess(title: l10n.operationPrompt, content: '已保存到历史记录');
   }
 
-  // 清空历史记录
-  void clearHistory() async {
-    if (history.isEmpty) {
-      return;
-    }
-    ConfirmDialog.showConfirmDialog(
-      title: l10n.confirmClear,
-      content: l10n.clearWarning,
-      onConfirm: () async {
-        history.clear();
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.remove(javaHistoryKey);
-      },
-    );
-  }
-
-  void removeHistoryItem(int index) async {
-    history.removeAt(index);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(
-      javaHistoryKey,
-      history.map((item) => jsonEncode(item.toJson())).toList(),
-    );
-  }
 
   ///删除单个历史记录
   void deleteOne(HistoryItem item) {

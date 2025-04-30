@@ -13,7 +13,10 @@ import 'package:syntax_highlight/syntax_highlight.dart';
 
 sealed class PreviewDialog {
   static void showPreviewDialog(BuildContext context, HistoryItem item) {
-    showDialog(context: context, builder: (context) => _PreviewDialogContent(item: item));
+    showDialog(
+      context: context,
+      builder: (context) => _PreviewDialogContent(item: item),
+    );
   }
 
   static void showPreviewJsonDialog(BuildContext context, String json) {
@@ -61,7 +64,10 @@ sealed class PreviewDialog {
   static void showPreviewDartDialog(BuildContext context, String code) {
     var size = MediaQuery.sizeOf(context);
     SplashLogic splashLogic = Get.find<SplashLogic>();
-    Highlighter highlighter = Highlighter(language: 'dart', theme: splashLogic.highlighterTheme);
+    Highlighter highlighter = Highlighter(
+      language: 'dart',
+      theme: splashLogic.highlighterTheme,
+    );
     showDialog(
       context: context,
       builder: (context) {
@@ -93,8 +99,11 @@ class _PreviewDialogContent extends GetView<JsonToDartLogic> {
     return ZoomIn(
       child: Dialog(
         child: Container(
-          padding: AppStyle.defaultPadding,
-          constraints: BoxConstraints(maxWidth: size.width * 0.9, maxHeight: size.height * 0.9),
+          padding: AppStyle.smallPadding,
+          constraints: BoxConstraints(
+            maxWidth: size.width * 0.9,
+            maxHeight: size.height * 0.9,
+          ),
           child: Row(
             spacing: 10,
             children: [
@@ -137,8 +146,18 @@ class _PreviewDialogContent extends GetView<JsonToDartLogic> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  IconButton(icon: const Icon(Icons.copy), onPressed: onCopy, tooltip: tooltip),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.copy),
+                    onPressed: onCopy,
+                    tooltip: tooltip,
+                  ),
                 ],
               ),
               // 代码内容区域

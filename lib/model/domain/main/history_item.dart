@@ -21,7 +21,7 @@ class HistoryItem {
       'subtitle': subtitle,
       'json': json,
       'code': code,
-      'timestamp': timestamp.millisecondsSinceEpoch, // 将 DateTime 转换为时间戳
+      'timestamp': timestamp.millisecondsSinceEpoch,
     };
   }
 
@@ -32,7 +32,7 @@ class HistoryItem {
       subtitle: json['subtitle'] as String,
       json: json['json'] as String,
       code: json['code'] as String,
-      timestamp: DateTime.fromMillisecondsSinceEpoch(json['timestamp'] as int), // 从时间戳恢复 DateTime
+      timestamp: DateTime.fromMillisecondsSinceEpoch(json['timestamp'] as int),
     );
   }
 }
