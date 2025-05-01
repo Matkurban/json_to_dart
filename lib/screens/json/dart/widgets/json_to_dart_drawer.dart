@@ -2,12 +2,12 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:flutter/cupertino.dart' show CupertinoIcons;
+import 'package:json_to_dart/screens/json/widgets/custom_drawer_header.dart';
 import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
-import 'package:json_to_dart/screens/json/logic/json_to_java_logic.dart';
-import 'package:json_to_dart/screens/json/view/widgets/custom_drawer_header.dart';
+import 'package:json_to_dart/screens/json/dart/json_to_dart_logic.dart';
 
-class JsonToJavaDrawer extends GetWidget<JsonToJavaLogic> {
-  const JsonToJavaDrawer({super.key});
+class JsonToDartDrawer extends GetWidget<JsonToDartLogic> {
+  const JsonToDartDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {

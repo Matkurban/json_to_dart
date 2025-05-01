@@ -2,7 +2,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_json_view/flutter_json_view.dart';
 import 'package:get/get.dart';
-import 'package:json_to_dart/screens/json/logic/json_to_dart_logic.dart';
+import 'package:json_to_dart/screens/json/dart/json_to_dart_logic.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/model/domain/main/history_item.dart';

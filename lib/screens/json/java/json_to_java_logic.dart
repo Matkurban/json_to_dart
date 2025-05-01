@@ -38,12 +38,12 @@ class JsonToJavaLogic extends GetxController {
 
   final SplashLogic splashLogic = Get.find<SplashLogic>();
 
-  static const Map<Type, JavaType> _javaTypeMap = {
-    String: JavaType('String', 'String', 'null', '""'),
-    int: JavaType('Integer', 'int', '0', '0'),
-    double: JavaType('Double', 'double', '0.0', '0.0'),
-    bool: JavaType('Boolean', 'boolean', 'false', 'false'),
-    Null: JavaType('Object', 'Object', 'null', 'null'),
+  static const Map<String, JavaType> _javaTypeMap = {
+    'String': JavaType('String', 'String', 'null', '""'),
+    'int': JavaType('Integer', 'int', '0', '0'),
+    'double': JavaType('Double', 'double', '0.0', '0.0'),
+    'bool': JavaType('Boolean', 'boolean', 'false', 'false'),
+    'Null': JavaType('Object', 'Object', 'null', 'null'),
   };
 
   Timer? _jsonDebounce;
@@ -51,12 +51,11 @@ class JsonToJavaLogic extends GetxController {
   Timer? _packageNameDebounce;
 
   @override
-  void onInit() async {
+  void onInit() {
     super.onInit();
-    highlighter = Highlighter(
-      language: 'dart',
-      theme: splashLogic.highlighterTheme,
-    );
+    // 兜底处理 theme 为空
+    final theme = splashLogic.highlighterTheme;
+    highlighter = Highlighter(language: 'dart', theme: theme);
     jsonController.addListener(jsonListener);
     packageNameController.addListener(packageNameListener);
     classNameController.addListener(classNameListener);
@@ -136,6 +135,7 @@ class JsonToJavaLogic extends GetxController {
     try {
       if (jsonController.text.trim().isEmpty ||
           classNameController.text.trim().isEmpty) {
+        javaCode.value = '';
         return;
       }
       final parsedJson = json.decode(jsonController.text.trim());
@@ -155,21 +155,17 @@ class JsonToJavaLogic extends GetxController {
     }
 
     final buffer = StringBuffer();
-    final classes = <String, Map<String, dynamic>>{}; // 存储所有需要生成的类
+    final classes = <String, Map<String, dynamic>>{};
     final classStack = [
-      ClassInfo(classNameController.text.trim(), jsonData),
-    ]; // 用于处理嵌套类
+      ClassInfo(_sanitizeClassName(classNameController.text.trim()), jsonData),
+    ];
 
-    // Add package declaration if provided
     if (packageNameController.text.isNotEmpty) {
-      buffer.writeln('package ${packageNameController.text};');
-      buffer.writeln();
+      buffer.writeln('package ${packageNameController.text};\n');
     }
 
-    // Add imports
     _writeImports(buffer);
 
-    // 处理所有嵌套类
     while (classStack.isNotEmpty) {
       final currentClass = classStack.removeLast();
       if (classes.containsKey(currentClass.name)) continue;
@@ -193,7 +189,6 @@ class JsonToJavaLogic extends GetxController {
     Map<String, Map<String, dynamic>> classes,
     List<ClassInfo> classStack,
   ) {
-    // Add Lombok annotations if enabled
     if (useLombok.value) {
       buffer.writeln('@Data');
       buffer.writeln('@Builder');
@@ -204,7 +199,6 @@ class JsonToJavaLogic extends GetxController {
     buffer.writeln('public class $className {');
     buffer.writeln();
 
-    // Generate fields and collect nested classes
     List<JavaFieldInfo> fields = _parseFields(
       jsonData,
       classes,
@@ -216,18 +210,15 @@ class JsonToJavaLogic extends GetxController {
       _writeField(field, buffer);
     }
 
-    // Generate getters and setters if not using Lombok
     if (!useLombok.value) {
       if (generateGetterSetter.value) {
         for (var field in fields) {
           _writeGetterSetter(field, buffer);
         }
       }
-
       if (generateBuilder.value) {
         _writeBuilder(className, fields, buffer);
       }
-
       if (generateToString.value) {
         _writeToString(className, fields, buffer);
       }
@@ -247,13 +238,11 @@ class JsonToJavaLogic extends GetxController {
       final value = entry.value;
       final fieldName = _convertToJavaFieldName(jsonKey);
 
-      // Handle nested objects and arrays
       if (value is Map<String, dynamic>) {
-        // 创建嵌套类的类名
-        final nestedClassName = '$parentClassName${jsonKey.capitalize}';
-        // 将嵌套类添加到待处理队列
+        final nestedClassName = _sanitizeClassName(
+          '$parentClassName${_capitalize(jsonKey)}',
+        );
         classStack.add(ClassInfo(nestedClassName, value));
-
         return JavaFieldInfo(
           name: fieldName,
           type: nestedClassName,
@@ -261,23 +250,33 @@ class JsonToJavaLogic extends GetxController {
           isOptional: false,
           isCustomType: true,
         );
-      } else if (value is List && value.isNotEmpty && value[0] is Map) {
-        // 处理对象数组
-        final itemClassName = '$parentClassName${jsonKey.capitalize}Item';
-        classStack.add(
-          ClassInfo(itemClassName, value[0] as Map<String, dynamic>),
-        );
-
+      } else if (value is List) {
+        String typeStr = 'List<Object>';
+        bool isCustom = false;
+        if (value.isNotEmpty) {
+          final first = value.first;
+          if (first is Map<String, dynamic>) {
+            final itemClassName = _sanitizeClassName(
+              '$parentClassName${_capitalize(jsonKey)}Item',
+            );
+            classStack.add(ClassInfo(itemClassName, first));
+            typeStr = 'List<$itemClassName>';
+            isCustom = true;
+          } else {
+            final elementType =
+                _javaTypeMap[first.runtimeType.toString()]?.type ?? 'Object';
+            typeStr = 'List<$elementType>';
+          }
+        }
         return JavaFieldInfo(
           name: fieldName,
-          type: 'List<$itemClassName>',
+          type: typeStr,
           jsonKey: jsonKey,
-          isOptional: false,
-          isCustomType: true,
+          isOptional: value.isEmpty,
+          isCustomType: isCustom,
         );
       }
 
-      // 处理基本类型
       final typeInfo = _resolveType(value, jsonKey, classes, parentClassName);
       return JavaFieldInfo(
         name: fieldName,
@@ -317,7 +316,6 @@ class JsonToJavaLogic extends GetxController {
     final capitalizedField =
         field.name[0].toUpperCase() + field.name.substring(1);
 
-    // Generate getter
     buffer.writeln();
     buffer.writeln('    public ${field.type} get$capitalizedField() {');
     if (field.isOptional && useOptional.value) {
@@ -327,7 +325,6 @@ class JsonToJavaLogic extends GetxController {
     }
     buffer.writeln('    }');
 
-    // Generate setter
     buffer.writeln();
     buffer.writeln(
       '    public void set$capitalizedField(${field.type} ${field.name}) {',
@@ -343,15 +340,10 @@ class JsonToJavaLogic extends GetxController {
   ) {
     buffer.writeln();
     buffer.writeln('    public static class ${className}Builder {');
-
-    // Builder fields
     for (var field in fields) {
       buffer.writeln('        private ${field.type} ${field.name};');
     }
-
     buffer.writeln();
-
-    // Builder methods
     for (var field in fields) {
       buffer.writeln(
         '        public ${className}Builder ${field.name}(${field.type} ${field.name}) {',
@@ -361,16 +353,12 @@ class JsonToJavaLogic extends GetxController {
       buffer.writeln('        }');
       buffer.writeln();
     }
-
-    // Build method
     buffer.writeln('        public $className build() {');
     buffer.write('            return new $className(');
     buffer.write(fields.map((f) => f.name).join(', '));
     buffer.writeln(');');
     buffer.writeln('        }');
     buffer.writeln('    }');
-
-    // Static builder creator method
     buffer.writeln();
     buffer.writeln('    public static ${className}Builder builder() {');
     buffer.writeln('        return new ${className}Builder();');
@@ -386,7 +374,6 @@ class JsonToJavaLogic extends GetxController {
     buffer.writeln('    @Override');
     buffer.writeln('    public String toString() {');
     buffer.write('        return "$className{" +');
-
     for (int i = 0; i < fields.length; i++) {
       final field = fields[i];
       if (i == 0) {
@@ -397,7 +384,6 @@ class JsonToJavaLogic extends GetxController {
         buffer.write('            ", ${field.name}=" + ${field.name}');
       }
     }
-
     buffer.writeln(' +');
     buffer.writeln('            "}";');
     buffer.writeln('    }');
@@ -416,9 +402,22 @@ class JsonToJavaLogic extends GetxController {
   }
 
   String _convertToJavaFieldName(String name) {
-    // Convert snake_case or kebab-case to camelCase
     final words = name.split(RegExp(r'[_\-]'));
-    return words.first + words.skip(1).map((word) => word.capitalize!).join();
+    final camel =
+        words.first + words.skip(1).map((word) => _capitalize(word)).join();
+    // 保证首字母小写
+    return camel[0].toLowerCase() + camel.substring(1);
+  }
+
+  String _capitalize(String s) {
+    if (s.isEmpty) return s;
+    return s[0].toUpperCase() + s.substring(1);
+  }
+
+  String _sanitizeClassName(String name) {
+    // 去除非法字符，首字母大写
+    final valid = name.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '');
+    return _capitalize(valid);
   }
 
   JavaTypeInfo _resolveType(
@@ -430,28 +429,50 @@ class JsonToJavaLogic extends GetxController {
     if (value == null) {
       return JavaTypeInfo(type: 'Object', isCustomType: false);
     }
-
     if (value is Map) {
-      final className = '$parentClassName${key.capitalize}';
+      final className = _sanitizeClassName(
+        '$parentClassName${_capitalize(key)}',
+      );
       return JavaTypeInfo(type: className, isCustomType: true);
     }
-
     if (value is List) {
       if (value.isEmpty) {
         return JavaTypeInfo(type: 'List<Object>', isCustomType: false);
       }
       final firstElement = value.first;
       if (firstElement is Map) {
-        final itemClassName = '$parentClassName${key.capitalize}Item';
+        final itemClassName = _sanitizeClassName(
+          '$parentClassName${_capitalize(key)}Item',
+        );
         return JavaTypeInfo(type: 'List<$itemClassName>', isCustomType: true);
       }
       final elementType =
-          _javaTypeMap[firstElement.runtimeType]?.type ?? 'Object';
+          _javaTypeMap[firstElement.runtimeType.toString()]?.type ?? 'Object';
       return JavaTypeInfo(type: 'List<$elementType>', isCustomType: false);
     }
-
-    final javaType = _javaTypeMap[value.runtimeType] ?? _javaTypeMap[Null]!;
-    return JavaTypeInfo(type: javaType.type, isCustomType: false);
+    // int/double区分
+    if (value is int) {
+      return JavaTypeInfo(type: _javaTypeMap['int']!.type, isCustomType: false);
+    }
+    if (value is double) {
+      return JavaTypeInfo(
+        type: _javaTypeMap['double']!.type,
+        isCustomType: false,
+      );
+    }
+    if (value is bool) {
+      return JavaTypeInfo(
+        type: _javaTypeMap['bool']!.type,
+        isCustomType: false,
+      );
+    }
+    if (value is String) {
+      return JavaTypeInfo(
+        type: _javaTypeMap['String']!.type,
+        isCustomType: false,
+      );
+    }
+    return JavaTypeInfo(type: 'Object', isCustomType: false);
   }
 
   void _jsonConvertWarning() {
@@ -464,14 +485,12 @@ class JsonToJavaLogic extends GetxController {
     }
   }
 
-  // 在 JsonToJavaLogic 类中添加以下方法
   void addToHistory() async {
     if (jsonController.text.trim().isEmpty ||
         classNameController.text.trim().isEmpty ||
         javaCode.value.isEmpty) {
       return;
     }
-
     final newItem = HistoryItem(
       title: classNameController.text,
       subtitle: DateTime.now().toString().substring(0, 10),
@@ -479,20 +498,14 @@ class JsonToJavaLogic extends GetxController {
       code: javaCode.value,
       timestamp: DateTime.now(),
     );
-
-    // 保存到 SharedPreferences
     final prefs = await SharedPreferences.getInstance();
     final historyJson = prefs.getStringList(javaHistoryKey) ?? [];
     historyJson.add(jsonEncode(newItem.toJson()));
     await prefs.setStringList(javaHistoryKey, historyJson);
-
-    // 更新历史记录列表
     history.add(newItem);
     MessageUtil.showSuccess(title: l10n.operationPrompt, content: '已保存到历史记录');
   }
 
-
-  ///删除单个历史记录
   void deleteOne(HistoryItem item) {
     ConfirmDialog.showConfirmDialog(
       title: l10n.confirmDelete,
@@ -515,6 +528,7 @@ class JsonToJavaLogic extends GetxController {
   void onClose() {
     jsonController.removeListener(jsonListener);
     classNameController.removeListener(classNameListener);
+    packageNameController.removeListener(packageNameListener);
     jsonController.dispose();
     classNameController.dispose();
     packageNameController.dispose();

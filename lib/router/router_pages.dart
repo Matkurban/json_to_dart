@@ -3,8 +3,8 @@ import 'package:json_to_dart/screens/main/main_binding.dart';
 import 'package:json_to_dart/screens/main/main_view.dart';
 import 'package:json_to_dart/screens/setting/view/toggle_language_view.dart';
 import 'package:json_to_dart/screens/setting/view/toggle_theme_view.dart';
-import 'package:json_to_dart/screens/json/binding/json_generator_binding.dart';
-import 'package:json_to_dart/screens/json/view/json_generator_view.dart';
+import 'package:json_to_dart/screens/json/generator/json_generator_binding.dart';
+import 'package:json_to_dart/screens/json/generator/json_generator_view.dart';
 import 'package:json_to_dart/router/router_names.dart';
 
 sealed class RouterPages {

@@ -6,8 +6,8 @@ import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/screens/json/widgets/title_text.dart';
 import 'package:json_to_dart/screens/json/widgets/label_check_box.dart';
 import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
-import 'package:json_to_dart/screens/json/logic/json_to_dart_logic.dart';
-import 'package:json_to_dart/screens/json/view/widgets/json_to_dart_drawer.dart';
+import 'package:json_to_dart/screens/json/dart/json_to_dart_logic.dart';
+import 'package:json_to_dart/screens/json/dart/widgets/json_to_dart_drawer.dart';
 
 class JsonToDartView extends GetView<JsonToDartLogic> {
   const JsonToDartView({super.key});

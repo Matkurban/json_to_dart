@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:json_to_dart/screens/json/logic/json_generator_logic.dart';
-import 'package:json_to_dart/screens/json/view/widgets/custom_drawer_header.dart';
+import 'package:json_to_dart/screens/json/generator/json_generator_logic.dart';
+import 'package:json_to_dart/screens/json/widgets/custom_drawer_header.dart';
 
 class JsonGeneratorDrawer extends GetWidget<JsonGeneratorLogic> {
   const JsonGeneratorDrawer({super.key});

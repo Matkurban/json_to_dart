@@ -1,13 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
-import 'package:json_to_dart/config/theme/app_theme.dart';
-import 'package:json_to_dart/router/router_pages.dart';
-import 'package:json_to_dart/screens/splash/binding/splash_binding.dart';
-import 'package:json_to_dart/screens/splash/view/splash_view.dart';
-import 'package:json_to_dart/services/storage_services.dart';
+import 'package:flutter/material.dart';
 import 'package:toastification/toastification.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:json_to_dart/router/router_pages.dart';
+import 'package:json_to_dart/config/theme/app_theme.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:json_to_dart/services/storage_services.dart';
+import 'package:json_to_dart/screens/splash/view/splash_view.dart';
+import 'package:json_to_dart/screens/splash/binding/splash_binding.dart';
 
 void main() async {
   usePathUrlStrategy();

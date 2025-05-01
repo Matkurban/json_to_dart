@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:get/get.dart';
-import 'package:json_to_dart/model/domain/main/json_field.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:syntax_highlight/syntax_highlight.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:json_to_dart/model/domain/main/json_field.dart';
 import 'package:json_to_dart/model/domain/main/json_history.dart';
 import 'package:json_to_dart/screens/splash/logic/splash_logic.dart';
 
@@ -122,30 +122,51 @@ class JsonGeneratorLogic extends GetxController {
     }
   }
 
-  void addField() {
+  void addField({List<JsonField>? targetList, int level = 0}) {
     final field = JsonField(
       keyController: TextEditingController(),
       valueController: TextEditingController(),
-      index: fields.length,
-      level: 0,
+      index: targetList?.length ?? fields.length,
+      level: level,
+      type: 'string',
+      children: <JsonField>[].obs,
     );
     field.keyController.addListener(updateJsonOutput);
     field.valueController.addListener(updateJsonOutput);
-    fields.add(field);
-    fields.refresh();
+    if (targetList != null) {
+      if (targetList is RxList<JsonField>) {
+        targetList.add(field);
+        targetList.refresh();
+      } else {
+        targetList.add(field);
+      }
+    } else {
+      fields.add(field);
+      fields.refresh();
+    }
     updateJsonOutput();
   }
 
-  void removeField(int index) {
-    fields[index].dispose();
-    fields.removeAt(index);
-    // 更新剩余字段的索引
-    for (var i = index; i < fields.length; i++) {
-      final oldField = fields[i];
-      fields[i] = oldField.createNewInstance(newIndex: i);
+  void addChildField(JsonField parent) {
+    addField(targetList: parent.children, level: parent.level + 1);
+  }
+
+  void removeField(int index, {List<JsonField>? targetList}) {
+    final list = targetList ?? fields;
+    list[index].dispose();
+    list.removeAt(index);
+    for (var i = index; i < list.length; i++) {
+      final oldField = list[i];
+      list[i] = oldField.createNewInstance(newIndex: i);
     }
-    fields.refresh();
+    if (list is RxList<JsonField>) {
+      list.refresh();
+    }
     updateJsonOutput();
+  }
+
+  void removeChildField(JsonField parent, int childIndex) {
+    removeField(childIndex, targetList: parent.children);
   }
 
   void clearFields() {
@@ -158,7 +179,8 @@ class JsonGeneratorLogic extends GetxController {
     updateJsonOutput();
   }
 
-  void selectType(int index) {
+  void selectType(int index, {List<JsonField>? targetList}) {
+    final list = targetList ?? fields;
     Get.dialog(
       AlertDialog(
         title: Text(l10n.selectType),
@@ -168,28 +190,35 @@ class JsonGeneratorLogic extends GetxController {
             ListTile(
               title: Text(l10n.string),
               onTap: () {
-                _updateFieldType(index, 'string');
+                _updateFieldType(index, 'string', targetList: list);
                 Get.back();
               },
             ),
             ListTile(
               title: Text(l10n.number),
               onTap: () {
-                _updateFieldType(index, 'number');
+                _updateFieldType(index, 'number', targetList: list);
                 Get.back();
               },
             ),
             ListTile(
               title: Text(l10n.boolean),
               onTap: () {
-                _updateFieldType(index, 'boolean');
+                _updateFieldType(index, 'bool', targetList: list);
                 Get.back();
               },
             ),
             ListTile(
               title: Text(l10n.array),
               onTap: () {
-                _updateFieldType(index, 'array');
+                _updateFieldType(index, 'array', targetList: list);
+                Get.back();
+              },
+            ),
+            ListTile(
+              title: Text('Object'),
+              onTap: () {
+                _updateFieldType(index, 'object', targetList: list);
                 Get.back();
               },
             ),
@@ -199,17 +228,30 @@ class JsonGeneratorLogic extends GetxController {
     );
   }
 
-  void _updateFieldType(int index, String newType) {
+  void _updateFieldType(
+    int index,
+    String newType, {
+    List<JsonField>? targetList,
+  }) {
     try {
-      if (fields.length > index) {
-        final targetField = fields[index];
+      final list = targetList ?? fields;
+      if (list.length > index) {
+        final targetField = list[index];
+        // 保留原有 key 和 value
         final newField = targetField.createNewInstance(
           newType: newType,
           newIndex: index,
+          keyText: targetField.keyController.text,
+          valueText: targetField.valueController.text,
         );
-        fields[index] = newField;
+        if (newType == 'object') {
+          newField.children.clear();
+        }
+        list[index] = newField;
+        if (list is RxList<JsonField>) {
+          list.refresh();
+        }
         updateJsonOutput();
-        fields.refresh();
       }
     } catch (e) {
       debugPrint('Error updating field type: $e');
@@ -229,8 +271,13 @@ class JsonGeneratorLogic extends GetxController {
   dynamic _processField(JsonField field) {
     switch (field.type) {
       case 'number':
-        return double.tryParse(field.valueController.text) ?? 0;
-      case 'boolean':
+        final text = field.valueController.text;
+        final intVal = int.tryParse(text);
+        if (intVal != null) return intVal;
+        final doubleVal = double.tryParse(text);
+        if (doubleVal != null) return doubleVal;
+        return 0;
+      case 'bool':
         return field.valueController.text.toLowerCase() == 'true';
       case 'array':
         try {
@@ -242,8 +289,84 @@ class JsonGeneratorLogic extends GetxController {
         } catch (e) {
           return [];
         }
+      case 'object':
+        final Map<String, dynamic> obj = {};
+        for (var child in field.children) {
+          if (child.keyController.text.isNotEmpty) {
+            obj[child.keyController.text] = _processField(child);
+          }
+        }
+        return obj;
       default:
         return field.valueController.text;
     }
+  }
+
+  /// 导入JSON字符串并填充到输入面板
+  void importFromJson(String jsonStr) {
+    try {
+      final dynamic jsonData = jsonDecode(jsonStr);
+      // 清除现有字段
+      for (var field in fields) {
+        field.dispose();
+      }
+      fields.clear();
+
+      if (jsonData is Map<String, dynamic>) {
+        _fillFieldsFromMap(jsonData, fields, 0);
+      } else {
+        // 只支持对象根节点
+        Get.snackbar('导入失败', '只支持对象类型的JSON根节点');
+        return;
+      }
+      fields.refresh();
+      updateJsonOutput();
+    } catch (e) {
+      Get.snackbar('导入失败', 'JSON格式错误');
+    }
+  }
+
+  /// 递归填充字段
+  void _fillFieldsFromMap(Map<String, dynamic> map, List<JsonField> target, int level) {
+    map.forEach((key, value) {
+      String type = 'string';
+      RxList<JsonField>? children;
+      String valueStr = '';
+      if (value is int || value is double) {
+        type = 'number';
+        valueStr = value.toString();
+      } else if (value is bool) {
+        type = 'bool';
+        valueStr = value.toString();
+      } else if (value is List) {
+        type = 'array';
+        valueStr = value.join(',');
+      } else if (value is Map<String, dynamic>) {
+        type = 'object';
+        children = <JsonField>[].obs;
+      } else if (value == null) {
+        type = 'string';
+        valueStr = '';
+      } else {
+        type = 'string';
+        valueStr = value.toString();
+      }
+
+      final field = JsonField(
+        keyController: TextEditingController(text: key),
+        valueController: TextEditingController(text: type == 'object' ? '' : valueStr),
+        index: target.length,
+        level: level,
+        type: type,
+        children: children,
+      );
+      field.keyController.addListener(updateJsonOutput);
+      field.valueController.addListener(updateJsonOutput);
+
+      if (type == 'object' && value is Map<String, dynamic>) {
+        _fillFieldsFromMap(value, field.children, level + 1);
+      }
+      target.add(field);
+    });
   }
 }

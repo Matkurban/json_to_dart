@@ -6,9 +6,9 @@ import 'package:json_to_dart/config/assets/image_assets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:json_to_dart/screens/main/main_logic.dart';
 import 'package:json_to_dart/screens/setting/view/setting_view.dart';
-import 'package:json_to_dart/screens/json/view/json_to_dart_view.dart';
-import 'package:json_to_dart/screens/json/view/json_to_java_view.dart';
-import 'package:json_to_dart/screens/json/view/json_generator_view.dart';
+import 'package:json_to_dart/screens/json/dart/json_to_dart_view.dart';
+import 'package:json_to_dart/screens/json/java/json_to_java_view.dart';
+import 'package:json_to_dart/screens/json/generator/json_generator_view.dart';
 
 class MainView extends GetView<MainLogic> {
   const MainView({super.key});

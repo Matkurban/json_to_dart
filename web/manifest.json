@@ -1,11 +1,11 @@
 {
-    "name": "json_to_dart",
-    "short_name": "json_to_dart",
+    "name": "JsonToDart",
+    "short_name": "JsonToDart",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#hexcode",
     "theme_color": "#hexcode",
-    "description": "A new Flutter project.",
+    "description": "It is a Json tool for generating Dart code",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
