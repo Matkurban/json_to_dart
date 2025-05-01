@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
+import 'package:json_to_dart/screens/tools/permutation/permutation_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/assets/image_assets.dart';
@@ -62,6 +63,14 @@ class MainView extends GetView<MainLogic> {
                   ),
                   label: Text(l10n.settings),
                 ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.format_list_numbered),
+                  selectedIcon: Icon(
+                    Icons.format_list_numbered,
+                    color: colorScheme.primary,
+                  ),
+                  label: Text('数字'),
+                ),
               ],
               selectedIndex: controller.currentIndex.value,
               onDestinationSelected: (value) {
@@ -82,6 +91,7 @@ class MainView extends GetView<MainLogic> {
                 JsonToDartView(),
                 JsonToJavaView(),
                 SettingView(),
+                PermutationView(),
               ],
             ),
           ),
