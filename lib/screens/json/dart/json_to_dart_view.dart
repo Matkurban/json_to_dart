@@ -57,90 +57,84 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
   }
 
   Widget _buildInputPanel(BuildContext context) {
-    return Expanded(
-      flex: 5,
-      child: Card(
-        margin: EdgeInsets.zero,
-        child: Padding(
-          padding: AppStyle.smallPadding,
-          child: Column(
-            spacing: 10,
-            children: [
-              Row(
-                children: [
-                  TitleText(text: l10n.jsonInput),
-                  Spacer(),
-                  IconButton(
-                    onPressed: () {
-                      previewJson(context, controller.jsonController.text);
-                    },
-                    icon: Icon(CupertinoIcons.eye),
-                    tooltip: l10n.previewJsonView,
-                  ),
-                  IconButton(
-                    onPressed: () => controller.jsonController.clear(),
-                    icon: Icon(Icons.clear),
-                    tooltip: l10n.clearInput,
-                  ),
-                ],
-              ),
-              Expanded(
-                child: TextField(
-                  textInputAction: TextInputAction.newline,
-                  controller: controller.jsonController,
-                  expands: true,
-                  maxLines: null,
-                  textAlignVertical: TextAlignVertical.top,
-                  decoration: InputDecoration(
-                    hintText: l10n.jsonInputPlaceholder,
-                  ),
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: AppStyle.smallPadding,
+        child: Column(
+          spacing: 10,
+          children: [
+            Row(
+              children: [
+                TitleText(text: l10n.jsonInput),
+                Spacer(),
+                IconButton(
+                  onPressed: () {
+                    previewJson(context, controller.jsonController.text);
+                  },
+                  icon: Icon(CupertinoIcons.eye),
+                  tooltip: l10n.previewJsonView,
+                ),
+                IconButton(
+                  onPressed: () => controller.jsonController.clear(),
+                  icon: Icon(Icons.clear),
+                  tooltip: l10n.clearInput,
+                ),
+              ],
+            ),
+            Expanded(
+              child: TextField(
+                textInputAction: TextInputAction.newline,
+                controller: controller.jsonController,
+                expands: true,
+                maxLines: null,
+                textAlignVertical: TextAlignVertical.top,
+                decoration: InputDecoration(
+                  hintText: l10n.jsonInputPlaceholder,
                 ),
               ),
-              _buildClassNameField(context),
-            ],
-          ),
+            ),
+            _buildClassNameField(context),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildOutputPanel(BuildContext context) {
-    return Expanded(
-      flex: 5,
-      child: Card(
-        margin: EdgeInsets.zero,
-        child: Padding(
-          padding: AppStyle.smallPadding,
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  TitleText(text: l10n.dartOutput),
-                  Spacer(),
-                  IconButton(
-                    onPressed: () {
-                      previewCode(context, controller.dartCode.value);
-                    },
-                    icon: Icon(CupertinoIcons.eye),
-                    tooltip: l10n.previewCode,
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.copy_all),
-                    onPressed: () => copyToClipboard(controller.dartCode.value),
-                    tooltip: l10n.copyCode,
-                  ),
-                ],
-              ),
-              Expanded(
-                child: Obx(() {
-                  return ModelViewPane(
-                    code: controller.dartCode.value,
-                    highlighter: controller.highlighter,
-                  );
-                }),
-              ),
-            ],
-          ),
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: AppStyle.smallPadding,
+        child: Column(
+          children: [
+            Row(
+              children: [
+                TitleText(text: l10n.dartOutput),
+                Spacer(),
+                IconButton(
+                  onPressed: () {
+                    previewCode(context, controller.dartCode.value);
+                  },
+                  icon: Icon(CupertinoIcons.eye),
+                  tooltip: l10n.previewCode,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.copy_all),
+                  onPressed: () => copyToClipboard(controller.dartCode.value),
+                  tooltip: l10n.copyCode,
+                ),
+              ],
+            ),
+            Expanded(
+              child: Obx(() {
+                return ModelViewPane(
+                  code: controller.dartCode.value,
+                  highlighter: controller.highlighter,
+                );
+              }),
+            ),
+          ],
         ),
       ),
     );

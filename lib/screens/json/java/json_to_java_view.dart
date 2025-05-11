@@ -56,106 +56,102 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
   }
 
   Widget _buildInputPanel(BuildContext context) {
-    return Expanded(
-      child: Card(
-        margin: EdgeInsets.zero,
-        child: Padding(
-          padding: AppStyle.smallPadding,
-          child: Column(
-            spacing: 10,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  TitleText(text: l10n.jsonInput),
-                  Spacer(),
-                  IconButton(
-                    onPressed: () {
-                      previewJson(context, controller.jsonController.text);
-                    },
-                    icon: Icon(CupertinoIcons.eye),
-                    tooltip: l10n.previewJsonView,
-                  ),
-                  IconButton(
-                    onPressed: controller.jsonController.clear,
-                    icon: Icon(Icons.clear),
-                    tooltip: l10n.clearInput,
-                  ),
-                ],
-              ),
-              Expanded(
-                child: TextField(
-                  controller: controller.jsonController,
-                  textInputAction: TextInputAction.newline,
-                  expands: true,
-                  maxLines: null,
-                  textAlignVertical: TextAlignVertical.top,
-                  decoration: InputDecoration(
-                    hintText: l10n.jsonInputPlaceholder,
-                  ),
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: AppStyle.smallPadding,
+        child: Column(
+          spacing: 10,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                TitleText(text: l10n.jsonInput),
+                Spacer(),
+                IconButton(
+                  onPressed: () {
+                    previewJson(context, controller.jsonController.text);
+                  },
+                  icon: Icon(CupertinoIcons.eye),
+                  tooltip: l10n.previewJsonView,
+                ),
+                IconButton(
+                  onPressed: controller.jsonController.clear,
+                  icon: Icon(Icons.clear),
+                  tooltip: l10n.clearInput,
+                ),
+              ],
+            ),
+            Expanded(
+              child: TextField(
+                controller: controller.jsonController,
+                textInputAction: TextInputAction.newline,
+                expands: true,
+                maxLines: null,
+                textAlignVertical: TextAlignVertical.top,
+                decoration: InputDecoration(
+                  hintText: l10n.jsonInputPlaceholder,
                 ),
               ),
-              Row(
-                spacing: 6,
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: controller.classNameController,
-                      decoration: InputDecoration(
-                        labelText: l10n.mainClassNameLabel,
-                      ),
+            ),
+            Row(
+              spacing: 6,
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: controller.classNameController,
+                    decoration: InputDecoration(
+                      labelText: l10n.mainClassNameLabel,
                     ),
                   ),
-                  Expanded(
-                    child: TextField(
-                      controller: controller.packageNameController,
-                      decoration: InputDecoration(labelText: l10n.packageName),
-                    ),
+                ),
+                Expanded(
+                  child: TextField(
+                    controller: controller.packageNameController,
+                    decoration: InputDecoration(labelText: l10n.packageName),
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildOutputPanel(BuildContext context) {
-    return Expanded(
-      child: Card(
-        margin: EdgeInsets.zero,
-        child: Padding(
-          padding: AppStyle.smallPadding,
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  TitleText(text: l10n.javaCode),
-                  const Spacer(),
-                  IconButton(
-                    onPressed:
-                        () => previewCode(context, controller.javaCode.value),
-                    icon: Icon(CupertinoIcons.eye),
-                    tooltip: l10n.previewCode,
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.copy),
-                    onPressed: () => copyToClipboard(controller.javaCode.value),
-                    tooltip: l10n.copyCode,
-                  ),
-                ],
-              ),
-              Expanded(
-                child: Obx(() {
-                  return ModelViewPane(
-                    code: controller.javaCode.value,
-                    highlighter: controller.highlighter,
-                  );
-                }),
-              ),
-            ],
-          ),
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: AppStyle.smallPadding,
+        child: Column(
+          children: [
+            Row(
+              children: [
+                TitleText(text: l10n.javaCode),
+                const Spacer(),
+                IconButton(
+                  onPressed:
+                      () => previewCode(context, controller.javaCode.value),
+                  icon: Icon(CupertinoIcons.eye),
+                  tooltip: l10n.previewCode,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.copy),
+                  onPressed: () => copyToClipboard(controller.javaCode.value),
+                  tooltip: l10n.copyCode,
+                ),
+              ],
+            ),
+            Expanded(
+              child: Obx(() {
+                return ModelViewPane(
+                  code: controller.javaCode.value,
+                  highlighter: controller.highlighter,
+                );
+              }),
+            ),
+          ],
         ),
       ),
     );
