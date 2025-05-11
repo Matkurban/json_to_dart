@@ -77,6 +77,54 @@ class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
                     ),
                   ),
                   const SizedBox(width: 8),
+                  // 类型选择下拉框
+                  SizedBox(
+                    width: 130,
+                    child: DropdownButtonFormField<String>(
+                      value: field.type,
+                      decoration: InputDecoration(
+                        labelText: "类型",
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 8,
+                        ),
+                      ),
+                      items: [
+                        DropdownMenuItem(
+                          value: 'string',
+                          child: Text(l10n.string),
+                        ),
+                        DropdownMenuItem(
+                          value: 'number',
+                          child: Text(l10n.number),
+                        ),
+                        DropdownMenuItem(
+                          value: 'bool',
+                          child: Text(l10n.boolean),
+                        ),
+                        DropdownMenuItem(
+                          value: 'array',
+                          child: Text(l10n.array),
+                        ),
+                        DropdownMenuItem(
+                          value: 'object',
+                          child: Text('Object'),
+                        ),
+                      ],
+                      onChanged: (val) {
+                        if (val != null && val != field.type) {
+                          final list = parent?.children ?? controller.fields;
+                          controller.updateFieldType(
+                            index,
+                            val,
+                            targetList: list,
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   if (field.type != 'object')
                     Expanded(
                       flex: 3,
@@ -89,15 +137,6 @@ class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
                       ),
                     ),
                   if (field.type == 'object') const SizedBox(width: 8),
-                  IconButton(
-                    icon: const Icon(Icons.type_specimen),
-                    onPressed:
-                        () => controller.selectType(
-                          index,
-                          targetList: parent?.children ?? controller.fields,
-                        ),
-                    tooltip: l10n.selectType,
-                  ),
                   IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: () {
@@ -121,6 +160,7 @@ class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
           ),
         ),
       );
+      // 递归渲染所有object类型的子字段
       if (field.type == 'object' && field.children.isNotEmpty) {
         widgets.addAll(
           _buildFieldList(

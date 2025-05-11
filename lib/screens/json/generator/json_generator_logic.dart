@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:syntax_highlight/syntax_highlight.dart';
-import 'package:json_to_dart/config/global/constant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:json_to_dart/model/domain/main/json_field.dart';
 import 'package:json_to_dart/model/domain/main/json_history.dart';
@@ -179,56 +178,7 @@ class JsonGeneratorLogic extends GetxController {
     updateJsonOutput();
   }
 
-  void selectType(int index, {List<JsonField>? targetList}) {
-    final list = targetList ?? fields;
-    Get.dialog(
-      AlertDialog(
-        title: Text(l10n.selectType),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              title: Text(l10n.string),
-              onTap: () {
-                _updateFieldType(index, 'string', targetList: list);
-                Get.back();
-              },
-            ),
-            ListTile(
-              title: Text(l10n.number),
-              onTap: () {
-                _updateFieldType(index, 'number', targetList: list);
-                Get.back();
-              },
-            ),
-            ListTile(
-              title: Text(l10n.boolean),
-              onTap: () {
-                _updateFieldType(index, 'bool', targetList: list);
-                Get.back();
-              },
-            ),
-            ListTile(
-              title: Text(l10n.array),
-              onTap: () {
-                _updateFieldType(index, 'array', targetList: list);
-                Get.back();
-              },
-            ),
-            ListTile(
-              title: Text('Object'),
-              onTap: () {
-                _updateFieldType(index, 'object', targetList: list);
-                Get.back();
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _updateFieldType(
+  void updateFieldType(
     int index,
     String newType, {
     List<JsonField>? targetList,
@@ -327,7 +277,11 @@ class JsonGeneratorLogic extends GetxController {
   }
 
   /// 递归填充字段
-  void _fillFieldsFromMap(Map<String, dynamic> map, List<JsonField> target, int level) {
+  void _fillFieldsFromMap(
+    Map<String, dynamic> map,
+    List<JsonField> target,
+    int level,
+  ) {
     map.forEach((key, value) {
       String type = 'string';
       RxList<JsonField>? children;
@@ -354,7 +308,9 @@ class JsonGeneratorLogic extends GetxController {
 
       final field = JsonField(
         keyController: TextEditingController(text: key),
-        valueController: TextEditingController(text: type == 'object' ? '' : valueStr),
+        valueController: TextEditingController(
+          text: type == 'object' ? '' : valueStr,
+        ),
         index: target.length,
         level: level,
         type: type,

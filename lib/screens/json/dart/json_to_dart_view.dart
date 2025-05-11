@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
+import 'package:json_to_dart/screens/json/generator/widgets/resizable_panels.dart';
 import 'package:json_to_dart/screens/json/widgets/title_text.dart';
 import 'package:json_to_dart/screens/json/widgets/label_check_box.dart';
 import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
@@ -40,12 +41,10 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
           children: [
             // 输入输出分栏
             Expanded(
-              child: Row(
-                children: [
-                  _buildInputPanel(context),
-                  VerticalDivider(width: 3),
-                  _buildOutputPanel(context), // 右侧输出区
-                ],
+              child: ResizablePanels(
+                minWidth: 240,
+                child1: _buildInputPanel(context),
+                child2: _buildOutputPanel(context),
               ),
             ),
             Divider(height: 3),

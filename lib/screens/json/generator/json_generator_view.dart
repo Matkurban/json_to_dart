@@ -6,6 +6,7 @@ import 'package:json_to_dart/screens/json/generator/widgets/generator_input_pane
 import 'package:json_to_dart/screens/json/generator/widgets/generator_output_panel.dart';
 import 'package:json_to_dart/screens/json/generator/json_generator_logic.dart';
 import 'package:json_to_dart/screens/json/generator/widgets/json_generator_drawer.dart';
+import 'package:json_to_dart/screens/json/generator/widgets/resizable_panels.dart';
 
 class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
   const JsonGeneratorView({super.key});
@@ -35,12 +36,10 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
       ),
       body: Padding(
         padding: AppStyle.smallPadding,
-        child: Row(
-          children: [
-            Expanded(flex: 1, child: const GeneratorOutputPanel()),
-            const VerticalDivider(width: 3),
-            Expanded(flex: 1, child: const GeneratorInputPanel()),
-          ],
+        child: ResizablePanels(
+          minWidth: 240,
+          child1: const GeneratorOutputPanel(),
+          child2: const GeneratorInputPanel(),
         ),
       ),
       endDrawer: const JsonGeneratorDrawer(),
