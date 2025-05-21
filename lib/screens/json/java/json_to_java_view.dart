@@ -131,8 +131,8 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                 TitleText(text: l10n.javaCode),
                 const Spacer(),
                 IconButton(
-                  onPressed:
-                      () => previewCode(context, controller.javaCode.value),
+                  onPressed: () =>
+                      previewCode(context, controller.javaCode.value),
                   icon: Icon(CupertinoIcons.eye),
                   tooltip: l10n.previewCode,
                 ),
@@ -180,25 +180,24 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                   return LabelCheckBox(
                     label: l10n.generateGetterSetter,
                     value: controller.generateGetterSetter.value,
-                    onChanged:
-                        (value) =>
-                            controller.generateGetterSetter.value = value!,
+                    onChanged: (value) =>
+                        controller.generateGetterSetter.value = value!,
                   );
                 }),
                 Obx(() {
                   return LabelCheckBox(
                     label: l10n.generateBuilder,
                     value: controller.generateBuilder.value,
-                    onChanged:
-                        (value) => controller.generateBuilder.value = value!,
+                    onChanged: (value) =>
+                        controller.generateBuilder.value = value!,
                   );
                 }),
                 Obx(() {
                   return LabelCheckBox(
                     label: l10n.generateToString,
                     value: controller.generateToString.value,
-                    onChanged:
-                        (value) => controller.generateToString.value = value!,
+                    onChanged: (value) =>
+                        controller.generateToString.value = value!,
                   );
                 }),
                 Obx(() {

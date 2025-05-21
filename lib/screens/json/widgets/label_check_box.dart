@@ -15,7 +15,10 @@ class LabelCheckBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: [Checkbox(value: value, onChanged: onChanged), Text(label)],
+      children: [
+        Checkbox(value: value, onChanged: onChanged),
+        Text(label),
+      ],
     );
   }
 }

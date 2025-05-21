@@ -187,12 +187,11 @@ class JsonToDartLogic extends GetxController {
   ) {
     // 字段声明
     for (final f in fields) {
-      final nullability =
-          f.isDynamic
-              ? ''
-              : nonNullable.value
-              ? ''
-              : '?';
+      final nullability = f.isDynamic
+          ? ''
+          : nonNullable.value
+          ? ''
+          : '?';
       buffer.writeln('  final ${f.type}$nullability ${f.name};');
     }
     buffer.write('\n');
@@ -336,10 +335,9 @@ class JsonToDartLogic extends GetxController {
         isList: typeInfo.isList,
         isListOfCustomType: typeInfo.isListOfCustomType,
         isBasicListType: typeInfo.isBasicListType,
-        defaultValue:
-            nonNullable.value && typeInfo.nullable
-                ? typeInfo.defaultValue
-                : null,
+        defaultValue: nonNullable.value && typeInfo.nullable
+            ? typeInfo.defaultValue
+            : null,
       );
     }).toList();
   }
@@ -423,34 +421,35 @@ class JsonToDartLogic extends GetxController {
         .replaceAll(RegExp(r'[^a-zA-Z0-9]+'), '_') // 合并连续特殊字符为单个下划线
         .replaceAll(RegExp(r'_+'), '_'); // 确保没有连续下划线
     // 2. 分割下划线并过滤空片段
-    List<String> parts =
-        sanitized.split('_').where((p) => p.isNotEmpty).toList();
+    List<String> parts = sanitized
+        .split('_')
+        .where((p) => p.isNotEmpty)
+        .toList();
     // 3. 处理每个片段
-    List<String> processedParts =
-        parts.map((part) {
-          // 处理纯数字片段（如 "123" → "_123"）
-          if (RegExp(r'^\d+$').hasMatch(part)) {
-            return '_$part';
-          }
-          // 处理数字开头的混合片段（如 "2fa" → "fa2"）
-          if (RegExp(r'^\d').hasMatch(part)) {
-            return part
-                .split(RegExp(r'(?<=\d)(?=\D)|(?<=\D)(?=\d)')) // 分割数字和字母
-                .reversed
-                .join(); // 反转顺序
-          }
-          return part;
-        }).toList();
+    List<String> processedParts = parts.map((part) {
+      // 处理纯数字片段（如 "123" → "_123"）
+      if (RegExp(r'^\d+$').hasMatch(part)) {
+        return '_$part';
+      }
+      // 处理数字开头的混合片段（如 "2fa" → "fa2"）
+      if (RegExp(r'^\d').hasMatch(part)) {
+        return part
+            .split(RegExp(r'(?<=\d)(?=\D)|(?<=\D)(?=\d)')) // 分割数字和字母
+            .reversed
+            .join(); // 反转顺序
+      }
+      return part;
+    }).toList();
     // 4. 转换为大驼峰格式（首字母大写）
-    processedParts =
-        processedParts.map((p) => p[0].toUpperCase() + p.substring(1)).toList();
+    processedParts = processedParts
+        .map((p) => p[0].toUpperCase() + p.substring(1))
+        .toList();
     // 5. 转换为小驼峰格式（首个字母小写）
-    String camelCase =
-        processedParts.isNotEmpty
-            ? processedParts.first[0].toLowerCase() +
-                processedParts.first.substring(1) +
-                processedParts.sublist(1).join()
-            : '';
+    String camelCase = processedParts.isNotEmpty
+        ? processedParts.first[0].toLowerCase() +
+              processedParts.first.substring(1) +
+              processedParts.sublist(1).join()
+        : '';
     // 6. 处理保留字和空值
     return _sanitizeFieldName(camelCase);
   }
@@ -474,18 +473,16 @@ class JsonToDartLogic extends GetxController {
   String _classNameFromKey(String key, String parentClassName) {
     // 处理父类名中的下划线和特殊字符
     final parentParts = parentClassName.split(RegExp(r'_+'));
-    final processedParent =
-        parentParts.map((part) {
-          if (part.isEmpty) return '';
-          return '${part[0].toUpperCase()}${part.substring(1)}';
-        }).join();
+    final processedParent = parentParts.map((part) {
+      if (part.isEmpty) return '';
+      return '${part[0].toUpperCase()}${part.substring(1)}';
+    }).join();
     // 处理字段名中的各种分隔符
     final keyParts = key.split(RegExp(r'[^a-zA-Z0-9]'));
-    final processedKey =
-        keyParts.map((part) {
-          if (part.isEmpty) return '';
-          return '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}';
-        }).join();
+    final processedKey = keyParts.map((part) {
+      if (part.isEmpty) return '';
+      return '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}';
+    }).join();
     // 组合生成类名
     final baseName = '$processedParent$processedKey';
     // 处理保留字（示例）

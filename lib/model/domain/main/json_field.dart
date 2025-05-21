@@ -45,12 +45,11 @@ class JsonField {
       index: newIndex ?? index,
       level: level,
       type: newType ?? type,
-      children:
-          (newType == 'object')
-              ? <JsonField>[].obs
-              : (newType == null && type == 'object')
-              ? children.map((c) => c.createNewInstance()).toList().obs
-              : <JsonField>[].obs,
+      children: (newType == 'object')
+          ? <JsonField>[].obs
+          : (newType == null && type == 'object')
+          ? children.map((c) => c.createNewInstance()).toList().obs
+          : <JsonField>[].obs,
     );
     // 添加监听，保证切换类型后内容变动能刷新
     newKeyController.addListener(() {

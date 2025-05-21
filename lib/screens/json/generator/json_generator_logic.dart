@@ -55,8 +55,9 @@ class JsonGeneratorLogic extends GetxController {
   Future<void> saveHistories() async {
     try {
       final prefs = Get.find<SharedPreferences>();
-      final historyJsonList =
-          histories.map((history) => jsonEncode(history.toJson())).toList();
+      final historyJsonList = histories
+          .map((history) => jsonEncode(history.toJson()))
+          .toList();
       await prefs.setStringList('json_histories', historyJsonList);
     } catch (e) {
       debugPrint('Error saving histories: $e');

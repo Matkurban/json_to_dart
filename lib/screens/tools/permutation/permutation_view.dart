@@ -34,8 +34,8 @@ class PermutationView extends GetView<PermutationLogic> {
                             onChanged: (val) {
                               if (val != null) {
                                 controller.selectedNumbers[i].value = val;
-                                controller.inputControllers[i].text =
-                                    val.toString();
+                                controller.inputControllers[i].text = val
+                                    .toString();
                               }
                             },
                             decoration: InputDecoration(
@@ -68,13 +68,12 @@ class PermutationView extends GetView<PermutationLogic> {
                       Text('筛选${col + 1}列:'),
                       DropdownButton<int>(
                         value: controller.filterValues[col].value,
-                        items:
-                            values.map((value) {
-                              return DropdownMenuItem(
-                                value: value,
-                                child: Text('$value'),
-                              );
-                            }).toList(),
+                        items: values.map((value) {
+                          return DropdownMenuItem(
+                            value: value,
+                            child: Text('$value'),
+                          );
+                        }).toList(),
                         onChanged: (val) {
                           controller.setFilterValue(col, val);
                         },
@@ -105,10 +104,9 @@ class PermutationView extends GetView<PermutationLogic> {
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children:
-                            perm.map((item) {
-                              return CircleContainer(item: item);
-                            }).toList(),
+                        children: perm.map((item) {
+                          return CircleContainer(item: item);
+                        }).toList(),
                       ),
                     );
                   },
@@ -132,10 +130,9 @@ class PermutationView extends GetView<PermutationLogic> {
             }),
             ElevatedButton(
               onPressed: () {
-                final numberList =
-                    controller.inputControllers
-                        .map((c) => int.tryParse(c.text.trim()))
-                        .toList();
+                final numberList = controller.inputControllers
+                    .map((c) => int.tryParse(c.text.trim()))
+                    .toList();
                 if (numberList.length == 5 &&
                     numberList.every((e) => e != null)) {
                   controller.setNumbers(numberList.cast<int>());
