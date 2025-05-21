@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
+import 'package:json_to_dart/l10n/app_localizations.dart';
 import 'package:json_to_dart/utils/message_util.dart';
 import 'package:json_to_dart/widgets/dialog/preview_dialog.dart';
 
