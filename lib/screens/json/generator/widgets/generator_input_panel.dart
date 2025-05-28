@@ -5,6 +5,7 @@ import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/model/domain/main/json_field.dart';
 import 'package:json_to_dart/screens/json/widgets/title_text.dart';
 import 'package:json_to_dart/screens/json/generator/json_generator_logic.dart';
+import 'package:flutter/services.dart';
 
 class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
   const GeneratorInputPanel({super.key});
@@ -37,9 +38,7 @@ class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
             const SizedBox(height: 10),
             Expanded(
               child: Obx(() {
-                return ListView(
-                  children: [..._buildFieldList(controller.fields, context)],
-                );
+                return ListView(children: [..._buildFieldList(controller.fields, context)]);
               }),
             ),
           ],
@@ -70,10 +69,7 @@ class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
                     flex: 2,
                     child: TextField(
                       controller: field.keyController,
-                      decoration: InputDecoration(
-                        labelText: l10n.key,
-                        hintText: l10n.enterKey,
-                      ),
+                      decoration: InputDecoration(labelText: l10n.key, hintText: l10n.enterKey),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -85,41 +81,19 @@ class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
                       decoration: InputDecoration(
                         labelText: "类型",
                         isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 8,
-                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                       ),
                       items: [
-                        DropdownMenuItem(
-                          value: 'string',
-                          child: Text(l10n.string),
-                        ),
-                        DropdownMenuItem(
-                          value: 'number',
-                          child: Text(l10n.number),
-                        ),
-                        DropdownMenuItem(
-                          value: 'bool',
-                          child: Text(l10n.boolean),
-                        ),
-                        DropdownMenuItem(
-                          value: 'array',
-                          child: Text(l10n.array),
-                        ),
-                        DropdownMenuItem(
-                          value: 'object',
-                          child: Text('Object'),
-                        ),
+                        DropdownMenuItem(value: 'string', child: Text(l10n.string)),
+                        DropdownMenuItem(value: 'number', child: Text(l10n.number)),
+                        DropdownMenuItem(value: 'bool', child: Text(l10n.boolean)),
+                        DropdownMenuItem(value: 'array', child: Text(l10n.array)),
+                        DropdownMenuItem(value: 'object', child: Text('Object')),
                       ],
                       onChanged: (val) {
                         if (val != null && val != field.type) {
                           final list = parent?.children ?? controller.fields;
-                          controller.updateFieldType(
-                            index,
-                            val,
-                            targetList: list,
-                          );
+                          controller.updateFieldType(index, val, targetList: list);
                         }
                       },
                     ),
@@ -128,13 +102,49 @@ class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
                   if (field.type != 'object')
                     Expanded(
                       flex: 3,
-                      child: TextField(
-                        controller: field.valueController,
-                        decoration: InputDecoration(
-                          labelText: l10n.value,
-                          hintText: l10n.enterValue,
-                        ),
-                      ),
+                      child: field.type == 'bool'
+                          ? Row(
+                              children: [
+                                Obx(() {
+                                  return Checkbox(
+                                    value: field.boolValue.value,
+                                    onChanged: (bool? value) {
+                                      if (value != null) {
+                                        field.boolValue.value = value;
+                                        field.valueController.text = value.toString();
+                                        field
+                                            .valueController
+                                            .selection = TextSelection.fromPosition(
+                                          TextPosition(offset: field.valueController.text.length),
+                                        );
+                                      }
+                                    },
+                                  );
+                                }),
+                                Obx(() {
+                                  return Text(
+                                    field.boolValue.value ? 'true' : 'false',
+                                    style: Get.textTheme.bodyLarge,
+                                  );
+                                }),
+                              ],
+                            )
+                          : TextField(
+                              controller: field.valueController,
+                              keyboardType: field.type == 'number'
+                                  ? const TextInputType.numberWithOptions(
+                                      decimal: true,
+                                      signed: true,
+                                    )
+                                  : TextInputType.text,
+                              inputFormatters: field.type == 'number'
+                                  ? [FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*$'))]
+                                  : null,
+                              decoration: InputDecoration(
+                                labelText: l10n.value,
+                                hintText: field.type == 'number' ? '输入数字' : l10n.enterValue,
+                              ),
+                            ),
                     ),
                   if (field.type == 'object') const SizedBox(width: 8),
                   IconButton(
@@ -162,14 +172,7 @@ class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
       );
       // 递归渲染所有object类型的子字段
       if (field.type == 'object' && field.children.isNotEmpty) {
-        widgets.addAll(
-          _buildFieldList(
-            field.children,
-            context,
-            level: level + 1,
-            parent: field,
-          ),
-        );
+        widgets.addAll(_buildFieldList(field.children, context, level: level + 1, parent: field));
       }
     }
     return widgets;

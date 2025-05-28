@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl_ui/intl_ui.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
-import 'package:json_to_dart/screens/json/generator/widgets/resizable_panels.dart';
 import 'package:json_to_dart/screens/json/widgets/title_text.dart';
 import 'package:json_to_dart/screens/json/widgets/label_check_box.dart';
 import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
@@ -41,8 +41,11 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
           children: [
             // 输入输出分栏
             Expanded(
-              child: ResizablePanels(
-                minWidth: 240,
+              child: Splitter(
+                splitterThickness: 3,
+                minFirstFraction: 0.2,
+                maxFirstFraction: 0.6,
+                splitterColor: Get.theme.colorScheme.primary,
                 child1: _buildInputPanel(context),
                 child2: _buildOutputPanel(context),
               ),
@@ -89,9 +92,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
                 expands: true,
                 maxLines: null,
                 textAlignVertical: TextAlignVertical.top,
-                decoration: InputDecoration(
-                  hintText: l10n.jsonInputPlaceholder,
-                ),
+                decoration: InputDecoration(hintText: l10n.jsonInputPlaceholder),
               ),
             ),
             _buildClassNameField(context),
@@ -146,9 +147,7 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
       child: Container(
         width: double.infinity,
         padding: AppStyle.smallPadding,
-        child: Column(
-          children: [_buildOptionsRow(context), _buildActionButtons(context)],
-        ),
+        child: Column(children: [_buildOptionsRow(context), _buildActionButtons(context)]),
       ),
     );
   }

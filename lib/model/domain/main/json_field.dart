@@ -9,6 +9,7 @@ class JsonField {
   final int level;
   final String type;
   RxList<JsonField> children;
+  final RxBool boolValue = false.obs;
 
   JsonField({
     required this.keyController,
@@ -17,11 +18,16 @@ class JsonField {
     required this.level,
     this.type = 'string',
     RxList<JsonField>? children,
-  }) : children = children ?? <JsonField>[].obs;
+  }) : children = children ?? <JsonField>[].obs {
+    if (type == 'bool') {
+      boolValue.value = valueController.text.toLowerCase() == 'true';
+    }
+  }
 
   void dispose() {
     keyController.dispose();
     valueController.dispose();
+    boolValue.close();
     for (var child in children) {
       child.dispose();
     }
@@ -33,11 +39,11 @@ class JsonField {
     String? keyText,
     String? valueText,
   }) {
-    final newKeyController = TextEditingController(
-      text: keyText ?? keyController.text,
-    );
+    final newKeyController = TextEditingController(text: keyText ?? keyController.text);
     final newValueController = TextEditingController(
-      text: valueText ?? valueController.text,
+      text: (type == 'bool' && newType != null && newType != 'bool')
+          ? ''
+          : (valueText ?? valueController.text),
     );
     final newField = JsonField(
       keyController: newKeyController,
@@ -51,9 +57,7 @@ class JsonField {
           ? children.map((c) => c.createNewInstance()).toList().obs
           : <JsonField>[].obs,
     );
-    // 添加监听，保证切换类型后内容变动能刷新
     newKeyController.addListener(() {
-      // 这里不能直接调用 updateJsonOutput，需要通过逻辑层
       try {
         final logic = Get.find<JsonGeneratorLogic>();
         logic.updateJsonOutput();

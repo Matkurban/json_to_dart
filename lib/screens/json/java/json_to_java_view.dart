@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl_ui/intl_ui.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
-import 'package:json_to_dart/screens/json/generator/widgets/resizable_panels.dart';
 import 'package:json_to_dart/screens/json/widgets/title_text.dart';
 import 'package:json_to_dart/screens/json/widgets/label_check_box.dart';
 import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
@@ -40,8 +40,11 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
         child: Column(
           children: [
             Expanded(
-              child: ResizablePanels(
-                minWidth: 240,
+              child: Splitter(
+                splitterThickness: 3,
+                minFirstFraction: 0.2,
+                maxFirstFraction: 0.6,
+                splitterColor: Get.theme.colorScheme.primary,
                 child1: _buildInputPanel(context),
                 child2: _buildOutputPanel(context),
               ),
@@ -89,9 +92,7 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                 expands: true,
                 maxLines: null,
                 textAlignVertical: TextAlignVertical.top,
-                decoration: InputDecoration(
-                  hintText: l10n.jsonInputPlaceholder,
-                ),
+                decoration: InputDecoration(hintText: l10n.jsonInputPlaceholder),
               ),
             ),
             Row(
@@ -100,9 +101,7 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                 Expanded(
                   child: TextField(
                     controller: controller.classNameController,
-                    decoration: InputDecoration(
-                      labelText: l10n.mainClassNameLabel,
-                    ),
+                    decoration: InputDecoration(labelText: l10n.mainClassNameLabel),
                   ),
                 ),
                 Expanded(
@@ -131,8 +130,7 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                 TitleText(text: l10n.javaCode),
                 const Spacer(),
                 IconButton(
-                  onPressed: () =>
-                      previewCode(context, controller.javaCode.value),
+                  onPressed: () => previewCode(context, controller.javaCode.value),
                   icon: Icon(CupertinoIcons.eye),
                   tooltip: l10n.previewCode,
                 ),
@@ -180,24 +178,21 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                   return LabelCheckBox(
                     label: l10n.generateGetterSetter,
                     value: controller.generateGetterSetter.value,
-                    onChanged: (value) =>
-                        controller.generateGetterSetter.value = value!,
+                    onChanged: (value) => controller.generateGetterSetter.value = value!,
                   );
                 }),
                 Obx(() {
                   return LabelCheckBox(
                     label: l10n.generateBuilder,
                     value: controller.generateBuilder.value,
-                    onChanged: (value) =>
-                        controller.generateBuilder.value = value!,
+                    onChanged: (value) => controller.generateBuilder.value = value!,
                   );
                 }),
                 Obx(() {
                   return LabelCheckBox(
                     label: l10n.generateToString,
                     value: controller.generateToString.value,
-                    onChanged: (value) =>
-                        controller.generateToString.value = value!,
+                    onChanged: (value) => controller.generateToString.value = value!,
                   );
                 }),
                 Obx(() {
@@ -219,25 +214,19 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
                   icon: const Icon(Icons.format_align_left),
                   label: Text(l10n.formatJson),
                   onPressed: controller.formatJson,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: colorScheme.primary,
-                  ),
+                  style: FilledButton.styleFrom(backgroundColor: colorScheme.primary),
                 ),
                 FilledButton.icon(
                   icon: const Icon(Icons.code),
                   label: Text(l10n.generateJavaClass),
                   onPressed: controller.generateJavaClass,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: colorScheme.secondary,
-                  ),
+                  style: FilledButton.styleFrom(backgroundColor: colorScheme.secondary),
                 ),
                 FilledButton.icon(
                   icon: const Icon(Icons.save),
                   label: Text(l10n.addToHistory),
                   onPressed: controller.addToHistory,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: colorScheme.primary,
-                  ),
+                  style: FilledButton.styleFrom(backgroundColor: colorScheme.primary),
                 ),
               ],
             ),
