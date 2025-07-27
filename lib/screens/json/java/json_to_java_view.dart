@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:intl_ui/intl_ui.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/screens/json/widgets/title_text.dart';
@@ -9,6 +8,7 @@ import 'package:json_to_dart/screens/json/widgets/label_check_box.dart';
 import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
 import 'package:json_to_dart/screens/json/java/json_to_java_logic.dart';
 import 'package:json_to_dart/screens/json/java/widgets/json_to_java_drawer.dart';
+import 'package:kurban_custom_widgets/kurban_custom_widgets.dart';
 
 class JsonToJavaView extends GetView<JsonToJavaLogic> {
   const JsonToJavaView({super.key});
@@ -40,7 +40,7 @@ class JsonToJavaView extends GetView<JsonToJavaLogic> {
         child: Column(
           children: [
             Expanded(
-              child: Splitter(
+              child: KurbanSplitter(
                 splitterThickness: 3,
                 minFirstFraction: 0.2,
                 maxFirstFraction: 0.6,

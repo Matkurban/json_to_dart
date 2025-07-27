@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl_ui/intl_ui.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/screens/json/generator/json_generator_logic.dart';
 import 'package:json_to_dart/screens/json/widgets/title_text.dart';
+import 'package:kurban_custom_widgets/kurban_custom_widgets.dart';
 
 class GeneratorOutputPanel extends GetWidget<JsonGeneratorLogic> {
   const GeneratorOutputPanel({super.key});
@@ -48,7 +48,9 @@ class GeneratorOutputPanel extends GetWidget<JsonGeneratorLogic> {
             const SizedBox(height: 10),
             Expanded(
               child: Obx(() {
-                return JsonViewer(jsonData: jsonDecode(controller.jsonOutput.value));
+                return KurbanJsonViewer(
+                  jsonData: jsonDecode(controller.jsonOutput.value),
+                );
               }),
             ),
           ],
@@ -64,7 +66,10 @@ class GeneratorOutputPanel extends GetWidget<JsonGeneratorLogic> {
         title: Text(l10n.saveToHistory),
         content: TextField(
           controller: nameController,
-          decoration: InputDecoration(labelText: l10n.name, hintText: l10n.enterName),
+          decoration: InputDecoration(
+            labelText: l10n.name,
+            hintText: l10n.enterName,
+          ),
         ),
         actions: [
           TextButton(onPressed: () => Get.back(), child: Text(l10n.cancel)),

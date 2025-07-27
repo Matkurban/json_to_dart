@@ -1,12 +1,12 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:intl_ui/intl_ui.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/screens/json/generator/widgets/generator_input_panel.dart';
 import 'package:json_to_dart/screens/json/generator/widgets/generator_output_panel.dart';
 import 'package:json_to_dart/screens/json/generator/json_generator_logic.dart';
 import 'package:json_to_dart/screens/json/generator/widgets/json_generator_drawer.dart';
+import 'package:kurban_custom_widgets/kurban_custom_widgets.dart';
 
 class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
   const JsonGeneratorView({super.key});
@@ -36,7 +36,7 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
       ),
       body: Padding(
         padding: AppStyle.smallPadding,
-        child: Splitter(
+        child: KurbanSplitter(
           splitterThickness: 3,
           minFirstFraction: 0.2,
           maxFirstFraction: 0.6,
