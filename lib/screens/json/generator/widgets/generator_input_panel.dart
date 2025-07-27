@@ -1,11 +1,11 @@
-import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/model/domain/main/json_field.dart';
-import 'package:json_to_dart/screens/json/widgets/title_text.dart';
 import 'package:json_to_dart/screens/json/generator/json_generator_logic.dart';
-import 'package:flutter/services.dart';
+import 'package:json_to_dart/screens/json/widgets/title_text.dart';
 
 class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
   const GeneratorInputPanel({super.key});
@@ -76,33 +76,34 @@ class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
                   // 类型选择下拉框
                   SizedBox(
                     width: 130,
-                    child: DropdownButtonFormField<String>(
-                      value: field.type,
-                      decoration: InputDecoration(
-                        labelText: "类型",
-                        isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                      ),
-                      items: [
-                        DropdownMenuItem(value: 'string', child: Text(l10n.string)),
-                        DropdownMenuItem(value: 'number', child: Text(l10n.number)),
-                        DropdownMenuItem(value: 'bool', child: Text(l10n.boolean)),
-                        DropdownMenuItem(value: 'array', child: Text(l10n.array)),
-                        DropdownMenuItem(value: 'object', child: Text('Object')),
-                      ],
-                      onChanged: (val) {
-                        if (val != null && val != field.type) {
-                          final list = parent?.children ?? controller.fields;
-                          controller.updateFieldType(index, val, targetList: list);
-                        }
-                      },
-                    ),
+                    child: Obx(() {
+                      return DropdownButtonFormField<String>(
+                        value: field.type.value,
+                        decoration: InputDecoration(
+                          labelText: "类型",
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        ),
+                        items: [
+                          DropdownMenuItem(value: 'string', child: Text(l10n.string)),
+                          DropdownMenuItem(value: 'number', child: Text(l10n.number)),
+                          DropdownMenuItem(value: 'bool', child: Text(l10n.boolean)),
+                          DropdownMenuItem(value: 'array', child: Text(l10n.array)),
+                          DropdownMenuItem(value: 'object', child: Text('Object')),
+                        ],
+                        onChanged: (val) {
+                          if (val != null && val != field.type.value) {
+                            field.updateType(val);
+                          }
+                        },
+                      );
+                    }),
                   ),
                   const SizedBox(width: 8),
-                  if (field.type != 'object')
+                  if (field.type.value != 'object')
                     Expanded(
                       flex: 3,
-                      child: field.type == 'bool'
+                      child: field.type.value == 'bool'
                           ? Row(
                               children: [
                                 Obx(() {
@@ -131,22 +132,22 @@ class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
                             )
                           : TextField(
                               controller: field.valueController,
-                              keyboardType: field.type == 'number'
+                              keyboardType: field.type.value == 'number'
                                   ? const TextInputType.numberWithOptions(
                                       decimal: true,
                                       signed: true,
                                     )
                                   : TextInputType.text,
-                              inputFormatters: field.type == 'number'
+                              inputFormatters: field.type.value == 'number'
                                   ? [FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*$'))]
                                   : null,
                               decoration: InputDecoration(
                                 labelText: l10n.value,
-                                hintText: field.type == 'number' ? '输入数字' : l10n.enterValue,
+                                hintText: field.type.value == 'number' ? '输入数字' : l10n.enterValue,
                               ),
                             ),
                     ),
-                  if (field.type == 'object') const SizedBox(width: 8),
+                  if (field.type.value == 'object') const SizedBox(width: 8),
                   IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: () {
@@ -158,7 +159,7 @@ class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
                     },
                     tooltip: l10n.delete,
                   ),
-                  if (field.type == 'object')
+                  if (field.type.value == 'object')
                     IconButton(
                       icon: const Icon(Icons.add_box),
                       onPressed: () => controller.addChildField(field),
@@ -171,7 +172,7 @@ class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
         ),
       );
       // 递归渲染所有object类型的子字段
-      if (field.type == 'object' && field.children.isNotEmpty) {
+      if (field.type.value == 'object' && field.children.isNotEmpty) {
         widgets.addAll(_buildFieldList(field.children, context, level: level + 1, parent: field));
       }
     }

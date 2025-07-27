@@ -1,12 +1,12 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=E:\flutter\sdk\flutter_windows_3.29.3-stable\flutter"
-export "FLUTTER_APPLICATION_PATH=E:\flutter\projects\json_to_dart"
+export "FLUTTER_ROOT=/Users/kurban/development/flutter"
+export "FLUTTER_APPLICATION_PATH=/Users/kurban/StudioProjects/json_to_dart"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
-export "FLUTTER_TARGET=lib\main.dart"
+export "FLUTTER_TARGET=lib/main.dart"
 export "FLUTTER_BUILD_DIR=build"
-export "FLUTTER_BUILD_NAME=1.1.0"
-export "FLUTTER_BUILD_NUMBER=1.1.0"
+export "FLUTTER_BUILD_NAME=1.1.2"
+export "FLUTTER_BUILD_NUMBER=1.1.2"
 export "DART_OBFUSCATION=false"
 export "TRACK_WIDGET_CREATION=true"
 export "TREE_SHAKE_ICONS=false"

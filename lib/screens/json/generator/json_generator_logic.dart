@@ -1,12 +1,13 @@
 import 'dart:convert';
-import 'package:get/get.dart';
-import 'package:uuid/uuid.dart';
+
 import 'package:flutter/material.dart';
-import 'package:syntax_highlight/syntax_highlight.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart';
 import 'package:json_to_dart/model/domain/main/json_field.dart';
 import 'package:json_to_dart/model/domain/main/json_history.dart';
 import 'package:json_to_dart/screens/splash/logic/splash_logic.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:syntax_highlight/syntax_highlight.dart';
+import 'package:uuid/uuid.dart';
 
 class JsonGeneratorLogic extends GetxController {
   final fields = <JsonField>[].obs;
@@ -22,10 +23,7 @@ class JsonGeneratorLogic extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    highlighter = Highlighter(
-      language: 'dart',
-      theme: splashLogic.highlighterTheme,
-    );
+    highlighter = Highlighter(language: 'dart', theme: splashLogic.highlighterTheme);
     addField();
     loadHistories();
   }
@@ -43,9 +41,7 @@ class JsonGeneratorLogic extends GetxController {
       final prefs = Get.find<SharedPreferences>();
       final historyJsonList = prefs.getStringList('json_histories') ?? [];
       histories.value =
-          historyJsonList
-              .map((json) => JsonHistory.fromJson(jsonDecode(json)))
-              .toList()
+          historyJsonList.map((json) => JsonHistory.fromJson(jsonDecode(json))).toList()
             ..sort((a, b) => b.createTime.compareTo(a.createTime));
     } catch (e) {
       debugPrint('Error loading histories: $e');
@@ -55,9 +51,7 @@ class JsonGeneratorLogic extends GetxController {
   Future<void> saveHistories() async {
     try {
       final prefs = Get.find<SharedPreferences>();
-      final historyJsonList = histories
-          .map((history) => jsonEncode(history.toJson()))
-          .toList();
+      final historyJsonList = histories.map((history) => jsonEncode(history.toJson())).toList();
       await prefs.setStringList('json_histories', historyJsonList);
     } catch (e) {
       debugPrint('Error saving histories: $e');
@@ -128,11 +122,9 @@ class JsonGeneratorLogic extends GetxController {
       valueController: TextEditingController(),
       index: targetList?.length ?? fields.length,
       level: level,
-      type: 'string',
+      initialType: 'string',
       children: <JsonField>[].obs,
     );
-    field.keyController.addListener(updateJsonOutput);
-    field.valueController.addListener(updateJsonOutput);
     if (targetList != null) {
       if (targetList is RxList<JsonField>) {
         targetList.add(field);
@@ -179,30 +171,13 @@ class JsonGeneratorLogic extends GetxController {
     updateJsonOutput();
   }
 
-  void updateFieldType(
-    int index,
-    String newType, {
-    List<JsonField>? targetList,
-  }) {
+  void updateFieldType(int index, String newType, {List<JsonField>? targetList}) {
     try {
       final list = targetList ?? fields;
       if (list.length > index) {
         final targetField = list[index];
-        // 保留原有 key 和 value
-        final newField = targetField.createNewInstance(
-          newType: newType,
-          newIndex: index,
-          keyText: targetField.keyController.text,
-          valueText: targetField.valueController.text,
-        );
-        if (newType == 'object') {
-          newField.children.clear();
-        }
-        list[index] = newField;
-        if (list is RxList<JsonField>) {
-          list.refresh();
-        }
-        updateJsonOutput();
+        // 直接更新类型，而不是重建整个字段
+        targetField.updateType(newType);
       }
     } catch (e) {
       debugPrint('Error updating field type: $e');
@@ -220,7 +195,7 @@ class JsonGeneratorLogic extends GetxController {
   }
 
   dynamic _processField(JsonField field) {
-    switch (field.type) {
+    switch (field.type.value) {
       case 'number':
         final text = field.valueController.text;
         final intVal = int.tryParse(text);
@@ -278,11 +253,7 @@ class JsonGeneratorLogic extends GetxController {
   }
 
   /// 递归填充字段
-  void _fillFieldsFromMap(
-    Map<String, dynamic> map,
-    List<JsonField> target,
-    int level,
-  ) {
+  void _fillFieldsFromMap(Map<String, dynamic> map, List<JsonField> target, int level) {
     map.forEach((key, value) {
       String type = 'string';
       RxList<JsonField>? children;
@@ -309,12 +280,10 @@ class JsonGeneratorLogic extends GetxController {
 
       final field = JsonField(
         keyController: TextEditingController(text: key),
-        valueController: TextEditingController(
-          text: type == 'object' ? '' : valueStr,
-        ),
+        valueController: TextEditingController(text: type == 'object' ? '' : valueStr),
         index: target.length,
         level: level,
-        type: type,
+        initialType: type,
         children: children,
       );
       field.keyController.addListener(updateJsonOutput);
