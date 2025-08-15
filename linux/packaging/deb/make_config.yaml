@@ -1,10 +1,10 @@
 display_name: JsonToDart
-package_name: jsontodart
+package_name: json-to-dart
 maintainer:
-  name: matkurban
+  name: Matkurban
   email: 3496354336@qq.com.com
 co_authors:
-  - name: matkurban
+  - name: Matkurban
     email: 3496354336@qq.com.com
 priority: optional
 section: x11
