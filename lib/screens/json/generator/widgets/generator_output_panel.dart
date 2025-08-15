@@ -48,15 +48,22 @@ class GeneratorOutputPanel extends GetWidget<JsonGeneratorLogic> {
             const SizedBox(height: 10),
             Expanded(
               child: Obx(() {
-                return KurbanJsonViewer(
-                  jsonData: jsonDecode(controller.jsonOutput.value),
-                );
+                final data = controller.jsonData.value ?? _safeDecode(controller.jsonOutput.value);
+                return KurbanJsonViewer(jsonData: data);
               }),
             ),
           ],
         ),
       ),
     );
+  }
+
+  dynamic _safeDecode(String text) {
+    try {
+      return jsonDecode(text);
+    } catch (_) {
+      return {};
+    }
   }
 
   void _showSaveDialog(BuildContext context) {
@@ -66,10 +73,7 @@ class GeneratorOutputPanel extends GetWidget<JsonGeneratorLogic> {
         title: Text(l10n.saveToHistory),
         content: TextField(
           controller: nameController,
-          decoration: InputDecoration(
-            labelText: l10n.name,
-            hintText: l10n.enterName,
-          ),
+          decoration: InputDecoration(labelText: l10n.name, hintText: l10n.enterName),
         ),
         actions: [
           TextButton(onPressed: () => Get.back(), child: Text(l10n.cancel)),

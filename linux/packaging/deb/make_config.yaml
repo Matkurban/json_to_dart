@@ -1,0 +1,40 @@
+display_name: JsonToDart
+package_name: jsontodart
+maintainer:
+  name: matkurban
+  email: 3496354336@qq.com.com
+co_authors:
+  - name: matkurban
+    email: 3496354336@qq.com.com
+priority: optional
+section: x11
+installed_size: 6604
+essential: false
+icon: assets/images/dart.png
+
+postinstall_scripts:
+  - echo "JsonToDart installed successfully"
+postuninstall_scripts:
+  - echo "JsonToDart uninstalled successfully"
+
+keywords:
+  - Json
+  - JsonTools
+  - Tools
+  - Application
+
+generic_name: Tools Application
+
+categories:
+  - Tools
+  - Utility
+  - Development
+  - Programming
+  - Text Editor
+  - Editors
+  - Programming Text Editors
+
+startup_notify: true
+# You can also specify [metainfo](https://freedesktop.org/software/appstream/docs/chap-Quickstart.html) file
+# which contains metadata of the app.
+# metainfo: linux/packaging/myappid.appdata.xml

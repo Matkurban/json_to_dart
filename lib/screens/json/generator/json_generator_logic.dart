@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:uuid/uuid.dart';
 class JsonGeneratorLogic extends GetxController {
   final fields = <JsonField>[].obs;
   final jsonOutput = ''.obs;
+  final Rxn<dynamic> jsonData = Rxn<dynamic>();
   final histories = <JsonHistory>[].obs;
   final currentHistory = Rxn<JsonHistory>();
 
@@ -19,6 +21,9 @@ class JsonGeneratorLogic extends GetxController {
   late Highlighter highlighter;
 
   final SplashLogic splashLogic = Get.find<SplashLogic>();
+
+  Timer? _debounceTimer;
+  static const _debounceDuration = Duration(milliseconds: 300);
 
   @override
   void onInit() {
@@ -30,6 +35,7 @@ class JsonGeneratorLogic extends GetxController {
 
   @override
   void onClose() {
+    _debounceTimer?.cancel();
     for (var field in fields) {
       field.dispose();
     }
@@ -84,7 +90,7 @@ class JsonGeneratorLogic extends GetxController {
       }
       fields.clear();
 
-      // 添加新字段
+      // 添加新字段（监听由 JsonField 内部统一处理）
       jsonMap.forEach((key, value) {
         final field = JsonField(
           keyController: TextEditingController(text: key),
@@ -92,8 +98,6 @@ class JsonGeneratorLogic extends GetxController {
           index: fields.length,
           level: 0,
         );
-        field.keyController.addListener(updateJsonOutput);
-        field.valueController.addListener(updateJsonOutput);
         fields.add(field);
       });
 
@@ -185,12 +189,18 @@ class JsonGeneratorLogic extends GetxController {
   }
 
   void updateJsonOutput() {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(_debounceDuration, _computeJsonOutput);
+  }
+
+  void _computeJsonOutput() {
     final Map<String, dynamic> jsonMap = {};
     for (var field in fields) {
       if (field.keyController.text.isNotEmpty) {
         jsonMap[field.keyController.text] = _processField(field);
       }
     }
+    jsonData.value = jsonMap;
     jsonOutput.value = JsonEncoder.withIndent('  ').convert(jsonMap);
   }
 
@@ -286,8 +296,6 @@ class JsonGeneratorLogic extends GetxController {
         initialType: type,
         children: children,
       );
-      field.keyController.addListener(updateJsonOutput);
-      field.valueController.addListener(updateJsonOutput);
 
       if (type == 'object' && value is Map<String, dynamic>) {
         _fillFieldsFromMap(value, field.children, level + 1);

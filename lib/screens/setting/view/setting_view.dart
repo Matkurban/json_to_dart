@@ -1,10 +1,7 @@
-import 'package:get/get.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:json_to_dart/router/router_names.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import 'package:get/get.dart';
 import 'package:json_to_dart/config/global/constant.dart';
+import 'package:json_to_dart/router/router_names.dart';
 import 'package:json_to_dart/screens/setting/logic/setting_logic.dart';
 
 class SettingView extends GetView<SettingLogic> {
@@ -42,36 +39,6 @@ class SettingView extends GetView<SettingLogic> {
                   ],
                 ),
                 onTap: () => Get.toNamed(RouterNames.toggleLanguage),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text(l10n.flutterMobileMirrorConfig),
-                trailing: Icon(Icons.keyboard_arrow_right),
-                onTap: () {
-                  launchUrlString(
-                    'https://www.jsontodart.cn/archives/flutter-android-guo-nei-gou-jian-zhi-nan',
-                  );
-                },
-              ),
-            ),
-
-            Card(
-              child: ListTile(
-                title: Text(l10n.androidStudioDartTemplate),
-                trailing: Icon(Icons.keyboard_arrow_right),
-                onTap: () {
-                  launchUrlString(
-                    'https://www.jsontodart.cn/archives/androidstudio-chuang-jian-dart-wen-jian-mo-ban',
-                  );
-                },
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text(l10n.officialWebsite),
-                trailing: Icon(CupertinoIcons.arrow_up_right),
-                onTap: () => launchUrl(Uri.parse('https://jsontodart.cn')),
               ),
             ),
             Card(

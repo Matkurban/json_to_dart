@@ -100,8 +100,12 @@ class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
                     }),
                   ),
                   const SizedBox(width: 8),
-                  if (field.type.value != 'object')
-                    Expanded(
+                  // 依赖类型的输入区域，放入 Obx，避免整行重建
+                  Obx(() {
+                    if (field.type.value == 'object') {
+                      return const SizedBox.shrink();
+                    }
+                    return Expanded(
                       flex: 3,
                       child: field.type.value == 'bool'
                           ? Row(
@@ -146,8 +150,9 @@ class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
                                 hintText: field.type.value == 'number' ? '输入数字' : l10n.enterValue,
                               ),
                             ),
-                    ),
-                  if (field.type.value == 'object') const SizedBox(width: 8),
+                    );
+                  }),
+                  // 删除按钮
                   IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: () {
@@ -159,22 +164,39 @@ class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
                     },
                     tooltip: l10n.delete,
                   ),
-                  if (field.type.value == 'object')
-                    IconButton(
-                      icon: const Icon(Icons.add_box),
-                      onPressed: () => controller.addChildField(field),
-                      tooltip: l10n.addField,
-                    ),
+                  // 仅当为 object 时展示添加子字段按钮
+                  Obx(() {
+                    if (field.type.value != 'object') {
+                      return const SizedBox.shrink();
+                    }
+                    return Row(
+                      children: [
+                        const SizedBox(width: 8),
+                        IconButton(
+                          icon: const Icon(Icons.add_box),
+                          onPressed: () => controller.addChildField(field),
+                          tooltip: l10n.addField,
+                        ),
+                      ],
+                    );
+                  }),
                 ],
               ),
             ),
           ),
         ),
       );
-      // 递归渲染所有object类型的子字段
-      if (field.type.value == 'object' && field.children.isNotEmpty) {
-        widgets.addAll(_buildFieldList(field.children, context, level: level + 1, parent: field));
-      }
+      // 递归渲染所有object类型的子字段（响应式）
+      widgets.add(
+        Obx(() {
+          if (field.type.value == 'object' && field.children.isNotEmpty) {
+            return Column(
+              children: _buildFieldList(field.children, context, level: level + 1, parent: field),
+            );
+          }
+          return const SizedBox.shrink();
+        }),
+      );
     }
     return widgets;
   }

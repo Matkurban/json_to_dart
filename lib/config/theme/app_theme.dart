@@ -8,33 +8,24 @@ import 'package:flutter/material.dart';
 /// Use same major flex_color_scheme package version. If you use a
 /// lower minor version, some properties may not be supported.
 /// In that case, remove them after copying this theme to your
-/// app or upgrade package to version 8.1.1.
+/// app or upgrade the package to version 8.3.0.
 ///
-/// Use in [MaterialApp] like this:
+/// Use it in a [MaterialApp] like this:
 ///
 /// MaterialApp(
 ///   theme: AppTheme.light,
 ///   darkTheme: AppTheme.dark,
 /// );
 abstract final class AppTheme {
-  // The defined light theme.
+  // The FlexColorScheme defined light mode ThemeData.
   static ThemeData light = FlexThemeData.light(
-    colors: const FlexSchemeColor(
-      // Custom colors
-      primary: Color(0xFF4CAF50),
-      primaryContainer: Color(0xFFC8FFC0),
-      primaryLightRef: Color(0xFF4CAF50),
-      secondary: Color(0xFF2196F3),
-      secondaryContainer: Color(0xFFD1E4FF),
-      secondaryLightRef: Color(0xFF2196F3),
-      tertiary: Color(0xFFFFEB3B),
-      tertiaryContainer: Color(0xFFFFFBFF),
-      tertiaryLightRef: Color(0xFFFFEB3B),
-      appBarColor: Color(0xFFD1E4FF),
-      error: Color(0xFFBA1A1A),
-      errorContainer: Color(0xFFFFF8F7),
-    ),
+    // Using FlexColorScheme built-in FlexScheme enum based colors
+    scheme: FlexScheme.shadBlue,
+    // Input color modifiers.
+    useMaterial3ErrorColors: true,
+    // Surface color adjustments.
     lightIsWhite: true,
+    // Component theme configurations for light mode.
     subThemesData: const FlexSubThemesData(
       interactionEffects: true,
       tintedDisabledControls: true,
@@ -57,35 +48,22 @@ abstract final class AppTheme {
       dialogBackgroundSchemeColor: SchemeColor.onPrimary,
       snackBarBackgroundSchemeColor: SchemeColor.onPrimary,
       tabBarDividerColor: Color(0x00000000),
-      tabBarIndicatorAnimation: TabIndicatorAnimation.linear,
       menuBarShadowColor: Color(0x00000000),
       searchUseGlobalShape: true,
       navigationRailUseIndicator: true,
-      navigationRailLabelType: NavigationRailLabelType.all,
-      cardRadius: 0,
-      cardElevation: 0,
     ),
-    useMaterial3ErrorColors: true,
+    // Direct ThemeData properties.
     visualDensity: FlexColorScheme.comfortablePlatformDensity,
     cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
   );
-  // The defined dark theme.
+
+  // The FlexColorScheme defined dark mode ThemeData.
   static ThemeData dark = FlexThemeData.dark(
-    colors: const FlexSchemeColor(
-      // Custom colors
-      primary: Color(0xFF9FC9FF),
-      primaryContainer: Color(0xFF00325B),
-      primaryLightRef: Color(0xFF4CAF50),
-      secondary: Color(0xFFFFB59D),
-      secondaryContainer: Color(0xFF872100),
-      secondaryLightRef: Color(0xFF2196F3),
-      tertiary: Color(0xFF86D2E1),
-      tertiaryContainer: Color(0xFF004E59),
-      tertiaryLightRef: Color(0xFFFFEB3B),
-      appBarColor: Color(0xFFD1E4FF),
-      error: Color(0xFFFFB4AB),
-      errorContainer: Color(0xFF93000A),
-    ),
+    // Using FlexColorScheme built-in FlexScheme enum based colors.
+    scheme: FlexScheme.shadBlue,
+    // Input color modifiers.
+    useMaterial3ErrorColors: true,
+    // Component theme configurations for dark mode.
     subThemesData: const FlexSubThemesData(
       interactionEffects: true,
       tintedDisabledControls: true,
@@ -106,21 +84,19 @@ abstract final class AppTheme {
       tooltipOpacity: null,
       snackBarBackgroundSchemeColor: SchemeColor.onPrimary,
       tabBarDividerColor: Color(0x00000000),
-      tabBarIndicatorAnimation: TabIndicatorAnimation.linear,
       menuBarShadowColor: Color(0x00000000),
       searchUseGlobalShape: true,
       navigationRailUseIndicator: true,
-      navigationRailLabelType: NavigationRailLabelType.all,
     ),
-    useMaterial3ErrorColors: true,
+    // Direct ThemeData properties.
     visualDensity: FlexColorScheme.comfortablePlatformDensity,
     cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
   );
 }
 
 /*{
-    "playground_data": "Themes Playground data exported 04.03.2025 16:20:36",
-    "playground_version": "8.1.1",
+    "playground_data": "Themes Playground data exported 16.08.2025 02:34:55",
+    "playground_version": "8.3.0",
     "blendLevelDark": 0,
     "blendLevelLight": 0,
     "blendLightOnColors": false,
@@ -235,10 +211,6 @@ abstract final class AppTheme {
         "dart_type": "color",
         "value": "00000000"
     },
-    "tabBarIndicatorAnimation": {
-        "dart_type": "enum_tabbar_indicator_animation",
-        "value": "linear"
-    },
     "themeMode": {
         "dart_type": "enum_theme_mode",
         "value": "system"
@@ -250,7 +222,7 @@ abstract final class AppTheme {
         "value": "onPrimary"
     },
     "tooltipsMatchBackground": false,
-    "topicIndexEndSide": 4,
+    "topicIndexEndSide": 5,
     "topicIndexStartSide": 25,
     "unselectedToggleIsColored": false,
     "useError": true,
