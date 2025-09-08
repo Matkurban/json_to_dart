@@ -135,7 +135,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get systemTheme => '系统';
 
   @override
-  String get dart => 'Dart';
+  String get dart => 'Json转Dart对象';
 
   @override
   String get java => 'Java';

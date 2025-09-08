@@ -10,6 +10,7 @@ class JsonField {
   final RxString type = 'string'.obs; // 改为响应式类型
   RxList<JsonField> children;
   final RxBool boolValue = false.obs;
+  final RxBool expanded = true.obs; // 用于折叠/展开 object 子字段
   bool _listenersAdded = false; // 防止重复添加监听器
 
   JsonField({
@@ -89,6 +90,7 @@ class JsonField {
     valueController.dispose();
     boolValue.close();
     type.close();
+    expanded.close();
     for (var child in children) {
       child.dispose();
     }

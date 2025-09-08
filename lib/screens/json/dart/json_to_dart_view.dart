@@ -1,14 +1,12 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
-import 'package:json_to_dart/screens/json/widgets/title_text.dart';
+import 'package:json_to_dart/screens/json/dart/widgets/dart_output_panel.dart';
+import 'package:json_to_dart/screens/json/dart/widgets/json_input_panel.dart';
 import 'package:json_to_dart/screens/json/widgets/label_check_box.dart';
-import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
 import 'package:json_to_dart/screens/json/dart/json_to_dart_logic.dart';
 import 'package:json_to_dart/screens/json/dart/widgets/json_to_dart_drawer.dart';
-import 'package:kurban_custom_widgets/kurban_custom_widgets.dart';
 
 class JsonToDartView extends GetView<JsonToDartLogic> {
   const JsonToDartView({super.key});
@@ -38,106 +36,23 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
       body: Padding(
         padding: AppStyle.smallPadding,
         child: Column(
-          children: [
-            // 输入输出分栏
-            Expanded(
-              child: KurbanSplitter(
-                splitterThickness: 3,
-                minFirstFraction: 0.2,
-                maxFirstFraction: 0.6,
-                splitterColor: Get.theme.colorScheme.primary,
-                child1: _buildInputPanel(context),
-                child2: _buildOutputPanel(context),
-              ),
-            ),
-            Divider(height: 3),
-            _buildControlPanel(context), // 底部控制区
-          ],
-        ),
-      ),
-      endDrawer: const JsonToDartDrawer(),
-    );
-  }
-
-  Widget _buildInputPanel(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: AppStyle.smallPadding,
-        child: Column(
           spacing: 10,
           children: [
-            Row(
-              children: [
-                TitleText(text: l10n.jsonInput),
-                Spacer(),
-                IconButton(
-                  onPressed: () {
-                    previewJson(context, controller.jsonController.text);
-                  },
-                  icon: Icon(CupertinoIcons.eye),
-                  tooltip: l10n.previewJsonView,
-                ),
-                IconButton(
-                  onPressed: () => controller.jsonController.clear(),
-                  icon: Icon(Icons.clear),
-                  tooltip: l10n.clearInput,
-                ),
-              ],
-            ),
             Expanded(
-              child: TextField(
-                textInputAction: TextInputAction.newline,
-                controller: controller.jsonController,
-                expands: true,
-                maxLines: null,
-                textAlignVertical: TextAlignVertical.top,
-                decoration: InputDecoration(hintText: l10n.jsonInputPlaceholder),
+              child: Row(
+                spacing: 10,
+                children: [
+                  Expanded(child: JsonInputPanel()),
+                  Expanded(child: DartOutputPanel()),
+                ],
               ),
             ),
-            _buildClassNameField(context),
+            _buildControlPanel(context),
           ],
         ),
       ),
-    );
-  }
 
-  Widget _buildOutputPanel(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: AppStyle.smallPadding,
-        child: Column(
-          children: [
-            Row(
-              children: [
-                TitleText(text: l10n.dartOutput),
-                Spacer(),
-                IconButton(
-                  onPressed: () {
-                    previewCode(context, controller.dartCode.value);
-                  },
-                  icon: Icon(CupertinoIcons.eye),
-                  tooltip: l10n.previewCode,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.copy_all),
-                  onPressed: () => copyToClipboard(controller.dartCode.value),
-                  tooltip: l10n.copyCode,
-                ),
-              ],
-            ),
-            Expanded(
-              child: Obx(() {
-                return ModelViewPane(
-                  code: controller.dartCode.value,
-                  highlighter: controller.highlighter,
-                );
-              }),
-            ),
-          ],
-        ),
-      ),
+      endDrawer: const JsonToDartDrawer(),
     );
   }
 
@@ -219,26 +134,6 @@ class JsonToDartView extends GetView<JsonToDartLogic> {
           label: Text(l10n.addToHistory),
           onPressed: controller.addHistory,
           style: FilledButton.styleFrom(backgroundColor: colorScheme.primary),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildClassNameField(BuildContext context) {
-    return Row(
-      spacing: 6,
-      children: [
-        Expanded(
-          child: TextField(
-            style: AppStyle.codeTextStyle,
-            controller: controller.classNameController,
-            decoration: InputDecoration(labelText: l10n.mainClassNameLabel),
-          ),
-        ),
-        IconButton(
-          tooltip: '清空类名',
-          icon: const Icon(Icons.clear),
-          onPressed: controller.classNameController.clear,
         ),
       ],
     );

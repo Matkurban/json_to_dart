@@ -32,8 +32,8 @@ Future<void> copyToClipboard(String text) async {
 }
 
 ///预览Json
-void previewJson(BuildContext context, String json) {
-  if (json.trim().isEmpty) {
+void previewJson(BuildContext context, Map<String,dynamic> json) {
+  if (json.isEmpty) {
     MessageUtil.showWarning(
       title: l10n.operationPrompt,
       content: l10n.enterJsonPrompt,

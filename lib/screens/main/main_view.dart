@@ -5,7 +5,6 @@ import 'package:json_to_dart/config/assets/image_assets.dart';
 import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/screens/json/dart/json_to_dart_view.dart';
 import 'package:json_to_dart/screens/json/generator/json_generator_view.dart';
-import 'package:json_to_dart/screens/json/java/json_to_java_view.dart';
 import 'package:json_to_dart/screens/main/main_logic.dart';
 import 'package:json_to_dart/screens/setting/view/setting_view.dart';
 
@@ -22,8 +21,22 @@ class MainView extends GetView<MainLogic> {
             return NavigationRail(
               leading: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20),
-                child: Image(image: AssetImage(ImageAssets.logo), width: 48, height: 48),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Image(image: AssetImage(ImageAssets.logo), width: 48, height: 48),
+                    IconButton(
+                      onPressed: controller.isExtended.toggle,
+                      icon: Icon(
+                        controller.isExtended.value
+                            ? Icons.arrow_back_ios
+                            : Icons.arrow_forward_ios,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              extended: controller.isExtended.value,
               destinations: [
                 NavigationRailDestination(
                   icon: Icon(FontAwesomeIcons.font),
@@ -34,11 +47,6 @@ class MainView extends GetView<MainLogic> {
                   icon: Icon(FontAwesomeIcons.dartLang),
                   selectedIcon: FaIcon(FontAwesomeIcons.dartLang, color: colorScheme.primary),
                   label: Text(l10n.dart),
-                ),
-                NavigationRailDestination(
-                  icon: FaIcon(FontAwesomeIcons.java),
-                  selectedIcon: FaIcon(FontAwesomeIcons.java, color: colorScheme.primary),
-                  label: Text(l10n.java),
                 ),
                 NavigationRailDestination(
                   icon: Icon(Icons.settings),
@@ -60,12 +68,7 @@ class MainView extends GetView<MainLogic> {
             child: PageView(
               controller: controller.pageController,
               onPageChanged: controller.onPageChanged,
-              children: [
-                JsonGeneratorView(),
-                JsonToDartView(),
-                JsonToJavaView(),
-                SettingView(),
-              ],
+              children: [JsonGeneratorView(), JsonToDartView(), SettingView()],
             ),
           ),
         ],

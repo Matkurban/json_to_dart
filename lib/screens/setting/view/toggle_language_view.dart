@@ -12,21 +12,22 @@ class ToggleLanguageView extends GetView<AppSetting> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.selectLanguage)),
-      body: ListView.builder(
-        padding: AppStyle.defaultPadding,
-        itemBuilder: (context, index) {
-          var values = AppLanguage.values;
-          return Obx(() {
-            return RadioListTile(
+      body: RadioGroup(
+        groupValue: controller.language.value,
+        onChanged: (value) => controller.changeLanguage(value!),
+        child: ListView.builder(
+          padding: AppStyle.defaultPadding,
+          itemBuilder: (context, index) {
+            var values = AppLanguage.values;
+           return RadioListTile(
               value: values[index],
-              groupValue: controller.language.value,
-              onChanged: (value) => controller.changeLanguage(value!),
               title: Text(values[index].displayName),
               selected: values[index] == controller.language.value,
+              toggleable: true,
             );
-          });
-        },
-        itemCount: AppLanguage.values.length,
+          },
+          itemCount: AppLanguage.values.length,
+        ),
       ),
     );
   }

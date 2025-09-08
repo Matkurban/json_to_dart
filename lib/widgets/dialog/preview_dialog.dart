@@ -1,6 +1,5 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_json_view/flutter_json_view.dart';
 import 'package:get/get.dart';
 import 'package:json_to_dart/screens/json/dart/json_to_dart_logic.dart';
 import 'package:json_to_dart/config/global/constant.dart';
@@ -9,6 +8,7 @@ import 'package:json_to_dart/model/domain/main/history_item.dart';
 import 'package:json_to_dart/screens/json/widgets/model_view_pane.dart';
 import 'package:json_to_dart/screens/splash/logic/splash_logic.dart';
 import 'package:json_to_dart/widgets/highlight/highlight_text.dart';
+import 'package:kurban_json_viewer/kurban_json_viewer.dart';
 import 'package:syntax_highlight/syntax_highlight.dart';
 
 sealed class PreviewDialog {
@@ -19,10 +19,9 @@ sealed class PreviewDialog {
     );
   }
 
-  static void showPreviewJsonDialog(BuildContext context, String json) {
+  static void showPreviewJsonDialog(BuildContext context, Map<String, dynamic> json) {
     var size = MediaQuery.sizeOf(context);
     var themeData = Theme.of(context);
-    var colorScheme = themeData.colorScheme;
     showDialog(
       context: context,
       builder: (context) {
@@ -30,30 +29,14 @@ sealed class PreviewDialog {
           child: Dialog(
             backgroundColor: themeData.cardColor,
             child: Container(
+              width: size.width * 0.8,
               padding: AppStyle.defaultPadding,
               constraints: BoxConstraints(
-                maxWidth: size.width * 0.9,
-                maxHeight: size.height * 0.9,
-                minHeight: size.height * 0.9,
+                maxWidth: size.width * 0.8,
+                maxHeight: size.height * 0.8,
+                minHeight: size.height * 0.8,
               ),
-              child: SingleChildScrollView(
-                child: JsonView.string(
-                  json,
-                  theme: JsonViewTheme(
-                    defaultTextStyle: TextStyle(fontFamily: "JetBrainsMono"),
-                    viewType: JsonViewType.collapsible,
-                    keyStyle: TextStyle(color: colorScheme.primary),
-                    doubleStyle: TextStyle(color: colorScheme.secondary),
-                    intStyle: TextStyle(color: colorScheme.secondary),
-                    boolStyle: TextStyle(color: colorScheme.secondary),
-                    stringStyle: TextStyle(color: colorScheme.secondary),
-                    closeIcon: Icon(Icons.keyboard_arrow_down, size: 16),
-                    openIcon: Icon(Icons.keyboard_arrow_up, size: 16),
-                    separator: Text(':'),
-                    backgroundColor: Colors.transparent,
-                  ),
-                ),
-              ),
+              child: JsonViewer(jsonData: json),
             ),
           ),
         );
@@ -64,10 +47,7 @@ sealed class PreviewDialog {
   static void showPreviewDartDialog(BuildContext context, String code) {
     var size = MediaQuery.sizeOf(context);
     SplashLogic splashLogic = Get.find<SplashLogic>();
-    Highlighter highlighter = Highlighter(
-      language: 'dart',
-      theme: splashLogic.highlighterTheme,
-    );
+    Highlighter highlighter = Highlighter(language: 'dart', theme: splashLogic.highlighterTheme);
     showDialog(
       context: context,
       builder: (context) {
@@ -100,10 +80,7 @@ class _PreviewDialogContent extends GetView<JsonToDartLogic> {
       child: Dialog(
         child: Container(
           padding: AppStyle.smallPadding,
-          constraints: BoxConstraints(
-            maxWidth: size.width * 0.9,
-            maxHeight: size.height * 0.9,
-          ),
+          constraints: BoxConstraints(maxWidth: size.width * 0.9, maxHeight: size.height * 0.9),
           child: Row(
             spacing: 10,
             children: [
@@ -146,18 +123,8 @@ class _PreviewDialogContent extends GetView<JsonToDartLogic> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.copy),
-                    onPressed: onCopy,
-                    tooltip: tooltip,
-                  ),
+                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                  IconButton(icon: const Icon(Icons.copy), onPressed: onCopy, tooltip: tooltip),
                 ],
               ),
               // 代码内容区域

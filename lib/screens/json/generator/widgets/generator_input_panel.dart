@@ -6,6 +6,7 @@ import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/model/domain/main/json_field.dart';
 import 'package:json_to_dart/screens/json/generator/json_generator_logic.dart';
 import 'package:json_to_dart/screens/json/widgets/title_text.dart';
+import 'package:json_to_dart/screens/json/generator/widgets/field_type_dropdown.dart';
 
 class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
   const GeneratorInputPanel({super.key});
@@ -38,7 +39,14 @@ class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
             const SizedBox(height: 10),
             Expanded(
               child: Obx(() {
-                return ListView(children: [..._buildFieldList(controller.fields, context)]);
+                return ListView.builder(
+                  itemCount: controller.fields.length,
+                  itemBuilder: (ctx, i) => _JsonFieldWidget(
+                    field: controller.fields[i],
+                    parent: null,
+                    rootController: controller,
+                  ),
+                );
               }),
             ),
           ],
@@ -46,77 +54,71 @@ class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
       ),
     );
   }
+}
 
-  List<Widget> _buildFieldList(
-    List<JsonField> fields,
-    BuildContext context, {
-    int level = 0,
-    JsonField? parent,
-  }) {
-    List<Widget> widgets = [];
-    for (int index = 0; index < fields.length; index++) {
-      final field = fields[index];
-      widgets.add(
-        Padding(
-          padding: EdgeInsets.only(left: level * 24.0),
-          child: Card(
-            margin: const EdgeInsets.only(bottom: 8),
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: TextField(
-                      controller: field.keyController,
-                      decoration: InputDecoration(labelText: l10n.key, hintText: l10n.enterKey),
+class _JsonFieldWidget extends StatelessWidget {
+  final JsonField field;
+  final JsonField? parent;
+  final JsonGeneratorLogic rootController;
+  const _JsonFieldWidget({required this.field, required this.parent, required this.rootController});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      return Padding(
+        padding: EdgeInsets.only(left: field.level * 18.0),
+        child: Column(
+          children: [
+            Card(
+              margin: const EdgeInsets.only(bottom: 6),
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (field.type.value == 'object')
+                      IconButton(
+                        icon: Icon(field.expanded.value ? Icons.expand_less : Icons.expand_more),
+                        tooltip: field.expanded.value ? '折叠' : '展开',
+                        onPressed: () => field.expanded.toggle(),
+                      )
+                    else
+                      const SizedBox(width: 40),
+                    Expanded(
+                      flex: 2,
+                      child: TextField(
+                        controller: field.keyController,
+                        decoration: InputDecoration(labelText: l10n.key, hintText: l10n.enterKey),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  // 类型选择下拉框
-                  SizedBox(
-                    width: 130,
-                    child: Obx(() {
-                      return DropdownButtonFormField<String>(
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 120,
+                      child: FieldTypeDropdown(
                         value: field.type.value,
-                        decoration: InputDecoration(
-                          labelText: "类型",
-                          isDense: true,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                        ),
                         items: [
                           DropdownMenuItem(value: 'string', child: Text(l10n.string)),
                           DropdownMenuItem(value: 'number', child: Text(l10n.number)),
                           DropdownMenuItem(value: 'bool', child: Text(l10n.boolean)),
                           DropdownMenuItem(value: 'array', child: Text(l10n.array)),
-                          DropdownMenuItem(value: 'object', child: Text('Object')),
+                          const DropdownMenuItem(value: 'object', child: Text('Object')),
                         ],
-                        onChanged: (val) {
-                          if (val != null && val != field.type.value) {
-                            field.updateType(val);
-                          }
-                        },
-                      );
-                    }),
-                  ),
-                  const SizedBox(width: 8),
-                  // 依赖类型的输入区域，放入 Obx，避免整行重建
-                  Obx(() {
-                    if (field.type.value == 'object') {
-                      return const SizedBox.shrink();
-                    }
-                    return Expanded(
-                      flex: 3,
-                      child: field.type.value == 'bool'
-                          ? Row(
-                              children: [
-                                Obx(() {
-                                  return Checkbox(
+                        onChanged: (val) => field.updateType(val),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    if (field.type.value != 'object')
+                      Expanded(
+                        flex: 3,
+                        child: field.type.value == 'bool'
+                            ? Row(
+                                children: [
+                                  Checkbox(
                                     value: field.boolValue.value,
-                                    onChanged: (bool? value) {
-                                      if (value != null) {
-                                        field.boolValue.value = value;
-                                        field.valueController.text = value.toString();
+                                    onChanged: (v) {
+                                      if (v != null) {
+                                        field.boolValue.value = v;
+                                        field.valueController.text = v.toString();
                                         field
                                             .valueController
                                             .selection = TextSelection.fromPosition(
@@ -124,80 +126,67 @@ class GeneratorInputPanel extends GetWidget<JsonGeneratorLogic> {
                                         );
                                       }
                                     },
-                                  );
-                                }),
-                                Obx(() {
-                                  return Text(
-                                    field.boolValue.value ? 'true' : 'false',
-                                    style: Get.textTheme.bodyLarge,
-                                  );
-                                }),
-                              ],
-                            )
-                          : TextField(
-                              controller: field.valueController,
-                              keyboardType: field.type.value == 'number'
-                                  ? const TextInputType.numberWithOptions(
-                                      decimal: true,
-                                      signed: true,
-                                    )
-                                  : TextInputType.text,
-                              inputFormatters: field.type.value == 'number'
-                                  ? [FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*$'))]
-                                  : null,
-                              decoration: InputDecoration(
-                                labelText: l10n.value,
-                                hintText: field.type.value == 'number' ? '输入数字' : l10n.enterValue,
+                                  ),
+                                  Text(field.boolValue.value ? 'true' : 'false'),
+                                ],
+                              )
+                            : TextField(
+                                controller: field.valueController,
+                                keyboardType: field.type.value == 'number'
+                                    ? const TextInputType.numberWithOptions(
+                                        decimal: true,
+                                        signed: true,
+                                      )
+                                    : TextInputType.text,
+                                inputFormatters: field.type.value == 'number'
+                                    ? [FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*$'))]
+                                    : null,
+                                decoration: InputDecoration(
+                                  labelText: l10n.value,
+                                  hintText: field.type.value == 'number' ? '输入数字' : l10n.enterValue,
+                                ),
                               ),
-                            ),
-                    );
-                  }),
-                  // 删除按钮
-                  IconButton(
-                    icon: const Icon(Icons.delete),
-                    onPressed: () {
-                      if (parent != null) {
-                        controller.removeChildField(parent, index);
-                      } else {
-                        controller.removeField(index);
-                      }
-                    },
-                    tooltip: l10n.delete,
-                  ),
-                  // 仅当为 object 时展示添加子字段按钮
-                  Obx(() {
-                    if (field.type.value != 'object') {
-                      return const SizedBox.shrink();
-                    }
-                    return Row(
-                      children: [
-                        const SizedBox(width: 8),
-                        IconButton(
-                          icon: const Icon(Icons.add_box),
-                          onPressed: () => controller.addChildField(field),
-                          tooltip: l10n.addField,
-                        ),
-                      ],
-                    );
-                  }),
-                ],
+                      )
+                    else
+                      const SizedBox(),
+                    IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () {
+                        if (parent != null) {
+                          rootController.removeChildField(parent!, parent!.children.indexOf(field));
+                        } else {
+                          final idx = rootController.fields.indexOf(field);
+                          if (idx != -1) rootController.removeField(idx);
+                        }
+                      },
+                      tooltip: l10n.delete,
+                    ),
+                    if (field.type.value == 'object')
+                      IconButton(
+                        icon: const Icon(Icons.add_box),
+                        onPressed: () => rootController.addChildField(field),
+                        tooltip: l10n.addField,
+                      ),
+                  ],
+                ),
               ),
             ),
-          ),
+            if (field.type.value == 'object' && field.expanded.value)
+              Obx(() {
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const ClampingScrollPhysics(),
+                  itemCount: field.children.length,
+                  itemBuilder: (c, i) => _JsonFieldWidget(
+                    field: field.children[i],
+                    parent: field,
+                    rootController: rootController,
+                  ),
+                );
+              }),
+          ],
         ),
       );
-      // 递归渲染所有object类型的子字段（响应式）
-      widgets.add(
-        Obx(() {
-          if (field.type.value == 'object' && field.children.isNotEmpty) {
-            return Column(
-              children: _buildFieldList(field.children, context, level: level + 1, parent: field),
-            );
-          }
-          return const SizedBox.shrink();
-        }),
-      );
-    }
-    return widgets;
+    });
   }
 }

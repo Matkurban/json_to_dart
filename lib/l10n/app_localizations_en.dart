@@ -15,22 +15,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get conversionError => 'Conversion Error';
 
   @override
-  String get enterValidJsonPrompt =>
-      'Please enter a valid JSON format to proceed';
+  String get enterValidJsonPrompt => 'Please enter a valid JSON format to proceed';
 
   @override
   String get confirmClear => 'Confirm Clear?';
 
   @override
-  String get clearWarning =>
-      'Once cleared, data cannot be recovered. Proceed with caution.';
+  String get clearWarning => 'Once cleared, data cannot be recovered. Proceed with caution.';
 
   @override
   String get confirmDelete => 'Confirm Delete?';
 
   @override
-  String get deleteHistoryWarning =>
-      'You are about to delete a history record. This cannot be undone.';
+  String get deleteHistoryWarning => 'You are about to delete a history record. This cannot be undone.';
 
   @override
   String get operationPrompt => 'Operation Prompt';
@@ -138,7 +135,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get systemTheme => 'System';
 
   @override
-  String get dart => 'Dart';
+  String get dart => 'Json To Dart Model';
 
   @override
   String get java => 'Java';

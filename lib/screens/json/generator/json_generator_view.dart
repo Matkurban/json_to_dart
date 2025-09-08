@@ -6,7 +6,6 @@ import 'package:json_to_dart/screens/json/generator/widgets/generator_input_pane
 import 'package:json_to_dart/screens/json/generator/widgets/generator_output_panel.dart';
 import 'package:json_to_dart/screens/json/generator/json_generator_logic.dart';
 import 'package:json_to_dart/screens/json/generator/widgets/json_generator_drawer.dart';
-import 'package:kurban_custom_widgets/kurban_custom_widgets.dart';
 
 class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
   const JsonGeneratorView({super.key});
@@ -36,13 +35,12 @@ class JsonGeneratorView extends GetView<JsonGeneratorLogic> {
       ),
       body: Padding(
         padding: AppStyle.smallPadding,
-        child: KurbanSplitter(
-          splitterThickness: 3,
-          minFirstFraction: 0.2,
-          maxFirstFraction: 0.6,
-          splitterColor: Get.theme.colorScheme.primary,
-          child1: const GeneratorOutputPanel(),
-          child2: const GeneratorInputPanel(),
+        child: Row(
+          spacing: 10,
+          children: [
+            Expanded(child: const GeneratorOutputPanel()),
+            Expanded(flex: 2, child: const GeneratorInputPanel()),
+          ],
         ),
       ),
       endDrawer: const JsonGeneratorDrawer(),

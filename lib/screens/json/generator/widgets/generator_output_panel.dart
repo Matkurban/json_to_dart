@@ -6,7 +6,7 @@ import 'package:json_to_dart/config/global/constant.dart';
 import 'package:json_to_dart/config/theme/app_style.dart';
 import 'package:json_to_dart/screens/json/generator/json_generator_logic.dart';
 import 'package:json_to_dart/screens/json/widgets/title_text.dart';
-import 'package:kurban_custom_widgets/kurban_custom_widgets.dart';
+import 'package:kurban_json_viewer/kurban_json_viewer.dart';
 
 class GeneratorOutputPanel extends GetWidget<JsonGeneratorLogic> {
   const GeneratorOutputPanel({super.key});
@@ -26,7 +26,7 @@ class GeneratorOutputPanel extends GetWidget<JsonGeneratorLogic> {
                 const Spacer(),
                 IconButton(
                   onPressed: () {
-                    previewJson(context, controller.jsonOutput.value);
+                    previewJson(context, jsonDecode(controller.jsonOutput.value));
                   },
                   icon: const Icon(Icons.visibility),
                   tooltip: l10n.previewJsonView,
@@ -48,8 +48,10 @@ class GeneratorOutputPanel extends GetWidget<JsonGeneratorLogic> {
             const SizedBox(height: 10),
             Expanded(
               child: Obx(() {
-                final data = controller.jsonData.value ?? _safeDecode(controller.jsonOutput.value);
-                return KurbanJsonViewer(jsonData: data);
+                final dynamic raw =
+                    controller.jsonData.value ?? _safeDecode(controller.jsonOutput.value);
+                final dynamic normalized = _normalizeForViewer(raw);
+                return JsonViewer(jsonData: normalized);
               }),
             ),
           ],
@@ -64,6 +66,16 @@ class GeneratorOutputPanel extends GetWidget<JsonGeneratorLogic> {
     } catch (_) {
       return {};
     }
+  }
+
+  dynamic _normalizeForViewer(dynamic data) {
+    if (data is Map) {
+      return data.map((key, value) => MapEntry(key.toString(), _normalizeForViewer(value)));
+    }
+    if (data is List) {
+      return data.map(_normalizeForViewer).toList();
+    }
+    return data;
   }
 
   void _showSaveDialog(BuildContext context) {

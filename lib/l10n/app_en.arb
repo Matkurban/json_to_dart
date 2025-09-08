@@ -42,7 +42,7 @@
   "lightTheme": "Light",
   "darkTheme": "Dark",
   "systemTheme": "System",
-  "dart": "Dart",
+  "dart": "Json To Dart Model",
   "java": "Java",
   "settings": "Settings",
   "theme": "Theme",

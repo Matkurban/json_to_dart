@@ -10,4 +10,7 @@ class MainLogic extends GetxController {
 
   ///pageController切换时触发，返回索引
   void onPageChanged(int index) => currentIndex(index);
+
+  ///是否展开
+  RxBool isExtended = false.obs;
 }

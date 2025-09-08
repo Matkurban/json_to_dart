@@ -11,38 +11,32 @@ class ToggleThemeView extends GetView<AppSetting> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.selectTheme)),
-      body: ListView(
-        padding: AppStyle.defaultPadding,
-        children: [
-          Obx(() {
-            return RadioListTile<ThemeMode>(
-              value: ThemeMode.light,
-              groupValue: controller.theme.value,
-              onChanged: (value) => controller.changeTheme(value!),
-              title: Text(l10n.lightTheme),
-              selected: ThemeMode.light == controller.theme.value,
-            );
-          }),
-          Obx(() {
-            return RadioListTile<ThemeMode>(
-              value: ThemeMode.dark,
-              groupValue: controller.theme.value,
-              onChanged: (value) => controller.changeTheme(value!),
-              title: Text(l10n.darkTheme),
-              selected: ThemeMode.dark == controller.theme.value,
-            );
-          }),
-          Obx(() {
-            return RadioListTile<ThemeMode>(
-              value: ThemeMode.system,
-              groupValue: controller.theme.value,
-              onChanged: (value) => controller.changeTheme(value!),
-              title: Text(l10n.systemTheme),
-              selected: ThemeMode.system == controller.theme.value,
-            );
-          }),
-        ],
-      ),
+      body: Obx(() {
+        return RadioGroup(
+          groupValue: controller.theme.value,
+          onChanged: (value) => controller.changeTheme(value!),
+          child: ListView(
+            padding: AppStyle.defaultPadding,
+            children: [
+              RadioListTile<ThemeMode>(
+                value: ThemeMode.light,
+                title: Text(l10n.lightTheme),
+                selected: ThemeMode.light == controller.theme.value,
+              ),
+              RadioListTile<ThemeMode>(
+                value: ThemeMode.dark,
+                title: Text(l10n.darkTheme),
+                selected: ThemeMode.dark == controller.theme.value,
+              ),
+              RadioListTile<ThemeMode>(
+                value: ThemeMode.system,
+                title: Text(l10n.systemTheme),
+                selected: ThemeMode.system == controller.theme.value,
+              ),
+            ],
+          ),
+        );
+      }),
     );
   }
 }

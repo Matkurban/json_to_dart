@@ -18,13 +18,12 @@ dependencies:
   animate_do: ^4.2.0
   toastification: ^3.0.3
   cupertino_icons: ^1.0.8
-  syntax_highlight: ^0.4.0
-  flutter_json_view: ^1.1.5
+  syntax_highlight: ^0.5.0
   flex_color_scheme: ^8.3.0
   package_info_plus: ^8.3.1
   shared_preferences: ^2.5.3
-  font_awesome_flutter: ^10.9.0
-  kurban_custom_widgets: ^0.1.6
+  font_awesome_flutter: ^10.10.0
+  kurban_json_viewer: ^1.0.2
 
 dev_dependencies:
   flutter_test:

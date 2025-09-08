@@ -42,7 +42,7 @@
   "lightTheme": "亮色",
   "darkTheme": "深色",
   "systemTheme": "系统",
-  "dart": "Dart",
+  "dart": "Json转Dart对象",
   "java": "Java",
   "settings": "设置",
   "theme": "主题",

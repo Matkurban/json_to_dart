@@ -35,7 +35,7 @@ class _FieldTypeDropdownState extends State<FieldTypeDropdown> {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      value: _selectedType,
+      initialValue: _selectedType,
       decoration: const InputDecoration(
         labelText: "类型",
         isDense: true,

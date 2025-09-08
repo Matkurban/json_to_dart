@@ -23,7 +23,9 @@ class JsonGeneratorLogic extends GetxController {
   final SplashLogic splashLogic = Get.find<SplashLogic>();
 
   Timer? _debounceTimer;
-  static const _debounceDuration = Duration(milliseconds: 300);
+  static const int _instantComputeThreshold = 20; // 字段总数 <= 该值时即时计算
+  static const Duration _baseDebounce = Duration(milliseconds: 160);
+  bool _suppressAutoCompute = false; // 批量操作时抑制自动计算
 
   @override
   void onInit() {
@@ -91,6 +93,7 @@ class JsonGeneratorLogic extends GetxController {
       fields.clear();
 
       // 添加新字段（监听由 JsonField 内部统一处理）
+      _suppressAutoCompute = true;
       jsonMap.forEach((key, value) {
         final field = JsonField(
           keyController: TextEditingController(text: key),
@@ -100,6 +103,7 @@ class JsonGeneratorLogic extends GetxController {
         );
         fields.add(field);
       });
+      _suppressAutoCompute = false;
 
       fields.refresh();
       updateJsonOutput();
@@ -189,19 +193,43 @@ class JsonGeneratorLogic extends GetxController {
   }
 
   void updateJsonOutput() {
+    if (_suppressAutoCompute) return; // 批量操作时跳过
+    final total = _countFields(fields);
+    if (total <= _instantComputeThreshold) {
+      // 小数据量即时计算，保证输入无延迟
+      _debounceTimer?.cancel();
+      _computeJsonOutput();
+      return;
+    }
+    // 大数据量自适应延迟，字段越多延迟越长（上限 600ms）
+    final int extra = (total / 60 * 400).clamp(0, 440).toInt();
+    final delay = _baseDebounce + Duration(milliseconds: extra);
     _debounceTimer?.cancel();
-    _debounceTimer = Timer(_debounceDuration, _computeJsonOutput);
+    _debounceTimer = Timer(delay, _computeJsonOutput);
   }
 
   void _computeJsonOutput() {
-    final Map<String, dynamic> jsonMap = {};
-    for (var field in fields) {
-      if (field.keyController.text.isNotEmpty) {
-        jsonMap[field.keyController.text] = _processField(field);
+    try {
+      final Map<String, dynamic> jsonMap = <String, dynamic>{};
+      for (var field in fields) {
+        final k = field.keyController.text;
+        if (k.isNotEmpty) {
+          jsonMap[k] = _processField(field);
+        }
       }
+      // 直接赋值原始结构供 UI 使用
+      jsonData.value = jsonMap;
+      // 延迟编码，减轻主线程卡顿
+      scheduleMicrotask(() {
+        try {
+          jsonOutput.value = JsonEncoder.withIndent('  ').convert(jsonMap);
+        } catch (e) {
+          debugPrint('Encode error: $e');
+        }
+      });
+    } catch (e) {
+      debugPrint('_computeJsonOutput error: $e');
     }
-    jsonData.value = jsonMap;
-    jsonOutput.value = JsonEncoder.withIndent('  ').convert(jsonMap);
   }
 
   dynamic _processField(JsonField field) {
@@ -217,11 +245,12 @@ class JsonGeneratorLogic extends GetxController {
         return field.valueController.text.toLowerCase() == 'true';
       case 'array':
         try {
-          return field.valueController.text
-              .split(',')
-              .map((e) => e.trim())
-              .where((e) => e.isNotEmpty)
-              .toList();
+          final raw = field.valueController.text;
+          if (raw.trim().startsWith('[')) {
+            final decoded = jsonDecode(raw);
+            if (decoded is List) return decoded;
+          }
+          return raw.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
         } catch (e) {
           return [];
         }
@@ -238,6 +267,17 @@ class JsonGeneratorLogic extends GetxController {
     }
   }
 
+  int _countFields(List<JsonField> list) {
+    int c = 0;
+    for (final f in list) {
+      c++;
+      if (f.type.value == 'object' && f.children.isNotEmpty) {
+        c += _countFields(f.children);
+      }
+    }
+    return c;
+  }
+
   /// 导入JSON字符串并填充到输入面板
   void importFromJson(String jsonStr) {
     try {
@@ -249,7 +289,9 @@ class JsonGeneratorLogic extends GetxController {
       fields.clear();
 
       if (jsonData is Map<String, dynamic>) {
+        _suppressAutoCompute = true;
         _fillFieldsFromMap(jsonData, fields, 0);
+        _suppressAutoCompute = false;
       } else {
         // 只支持对象根节点
         Get.snackbar('导入失败', '只支持对象类型的JSON根节点');
