@@ -1,7 +1,7 @@
 name: json_to_dart
 description: "It is a Json tool for generating Dart code"
 publish_to: "none"
-version: 1.1.3
+version: 1.1.4
 environment:
   sdk: ^3.9.0
 
