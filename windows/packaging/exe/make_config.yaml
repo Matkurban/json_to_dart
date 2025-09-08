@@ -1,0 +1,13 @@
+# AppId 的值唯一标识此应用。
+app_id: 8370ABF0-7B74-489C-AB1A-7C3CE01CC355
+publisher: Matkurban
+publisher_url: https://github.com/Matkurban/json_to_dart
+display_name: JsonToDart
+create_desktop_icon: true
+# See: https://jrsoftware.org/ishelp/index.php?topic=setup_defaultdirname
+install_dir_name: "D:/Program Files/JsonToDart"
+# 这里的路径是相对于项目根目录的路径； 图标格式必须是ico格式，不能是png或其它
+setup_icon_file: windows\runner\resources\app_icon.ico
+locales:
+  - en
+  - zh
