@@ -35,7 +35,6 @@ devtools_options.yaml
 pubspec.lock
 .pub/
 /build/
-/dist/
 
 # Symbolication related
 app.*.symbols
