@@ -35,6 +35,7 @@ class _FieldTypeDropdownState extends State<FieldTypeDropdown> {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
+      padding: EdgeInsets.symmetric(vertical: 4),
       initialValue: _selectedType,
       decoration: const InputDecoration(
         labelText: "类型",
